@@ -4,7 +4,11 @@
  
 import pygame
 
-from sappho import AnimatedSprite, TileMap, Tilesheet, tmx_file_to_tilemap_csv_string
+from sappho import (AnimatedSprite,
+                    TileMap,
+                    Tilesheet,
+                    tmx_file_to_tilemap_csv_string,
+                    SurfaceLayers)
 
  
 # Setup
@@ -39,6 +43,8 @@ tilesheet = Tilesheet.from_file('test_scene/tilesheet.png', 10, 10)
 tilemap_csv_string = tmx_file_to_tilemap_csv_string("test_scene/test.tmx")
 tilemap = TileMap.from_csv_string_and_tilesheet(tilemap_csv_string, tilesheet)
 tilemap_surface = tilemap.to_surface()
+
+layers = SurfaceLayers(screen, 2)
  
 # Main program loop
 while not done:
@@ -88,8 +94,9 @@ while not done:
         x_coord = potential_x_coord
  
     # DRAWING/RENDER CODE
-    screen.blit(tilemap_surface, (0, 0))  # background
-    screen.blit(animated_sprite.image, (x_coord, y_coord))
+    layers[0].blit(tilemap_surface, (0, 0))  # background
+    layers[1].blit(animated_sprite.image, (x_coord, y_coord))
+    layers.render()
     animated_sprite.update(clock)
  
     # Go ahead and update the screen with what we've drawn.

@@ -3,11 +3,10 @@ import pygame
 
 class Tile(pygame.sprite.Sprite):
 
-    def __init__(self, id_, surface, subsurface, solid_block=False):
+    def __init__(self, id_, image, solid_block=False):
         super(Tile, self).__init__()
         self.id_ = id_
-        self.surface = surface
-        self.subsurface = subsurface
+        self.image = image
         self.solid_block = solid_block
 
 
@@ -66,8 +65,7 @@ class Tilesheet(object):
 
             solid = tile_id in tile_rules and 'solid_block' in tile_rules[tile_id]
             tile = Tile(id_=tile_id,
-                        surface=tilesheet_surface,
-                        subsurface=subsurface,
+                        image=subsurface,
                         solid_block=solid)
             tiles.append(tile)
 
@@ -121,7 +119,7 @@ class TileMap(object):
             for x, tile in enumerate(row_of_tiles):
                 # blit tile subsurface onto respective layer
                 tile_position = (x * tile_size_x, y * tile_size_y)
-                new_surface.blit(tile.subsurface, tile_position)
+                new_surface.blit(tile.image, tile_position)
 
         return new_surface
 
