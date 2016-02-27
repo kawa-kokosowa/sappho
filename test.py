@@ -1,8 +1,5 @@
-"""
-Sample Python/Pygame Programs
-Simpson College Computer Science
-http://programarcadegames.com/
-http://simpson.edu/computer-science/
+"""Basic demo Sappho game
+
 """
  
 import pygame
@@ -17,7 +14,7 @@ pygame.init()
 size = [700, 500]
 screen = pygame.display.set_mode(size)
  
-pygame.display.set_caption("My Game")
+pygame.display.set_caption("Sappho Engine Test")
  
 # Loop until the user clicks the close button.
 done = False
@@ -43,16 +40,18 @@ tilemap_csv_string = tmx_file_to_tilemap_csv_string("test_scene/test.tmx")
 tilemap = TileMap.from_csv_string_and_tilesheet(tilemap_csv_string, tilesheet)
 tilemap_surface = tilemap.to_surface()
  
-
-# -------- Main Program Loop -----------
+# Main program loop
 while not done:
-    # --- Event Processing
+
+    # Process events
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             done = True
-            # User pressed down on a key
  
+        # User pressed down on a key
         elif event.type == pygame.KEYDOWN:
+
             # Figure out if it was an arrow key. If so
             # adjust speed.
             if event.key == pygame.K_LEFT:
@@ -66,13 +65,14 @@ while not done:
  
         # User let up on a key
         elif event.type == pygame.KEYUP:
+
             # If it is an arrow key, reset vector back to zero
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 x_speed = 0
             elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 y_speed = 0
  
-    # --- Game Logic
+    # GAME LOGIC
  
     # Move the object according to the speed vector.
     potential_x_coord = x_coord + x_speed
@@ -87,15 +87,8 @@ while not done:
         y_coord = potential_y_coord
         x_coord = potential_x_coord
  
-    # --- Drawing Code
-    #
-    # First, clear the screen to WHITE. Don't put other drawing commands
-    # above this, or they will be erased with this command.
-    # screen.fill(WHITE)
-    #
-    # --- Background
-    screen.blit(tilemap_surface, (0, 0))
-
+    # DRAWING/RENDER CODE
+    screen.blit(tilemap_surface, (0, 0))  # background
     screen.blit(animated_sprite.image, (x_coord, y_coord))
     animated_sprite.update(clock)
  
