@@ -3,17 +3,12 @@ import pygame
 
 class Tile(pygame.sprite.Sprite):
 
-    def __init__(self, pygame_subsurface):
+    def __init__(self, id_, surface, subsurface, solid_block=False):
         super(Tile, self).__init__()
-        self.image = pygame_subsurface
-
-
-class Tile(object):
-
-    def __init__(self, id_, surface, subsurface):
         self.id_ = id_
         self.surface = surface
         self.subsurface = subsurface
+        self.solid_block = solid_block
 
 
 class Tilesheet(object):
@@ -23,10 +18,37 @@ class Tilesheet(object):
         self.tiles = tiles
         self.tile_size = tile_size
 
+    @staticmethod
+    def parse_rules(path_to_rules_file):
+        
+        with open(path_to_rules_file) as f:
+            rules = f.readlines()
+
+        tile_rules = {}
+
+        for rule in rules:
+            tile_ids_affected, flags = rule.split('=')
+            tile_ids_affected = [id_ for id_ in tile_ids_affected.split(',')]
+            flags = [flag.strip() for flag in flags.split(',')]
+
+            for tile_id in tile_ids_affected:
+                
+                if '-' in tile_id:
+                    first_id, last_id = tile_id.split('-')
+                    first_id = int(first_id)
+                    last_id = int(last_id)
+
+                    for tile_id in xrange(first_id, last_id + 1):
+                        tile_rules[int(tile_id)] = flags
+
+                tile_rules[int(tile_id)] = flags
+
+        return tile_rules
 
     @classmethod
     def from_file(cls, file_path, tile_width, tile_height):
         tilesheet_surface = pygame.image.load(file_path)
+        tile_rules = cls.parse_rules(file_path + ".rules")
 
         tile_size = (tile_width, tile_height)
         tilesheet_width, tilesheet_height = tilesheet_surface.get_size()
@@ -41,9 +63,12 @@ class Tilesheet(object):
             subsurface = cls.tile_subsurface_from_tile_id(tilesheet_surface,
                                                           tile_size,
                                                           tile_id)
+
+            solid = tile_id in tile_rules and 'solid_block' in tile_rules[tile_id]
             tile = Tile(id_=tile_id,
                         surface=tilesheet_surface,
-                        subsurface=subsurface)
+                        subsurface=subsurface,
+                        solid_block=solid)
             tiles.append(tile)
 
         return Tilesheet(tilesheet_surface, tiles, tile_size)
@@ -63,9 +88,10 @@ class Tilesheet(object):
         return subsurface
 
 
+# NOTE: could become TileMapLayer
 class TileMap(object):
 
-    def __init__(self, tilesheet, tiles):
+    def __init__(self, tilesheet, tiles, solid_blocks=[]):
         """
 
         Arguments:
@@ -76,6 +102,7 @@ class TileMap(object):
 
         self.tilesheet = tilesheet
         self.tiles = tiles
+        self.solid_blocks = solid_blocks
 
     def to_surface(self):
         tile_size_x, tile_size_y = self.tilesheet.tile_size
@@ -101,11 +128,12 @@ class TileMap(object):
     @classmethod
     def from_csv_string_and_tilesheet(cls, csv_string, tilesheet):
         sheet = []
+        solid_blocks = []
 
-        for line in csv_string.split('\n'):
+        for y, line in enumerate(csv_string.split('\n')):
             row = []
 
-            for tile_id_string in line.split(','):
+            for x, tile_id_string in enumerate(line.split(',')):
 
                 if not tile_id_string:
 
@@ -114,11 +142,19 @@ class TileMap(object):
                 tile_id = int(tile_id_string)
                 tile = tilesheet.tiles[tile_id]
 
+                if tile.solid_block:
+                    left_top = (x * tilesheet.tile_size[0],
+                                y * tilesheet.tile_size[1])
+                    block = pygame.rect.Rect(left_top, tilesheet.tile_size)
+                    solid_blocks.append(block)
+
+                # create absolute rect and add to group
+
                 row.append(tile)
 
             sheet.append(row)
 
-        return cls(tilesheet, sheet)
+        return cls(tilesheet, sheet, solid_blocks)
 
 
 def index_to_coord(width, i):

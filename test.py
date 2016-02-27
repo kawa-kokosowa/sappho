@@ -10,11 +10,6 @@ import pygame
 from sappho import AnimatedSprite, TileMap, Tilesheet, tmx_file_to_tilemap_csv_string
 
  
-WHITE = (255, 255, 255)
-
-TILEMAP_CSV_STRING = "0,16,8\n9,4,2\n3,1,5"
- 
-
 # Setup
 pygame.init()
  
@@ -80,8 +75,17 @@ while not done:
     # --- Game Logic
  
     # Move the object according to the speed vector.
-    x_coord = x_coord + x_speed
-    y_coord = y_coord + y_speed
+    potential_x_coord = x_coord + x_speed
+    potential_y_coord = y_coord + y_speed
+
+    rect = pygame.rect.Rect((potential_x_coord, potential_y_coord),
+                            animated_sprite.image.get_size())
+
+    if rect.collidelist(tilemap.solid_blocks) != -1:
+        print("colliding!")
+    else:
+        y_coord = potential_y_coord
+        x_coord = potential_x_coord
  
     # --- Drawing Code
     #
@@ -91,7 +95,7 @@ while not done:
     #
     # --- Background
     screen.blit(tilemap_surface, (0, 0))
- 
+
     screen.blit(animated_sprite.image, (x_coord, y_coord))
     animated_sprite.update(clock)
  
