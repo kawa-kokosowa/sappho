@@ -1,5 +1,8 @@
 # ![Sappho Logo (A Lyre)](sappho-logo.png)
 
+[![GitHub license](https://img.shields.io/github/license/lillian-lemmer/sappho.svg?style=flat-square)](https://raw.githubusercontent.com/lillian-lemmer/sappho/master/LICENSE)
+[![Donate with Paypal](https://img.shields.io/badge/paypal-donate-ff69b4.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZU5EVKVY2DX2S)
+
 Sappho is a 2D game engine written with Python and pygame.
 
 The purpose of this repo is to rewrite Hypatia Engine
