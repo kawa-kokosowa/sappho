@@ -1,7 +1,24 @@
+"""Support for tile maps.
+
+Has impassability support.
+
+"""
+
 import pygame
 
 
 class Tile(pygame.sprite.Sprite):
+    """A tile object is a sprite, which is typically
+    a subsurface of a tilesheet.
+
+    Attributes:
+        id_ (str): The ID of this tile in its respective
+            tilesheet.
+        image (pygame.surface.Surface):
+        solid_block (bool): If true, this entire tile
+            is completely impassible.
+
+    """
 
     def __init__(self, id_, image, solid_block=False):
         super(Tile, self).__init__()
@@ -11,6 +28,17 @@ class Tile(pygame.sprite.Sprite):
 
 
 class Tilesheet(object):
+    """Efficient place to  update, subsurface tile
+    graphics.
+
+    Attributes:
+        surface (pygame.surface.Surface):
+        tiles (list[Tile]): The tiles composing this
+            Tilesheet.
+        tile_size (tuple[int, int]): The size of each
+            tile in pixels (x, y).
+
+    """
 
     def __init__(self, surface, tiles, tile_size):
         self.surface = surface
@@ -19,6 +47,16 @@ class Tilesheet(object):
 
     @staticmethod
     def parse_rules(path_to_rules_file):
+        """Get properties for tile IDs from the
+        path_to_rules_file.
+
+        Argument:
+            path_to_rules_file (str):
+
+        Returns:
+            str:
+
+        """
         
         with open(path_to_rules_file) as f:
             rules = f.readlines()
@@ -46,6 +84,16 @@ class Tilesheet(object):
 
     @classmethod
     def from_file(cls, file_path, tile_width, tile_height):
+        """Creates a tilesheet, and its tiles, from a
+        file, as well as tile width and height specification.
+
+        Arguments:
+            file_path (str):
+            tile_width (int):
+            tile_height(int):
+
+        """
+
         tilesheet_surface = pygame.image.load(file_path)
         tile_rules = cls.parse_rules(file_path + ".rules")
 
@@ -73,6 +121,20 @@ class Tilesheet(object):
 
     @staticmethod
     def tile_subsurface_from_tile_id(tilesheet_surface, tile_size, tile_id):
+        """Create a subsurface for a tile from the tilesheet surface.
+
+        Arguments:
+            tilesheet_surface (pygame.surface.Surface):
+            tile_size (list[int, int]): (x, y) pixel dimensions
+                of all tiles.
+            tile_id (int): The tile ID to graph the graphic from
+                the tilesheet surface for.
+
+        Return:
+            pygame.surface.Surface:
+
+        """
+
         tilesheet_width_in_tiles = (tilesheet_surface.get_size()[0] /
                                     tile_size[0])
         top_left_in_tiles = index_to_coord(tilesheet_width_in_tiles,
@@ -86,8 +148,15 @@ class Tilesheet(object):
         return subsurface
 
 
-# NOTE: could become TileMapLayer
 class TileMap(object):
+    """A 2D grid arrangement of tiles, accompanied by
+    passability information.
+
+    Notes:
+        You can use this as a layer for a map.
+        Can be used as a tile map layer!
+
+    """
 
     def __init__(self, tilesheet, tiles, solid_blocks=[]):
         """
@@ -103,8 +172,15 @@ class TileMap(object):
         self.solid_blocks = solid_blocks
 
     def to_surface(self):
+        """Blit the tiles to a surface and return it!
+
+        Returns:
+            pygame.surface.Surface: --
+
+        """
+
         tile_size_x, tile_size_y = self.tilesheet.tile_size
-        
+
         width_in_tiles = len(self.tiles[0])
         height_in_tiles = len(self.tiles)
 
@@ -125,6 +201,15 @@ class TileMap(object):
 
     @classmethod
     def from_csv_string_and_tilesheet(cls, csv_string, tilesheet):
+        """Create a tilemap using a CSV of tile IDs and
+        a tilesheet.
+
+        Arguments:
+            csv_string (str):
+            tilesheet (Tilesheet):
+
+        """
+
         sheet = []
         solid_blocks = []
 
