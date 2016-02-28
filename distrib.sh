@@ -24,8 +24,9 @@
 rm -rf build dist  # ??
 
 if [ "$1" = "live" ]; then
-  python setup.py sdist bdist_wheel
-  twine upload dist/*
+  #python setup.py sdist bdist_wheel
+  python setup.py sdist
+  #twine upload dist/*
 elif [ "$1" = "test" ]; then
   python setup.py register -r pypitest
 else
