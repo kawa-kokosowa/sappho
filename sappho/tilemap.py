@@ -156,6 +156,15 @@ class TileMap(object):
         You can use this as a layer for a map.
         Can be used as a tile map layer!
 
+        You could use a tilemap per "layer" and then
+        move through the layers of TileMap objects
+        respectively, so when you move up stairs
+        you're affected by solids of that same
+        layer/level/TileMap object.
+
+        This is to stress that a 3D tilemap is not
+        only not needed, but a bad idea!
+
     """
 
     def __init__(self, tilesheet, tiles, solid_blocks=[]):
