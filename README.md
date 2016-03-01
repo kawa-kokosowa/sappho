@@ -1,4 +1,4 @@
-# ![Sappho Logo (A Lyre)](sappho-logo.png)
+# ![Sappho Logo (A Lyre)](logo/sappho-logo.png)
 
 [![GitHub license](https://img.shields.io/github/license/lillian-lemmer/sappho.svg?style=flat-square)](https://raw.githubusercontent.com/lillian-lemmer/sappho/master/LICENSE)
 [![PyPI Version](https://img.shields.io/pypi/v/sappho.svg?style=flat-square)](https://pypi.python.org/pypi/sappho/)
