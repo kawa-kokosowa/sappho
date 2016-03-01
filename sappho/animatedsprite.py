@@ -1,4 +1,17 @@
-"""Animated sprites, which are pygame sprites!
+"""AnimatedSprite is a pygame sprite, which is
+animated! The image is changed by sending update()
+the game clock.
+
+AnimatedSprites also allow for "anchoring," meaning
+you can pin one AnimatedSprite to another! A file
+gives you frame-by-frame control of the anchor point
+of each AnimatedSprite. An AnimatedSprite is anchored
+to another by lining up said anchor points on either
+AnimatedSprite.
+
+Warning: this module is pretty technical, the only
+thing you should really be concerned about is
+AnimatedSprite.
 
 """
 

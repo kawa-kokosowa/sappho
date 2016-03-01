@@ -1,4 +1,10 @@
-"""Basic demo Sappho game
+"""Demo pygame game using Sappho.
+
+A very horrible and basic pygame game which
+utilizes Sappho (hopefully) to the fullest and
+acts as a test.
+
+This could also serve as a template in the future.
 
 """
  
@@ -7,18 +13,25 @@ import pygame
 from sappho import (AnimatedSprite,
                     TileMap,
                     Tilesheet,
-                    tmx_file_to_tilemap_csv_string,
+                    tmx_file_to_tilemaps,
                     SurfaceLayers)
 
- 
+# Constants/game config
+RESOLUTION = [700, 500]
+WINDOW_TITLE = "Sappho Engine Test"
+ANIMATED_SPRITE_PATH = "test.gif"
+TILESHEET_PATH = "test_scene/tilesheet.png"
+TMX_PATH = "test_scene/test.tmx"
+ANIMATED_SPRITE_Z_INDEX = 0
+
+
 # Setup
 pygame.init()
  
 # Set the width and height of the screen [width,height]
-size = [700, 500]
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(RESOLUTION)
  
-pygame.display.set_caption("Sappho Engine Test")
+pygame.display.set_caption(WINDOW_TITLE)
  
 # Loop until the user clicks the close button.
 done = False
@@ -37,14 +50,22 @@ y_speed = 0
 x_coord = 10
 y_coord = 10
 
-animated_sprite = AnimatedSprite.from_file('test.gif')
-tilesheet = Tilesheet.from_file('test_scene/tilesheet.png', 10, 10)
+# The player will be able to control this with arrow keys.
+animated_sprite = AnimatedSprite.from_file(ANIMATED_SPRITE_PATH)
 
-tilemap_csv_string = tmx_file_to_tilemap_csv_string("test_scene/test.tmx")
-tilemap = TileMap.from_csv_string_and_tilesheet(tilemap_csv_string, tilesheet)
-tilemap_surface = tilemap.to_surface()
+# Load the scene, namely the layered map. Layered maps are
+# represented as a list of TileMap objects.
+tilesheet = Tilesheet.from_file(TILESHEET_PATH, 10, 10)
+layer_tilemaps = tmx_file_to_tilemaps(TMX_PATH, tilesheet)
 
-layers = SurfaceLayers(screen, 2)
+# ... Make a list of surfaces from the tilemaps.
+tilemap_surfaces = []
+
+for layer_tilemap in layer_tilemaps:
+    tilemap_surfaces.append(layer_tilemap.to_surface())
+
+# The render layers which we draw to
+layers = SurfaceLayers(screen, len(tilemap_surfaces))
  
 # Main program loop
 while not done:
@@ -87,15 +108,26 @@ while not done:
     rect = pygame.rect.Rect((potential_x_coord, potential_y_coord),
                             animated_sprite.image.get_size())
 
-    if rect.collidelist(tilemap.solid_blocks) != -1:
+    tilemap_on_players_index = layer_tilemaps[ANIMATED_SPRITE_Z_INDEX]
+    solid_blocks_on_players_index = tilemap_on_players_index.solid_blocks
+
+    if rect.collidelist(solid_blocks_on_players_index) != -1:
         print("colliding!")
     else:
         y_coord = potential_y_coord
         x_coord = potential_x_coord
  
     # DRAWING/RENDER CODE
-    layers[0].blit(tilemap_surface, (0, 0))  # background
-    layers[1].blit(animated_sprite.image, (x_coord, y_coord))
+
+    # first let's render each tilemap on its respective surface
+    for i, tilemap_layer in enumerate(tilemap_surfaces):
+        layers[i].blit(tilemap_layer, (0, 0))
+
+    # Finally let's render the animated sprite on some
+    # arbitrary layer. In the future the TMX will set this.
+    layers[ANIMATED_SPRITE_Z_INDEX].blit(animated_sprite.image, (x_coord, y_coord))
+
+    # Draw the layers and update the animations with the time
     layers.render()
     animated_sprite.update(clock)
  

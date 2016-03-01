@@ -1,10 +1,12 @@
-"""Support for tile maps.
+"""Tile engine; tile map, tilesheet system.
 
 Has impassability support.
 
 """
 
 import pygame
+
+import xml.etree.ElementTree as ET
 
 
 class Tile(pygame.sprite.Sprite):
@@ -272,3 +274,44 @@ def index_to_coord(width, i):
     else:
 
         return ((i % width), (i // width))
+
+
+def tmx_file_to_tilemaps(tmx_file_path, tilesheet):
+    """Read TMX file from path and return
+    a list of TileMaps (one TileMap per layer).
+
+    Arguments:
+        tmx_file_path (str)
+        tilesheet (Tilesheet)
+
+    Returns:
+        list[TileMap]: Each layer gets its own TileMap!
+
+    Note:
+        Uses CSV layers; TMX allows all kinds, but
+        CSV is the default.
+
+    """
+
+    tree = ET.parse(tmx_file_path)
+    root = tree.getroot()  # <map ...>
+
+    csv_layers = []
+
+    for layer_data in root.findall(".//layer/data"):
+        data_encoding = layer_data.attrib['encoding']
+
+        if data_encoding != 'csv':
+
+            raise TMXLayersNotCSV(data_encoding)
+
+        layer_csv = layer_data.text.strip()
+        csv_layers.append(layer_csv)
+
+    tilemaps = []
+
+    for layer in csv_layers:
+        layer_tilemap = TileMap.from_csv_string_and_tilesheet(layer, tilesheet)
+        tilemaps.append(layer_tilemap)
+
+    return tilemaps
