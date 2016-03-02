@@ -2,8 +2,7 @@ import os
 
 import pygame
 
-import parent
-import sappho
+from .. import sappho
 
 
 def test_layers():
