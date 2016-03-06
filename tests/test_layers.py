@@ -35,7 +35,7 @@ class TestSurfaceLayers(object):
         for i, surface in enumerate(self.surface_layers):
             assert surface is self.surface_layers[i]
 
-        assert i == 99
+        assert i == (NUMBER_OF_LAYERS - 1)
 
     def test_sizes(self):
 
