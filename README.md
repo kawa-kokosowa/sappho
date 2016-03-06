@@ -12,6 +12,8 @@ and eventually replace Hypatia Engine as "Sappho."
 
 Sorry I haven't had time to clean anything yet.
 
+You can run tests with `py.test -v` in the directory root.
+
 ## Design Philosophy
 
   1. Don't interfere with the way people build their pygame games

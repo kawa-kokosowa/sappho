@@ -5,18 +5,31 @@ import pygame
 from .. import sappho
 
 
-def test_layers():
-    target_surface = pygame.surface.Surface([400, 300])
-    surface_layers = sappho.SurfaceLayers(target_surface, 4)
+class TestSurfaceLayers(object):
+    NUMBER_OF_LAYERS = 100
+    TARGET_SURFACE_SIZE = (800, 600)
 
-    # Should use magic method that counts _surface_layers instead!
-    assert len(surface_layers._surface_layers) == 4
+    def setup(self):
+        self.target_surface = pygame.surface.Surface(self.TARGET_SURFACE_SIZE)
+        self.surface_layers = sappho.SurfaceLayers(self.target_surface,
+                                                   self.NUMBER_OF_LAYERS)
 
-    # should have __iter__ instead
-    for surface in surface_layers._surface_layers:
-        assert surface.get_size() == target_surface.get_size()
+    def test_getitem(self):
 
-    surface_layers[0]
-    surface_layers[1]
-    surface_layers[2]
-    surface_layers[3]
+        for i in range(self.NUMBER_OF_LAYERS):
+            self.surface_layers[i]
+
+    def test_len(self):
+        assert len(self.surface_layers) == self.NUMBER_OF_LAYERS
+
+    def test_iter(self):
+
+        for i, surface in enumerate(self.surface_layers):
+            assert surface is self.surface_layers[i]
+
+        assert i == 99
+
+    def test_sizes(self):
+
+        for surface in self.surface_layers:
+            assert surface.get_size() == self.TARGET_SURFACE_SIZE
