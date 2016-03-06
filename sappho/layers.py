@@ -67,6 +67,27 @@ class SurfaceLayers(object):
 
         return self._surface_layers[key]
 
+    def __len__(self):
+        """Return the number of layers.
+
+        Returns:
+            int: Number of members in self.surface_layers.
+
+        """
+
+        return len(self._surface_layers)
+
+    def __iter__(self):
+        """Iterate through the surface layers.
+
+        Yields:
+            pygame.surface.Surface
+
+        """
+
+        for surface in self._surface_layers:
+            yield surface
+
     def render(self):
         """Draw each layer onto the target surface.
 
