@@ -43,8 +43,46 @@ class TestSurfaceLayers(object):
             assert surface.get_size() == self.TARGET_SURFACE_SIZE
 
     def test_render(self):
-        """This requires a fixture.
 
-        """
+        subsurface_size = (150, 150)
 
-        pass
+        # Create our test surfaces
+        background = pygame.surface.Surface(self.TARGET_SURFACE_SIZE)
+        rect1 = pygame.surface.Surface(subsurface_size)
+        rect1pos = (100, 100)
+        rect2 = pygame.surface.Surface(subsurface_size)
+        rect2pos = (200, 200)
+        rect3 = pygame.surface.Surface(subsurface_size)
+        rect3pos = (300, 300)
+
+        # Fill the surfaces
+        background.fill((255, 255, 255))
+        rect1.fill((255, 0, 0))
+        rect2.fill((0, 255, 0))
+        rect3.fill((0, 0, 255))
+
+        # Create a surface to compare with and blit our test surfaces
+        test_surface = pygame.surface.Surface(self.TARGET_SURFACE_SIZE)
+        test_surface.blit(background, (0, 0))
+        test_surface.blit(rect1, rect1pos)
+        test_surface.blit(rect2, rect2pos)
+        test_surface.blit(rect3, rect3pos)
+
+        # Create the SurfaceLayers object and fill it with our layers
+        surface_layers = sappho.SurfaceLayers(self.target_surface, 4)
+        surface_layers[0].blit(background, (0, 0))
+        surface_layers[1].blit(rect1, rect1pos)
+        surface_layers[2].blit(rect2, rect2pos)
+        surface_layers[3].blit(rect3, rect3pos)
+
+        # Render to the target surface
+        surface_layers.render()
+
+        # Compare the two surfaces
+        target_view = self.target_surface.get_view().raw
+        test_view = test_surface.get_view().raw
+
+        # The returned value is a bytes (str in python2) object so we can 
+        # just do a straight compare
+        assert(target_view == test_view)
+
