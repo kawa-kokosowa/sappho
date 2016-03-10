@@ -24,5 +24,6 @@ You can run tests with `py.test -v` in the directory root.
   5. Consistency.
   6. Simplicity trumps all else.
   7. Well documented.
+  8. Code is easy-to-test. We show that with our 100% test coverage.
 
 For more details see `CONTRIBUTING.md`.
