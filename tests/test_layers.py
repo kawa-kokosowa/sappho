@@ -18,8 +18,8 @@ class TestSurfaceLayers(object):
     TARGET_SURFACE_SIZE = (800, 600)
 
     def setup(self):
-        target_surface = pygame.surface.Surface(self.TARGET_SURFACE_SIZE)
-        self.surface_layers = sappho.SurfaceLayers(target_surface,
+        self.target_surface = pygame.surface.Surface(self.TARGET_SURFACE_SIZE)
+        self.surface_layers = sappho.SurfaceLayers(self.target_surface,
                                                    self.NUMBER_OF_LAYERS)
 
     def test_getitem(self):
@@ -35,7 +35,7 @@ class TestSurfaceLayers(object):
         for i, surface in enumerate(self.surface_layers):
             assert surface is self.surface_layers[i]
 
-        assert i == (NUMBER_OF_LAYERS - 1)
+        assert i == (self.NUMBER_OF_LAYERS - 1)
 
     def test_sizes(self):
 
