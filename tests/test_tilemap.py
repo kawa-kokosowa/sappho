@@ -80,7 +80,22 @@ class TestTilemap(object):
         # in the tilemap. Here, we check that a solid block has been correctly
         # entered into the tilemap.
         assert(len(tilemap.solid_blocks) == 1)
-        assert(tilemap.solid_blocks[0].topleft == (0, 0)) 
+        assert(tilemap.solid_blocks[0].topleft == (0, 0))
+        assert(tilemap.solid_blocks[0].bottomright == (1, 1))
+
+    def test_from_tmx(self):
+        testpath = os.path.realpath(__file__)
+        path = os.path.abspath(os.path.join(testpath,
+                                            "..",
+                                            "resources",
+                                            "tilemap.tmx"))
+
+        tilemaps = sappho.tmx_file_to_tilemaps(path, self.tilesheet)
+        tilemap = tilemaps[0]
+
+        # Same as the above test, check for the solid block
+        assert(len(tilemap.solid_blocks) == 1)
+        assert(tilemap.solid_blocks[0].topleft == (0, 0))
         assert(tilemap.solid_blocks[0].bottomright == (1, 1))
 
     def test_render(self):
