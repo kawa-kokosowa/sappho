@@ -57,7 +57,7 @@ class TestTilesheet(object):
 class TestTilemap(object):
     TILEMAP_CSV = """\
     0,1,2
-    5,4,3
+    5,3,4
     """
     
     def setup(self):
@@ -72,7 +72,7 @@ class TestTilemap(object):
         self.tilesheet = sappho.Tilesheet.from_file(path, 1, 1)
 
     def test_from_csv(self):
-        csv = textwrap.dedent(self.TILEMAP_CSV)
+        csv = textwrap.dedent(self.TILEMAP_CSV).strip()
         tilemap = sappho.TileMap.from_csv_string_and_tilesheet(csv,
                                                                self.tilesheet)
 
@@ -82,3 +82,24 @@ class TestTilemap(object):
         assert(len(tilemap.solid_blocks) == 1)
         assert(tilemap.solid_blocks[0].topleft == (0, 0)) 
         assert(tilemap.solid_blocks[0].bottomright == (1, 1))
+
+    def test_render(self):
+        csv = textwrap.dedent(self.TILEMAP_CSV).strip()
+        tilemap = sappho.TileMap.from_csv_string_and_tilesheet(csv,
+                                                               self.tilesheet)
+
+        # Create a surface that has 1x2 strips of red, green, and blue to compare
+        # against the rendered tilemap. This surface has to have the SRCALPHA flag
+        # and a depth of 32 to match the surface returned by the render function.
+        test_surface = pygame.surface.Surface((3, 2), pygame.SRCALPHA, 32)
+        test_surface.fill((255, 0, 0), pygame.Rect(0, 0, 1, 2))
+        test_surface.fill((0, 255, 0), pygame.Rect(1, 0, 1, 2))
+        test_surface.fill((0, 0, 255), pygame.Rect(2, 0, 1, 2))
+
+        # Render the tilemap
+        output_surface = tilemap.to_surface()
+
+        # Compare the two surfaces
+        test_view = test_surface.get_view().raw
+        output_view = output_surface.get_view().raw
+        assert(test_view == output_view)
