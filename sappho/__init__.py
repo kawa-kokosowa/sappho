@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-    __version__ = "0.4.2"
+    __version__ = "0.4.3"
 else:
     from animatedsprite import AnimatedSprite
     from tilemap import TileMap, Tilesheet, tmx_file_to_tilemaps
