@@ -211,13 +211,14 @@ class TileMap(object):
         return new_surface
 
     @classmethod
-    def from_csv_string_and_tilesheet(cls, csv_string, tilesheet):
+    def from_csv_string_and_tilesheet(cls, csv_string, tilesheet, firstgid=0):
         """Create a tilemap using a CSV of tile IDs and
         a tilesheet.
 
         Arguments:
             csv_string (str):
             tilesheet (Tilesheet):
+            firstgid (int): ID of the first tile
 
         """
 
@@ -233,7 +234,7 @@ class TileMap(object):
 
                     continue
 
-                tile_id = int(tile_id_string)
+                tile_id = int(tile_id_string) - firstgid
                 tile = tilesheet.tiles[tile_id]
 
                 if tile.solid_block:
@@ -296,6 +297,8 @@ def tmx_file_to_tilemaps(tmx_file_path, tilesheet):
     tree = ET.parse(tmx_file_path)
     root = tree.getroot()  # <map ...>
 
+    firstgid = int(root.findall(".//tileset")[0].attrib["firstgid"])
+
     csv_layers = []
 
     for layer_data in root.findall(".//layer/data"):
@@ -311,7 +314,10 @@ def tmx_file_to_tilemaps(tmx_file_path, tilesheet):
     tilemaps = []
 
     for layer in csv_layers:
-        layer_tilemap = TileMap.from_csv_string_and_tilesheet(layer, tilesheet)
+        layer_tilemap = TileMap.from_csv_string_and_tilesheet(layer,
+                                                              tilesheet,
+                                                              firstgid)
+
         tilemaps.append(layer_tilemap)
 
     return tilemaps
