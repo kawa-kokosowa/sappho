@@ -14,7 +14,8 @@ from sappho import (AnimatedSprite,
                     TileMap,
                     Tilesheet,
                     tmx_file_to_tilemaps,
-                    SurfaceLayers)
+                    SurfaceLayers,
+                    Camera)
 
 # Constants/game config
 RESOLUTION = [700, 500]
@@ -64,8 +65,13 @@ tilemap_surfaces = []
 for layer_tilemap in layer_tilemaps:
     tilemap_surfaces.append(layer_tilemap.to_surface())
 
+surface_size = (tilemap_surfaces[0].get_width(),
+                tilemap_surfaces[0].get_height())
+
+camera = Camera(surface_size, RESOLUTION, (80, 80))
+
 # The render layers which we draw to
-layers = SurfaceLayers(screen, len(tilemap_surfaces))
+layers = SurfaceLayers(camera, len(tilemap_surfaces))
  
 # Main program loop
 while not done:
@@ -116,6 +122,11 @@ while not done:
     else:
         y_coord = potential_y_coord
         x_coord = potential_x_coord
+
+        # Scroll the viewport to where our character is. This could be improved
+        # to only scroll when reaching the edges of the viewport, but this
+        # works for now.
+        camera.scroll_absolute(x_coord - 10, y_coord - 10)
  
     # DRAWING/RENDER CODE
 
@@ -132,6 +143,7 @@ while not done:
     animated_sprite.update(clock)
  
     # Go ahead and update the screen with what we've drawn.
+    screen.blit(camera, (0, 0))
     pygame.display.flip()
  
     # Limit frames per second
