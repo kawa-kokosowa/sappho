@@ -17,6 +17,10 @@ Installing:
 
   Does not install pygame. See `README.md`.
 
+Notes:
+    Pygame is a hassle to install, use the boostrap (whenever
+    it's ported from Hypatia Engine).
+
 """
 
 import sys
@@ -25,7 +29,8 @@ from distutils.version import StrictVersion
 
 
 # Build the list of packages required according to Python version
-install_requires = ['Pillow>=2']
+# Pygame isn't on Pypi.
+install_requires = ['Pillow>=2, <4']  # NOTE: why this specific Pillow range?
 
 # x.y.z
 python_version = StrictVersion('.'.join(str(n) for n in sys.version_info[:3]))
@@ -41,8 +46,6 @@ setup(name='sappho',
       version=__version__,
       description='2D game engine (pygame)',
       setup_requires=['setuptools-markdown'],
-      # pygame isn't on pypi
-      # TODO: i should maybe also specifiy Pillow<4
       install_requires=install_requires,
       long_description_markdown_filename='README.md',
       author='Lillian Lemmer',

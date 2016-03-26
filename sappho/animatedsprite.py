@@ -58,8 +58,27 @@ class Anchor(object):
         self.x = x
         self.y = y
 
-    def __repr__(self):
+    def _coords_are_ints(coordinates):
+        """Check if a two-element tuple representing 2D
+        coordinates consists of two integers.
+
+        This presumes that coordinates is indeed a
+        two-element tuple.
+
+        Arguments:
+            coordinates (tuple):
+
+        Returns:
+            bool: True if the coordinates are integers, False
+                otherwise.
+
         """
+
+        return type(coordinates[0]) == int and type(coordinates[1]) == int
+
+    def __repr__(self):
+        """Represent the class/anchor with its coordinates.
+
         Example:
             >>> anchor = Anchor(1, 2)
             >>> print(anchor)
@@ -107,7 +126,7 @@ class Anchor(object):
             return Anchor(self.x + coordinates.x,
                           self.y + coordinates.y)
 
-        elif type(coordinates[0]) == int and type(coordinates[1]) == int:
+        elif _coords_are_ints(coordinates):
 
             return Anchor(self.x + coordinates[0],
                           self.y + coordinates[1])
@@ -169,7 +188,7 @@ class Anchor(object):
             return Anchor(self.x - coordinates.x,
                           self.y - coordinates.y)
 
-        elif type(coordinates[0]) == int and type(coordinates[1]) == int:
+        elif _coords_are_ints(coordinates):
 
             return Anchor(self.x - coordinates[0],
                           self.y - coordinates[1])
