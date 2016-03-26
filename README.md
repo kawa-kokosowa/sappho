@@ -10,9 +10,9 @@ Sappho is a 2D game engine written with Python and pygame.
 The purpose of this repo is to rewrite Hypatia Engine
 and eventually replace Hypatia Engine as "Sappho."
 
-Sorry I haven't had time to clean anything yet.
+You can run tests with `py.test tests` in the directory root.
 
-You can run tests with `py.test -v` in the directory root.
+A demo of Sappho is included in the `demo` directory.
 
 ## Design Philosophy
 
@@ -25,5 +25,3 @@ You can run tests with `py.test -v` in the directory root.
   6. Simplicity trumps all else.
   7. Well documented.
   8. Code is easy-to-test. We show that with our 100% test coverage.
-
-For more details see `CONTRIBUTING.md`.
