@@ -3,9 +3,11 @@ import os
 import pygame
 
 from ..sappho import Camera
-from .common import compare_pygame_surfaces
+from .common import compare_surfaces
+
 
 class TestCamera(object):
+
     def test_scroll(self):
         # Create surface to render to
         output_surface = pygame.surface.Surface((1, 1))
@@ -23,13 +25,13 @@ class TestCamera(object):
 
         # We should be at (0, 0) so blitting should get us a red pixel
         output_surface.blit(camera, (0, 0))
-        assert(compare_pygame_surfaces(red_surface, output_surface))
+        assert(compare_surfaces(red_surface, output_surface))
 
         # Scroll one pixel to the left, and we should get a blue pixel
         # when blitting
         camera.scroll(1, 0)
         output_surface.blit(camera, (0, 0))
-        assert(compare_pygame_surfaces(blue_surface, output_surface))
+        assert(compare_surfaces(blue_surface, output_surface))
 
     def test_scale(self):
         # Create surface to render to
@@ -47,4 +49,4 @@ class TestCamera(object):
 
         # Blit and compare
         output_surface.blit(camera, (0, 0))
-        assert(compare_pygame_surfaces(output_surface, red_large))
+        assert(compare_surfaces(output_surface, red_large))

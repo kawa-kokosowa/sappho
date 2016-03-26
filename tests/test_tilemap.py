@@ -5,6 +5,7 @@ import pygame
 
 from .. import sappho
 from ..sappho.tilemap import Tile
+from .common import compare_surfaces
 
 
 class TestTile(object):
@@ -51,7 +52,7 @@ class TestTilesheet(object):
         target_view = target_surface.get_view().raw
         master_view = master_surface.get_view().raw
         
-        assert(target_view == master_view)
+        assert(compare_surfaces(target_surface, master_surface))
 
 
 class TestTilemap(object):
@@ -115,6 +116,4 @@ class TestTilemap(object):
         output_surface = tilemap.to_surface()
 
         # Compare the two surfaces
-        test_view = test_surface.get_view().raw
-        output_view = output_surface.get_view().raw
-        assert(test_view == output_view)
+        assert(compare_surfaces(test_surface, output_surface))
