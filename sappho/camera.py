@@ -30,6 +30,11 @@ class Camera(pygame.surface.Surface):
         self.scroll_position = (0, 0)
 
     def _update(self):
+        """ Update the Camera to point to the current scroll position.
+        This should only be used internally, to scroll use the scroll()
+        or scroll_absolute() functions.
+        """
+
         position_rect = pygame.Rect(self.scroll_position, self.camera_res)
         subsurface = self.source_surface.subsurface(position_rect)
 
@@ -52,9 +57,24 @@ class Camera(pygame.surface.Surface):
         self._update()
 
     def scroll_absolute(self, x, y):
+        """ Scroll the view to an absolute position specified by x and y.
+
+        Arguments: 
+            x (int): X position to scroll to
+            y (int): Y position to scroll to
+        """
+
         self.scroll_position = (x, y)
         self._update()
 
-    def blit(self, *args):
-        self.source_surface.blit(*args)
+    def blit(self, surface, position):
+        """ Blit the given surface to our source surface at the given 
+        position.
+
+        Arguments:
+            surface (Surface): Surface to blit
+            position (tuple[int, int]): Position to blit to
+        """
+
+        self.source_surface.blit(surface, position)
         self._update()
