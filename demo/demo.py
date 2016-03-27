@@ -123,10 +123,12 @@ while not done:
         y_coord = potential_y_coord
         x_coord = potential_x_coord
 
+        # XXX
         # Scroll the viewport to where our character is. This could be improved
         # to only scroll when reaching the edges of the viewport, but this
         # works for now.
-        camera.scroll_absolute(x_coord - 10, y_coord - 10)
+        camera.scroll_to(rect)
+        #camera.scroll_absolute(x_coord - 10, y_coord - 10)
  
     # DRAWING/RENDER CODE
 

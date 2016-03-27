@@ -13,7 +13,10 @@ class CameraBehavior(object):
 
     """
 
-    def center_on(some_object):
+    def __init__(self, camera):
+        self.camera = camera
+
+    def move(self, focal_rectangle):
         """How the camera centers on an object.
         
         Note that simply putting the character directly
@@ -21,9 +24,21 @@ class CameraBehavior(object):
 
         That noted, the name could use some work.
         
+        Arguments:
+            focal_rectangle (pygame.Rect): Rectangle which
+                is used to possibly adjust camera position
+                within area_of_the_scrollable_surface.
+            
+        Returns:
+            pygame.Rect: the view area, represented as a Pygame
+                rectangle.
+
         """
 
-        pass
+        position_rect = pygame.Rect(self.camera.scroll_position,
+                                    self.camera.camera_resolution)
+
+        return self.camera.source_surface.subsurface(position_rect)
 
 
 class Camera(pygame.surface.Surface):
@@ -40,7 +55,7 @@ class Camera(pygame.surface.Surface):
 
     """
 
-    def __init__(self, source_resolution, target_resolution, camera_resolution):
+    def __init__(self, source_resolution, target_resolution, camera_resolution, behavior=None):
         """
 
         Arguments:
@@ -61,9 +76,16 @@ class Camera(pygame.surface.Surface):
         self.source_resolution = source_resolution
         self.target_resolution = target_resolution
         self.camera_resolution = camera_resolution
-        self.scroll_position = (0, 0)
 
-    def _update(self):
+        self.view_rect = pygame.Rect((0, 0),
+                                     self.camera_resolution)
+
+        if behavior is None:
+            self.behavior = CameraBehavior(self)
+        else:
+            self.behavior = behavior
+
+    def scroll_to(self, focal_rectangle):
         """Update the Camera to point to the
         current scroll position.
 
@@ -79,40 +101,13 @@ class Camera(pygame.surface.Surface):
 
         """
 
-        position_rect = pygame.Rect(self.scroll_position,
-                                    self.camera_resolution)
-        subsurface = self.source_surface.subsurface(position_rect)
-
+        self.view_rect.topleft = focal_rectangle.topleft
+        position_rect = self.behavior.move(focal_rectangle)
         scaled_surface = pygame.transform.scale(subsurface,
                                                 self.target_resolution)
 
         # Blit the scaled surface to this camera (which is also a surface)
         super(Camera, self).blit(scaled_surface, (0, 0))
-
-    def scroll(self, x, y):
-        """ Scroll the view x pixels to the right and y pixels down.
-        x and y can be negative, to signify scrolling left and up, respectively.
-
-        Arguments:
-            x (int): Number of pixels to scroll horizontally
-            y (int): Number of pixels to scroll vertically.
-        """
-
-        self.scroll_position = (self.scroll_position[0] + x,
-                                self.scroll_position[1] + y)
-
-        self._update()
-
-    def scroll_absolute(self, x, y):
-        """ Scroll the view to an absolute position specified by x and y.
-
-        Arguments: 
-            x (int): X position to scroll to
-            y (int): Y position to scroll to
-        """
-
-        self.scroll_position = (x, y)
-        self._update()
 
     def blit(self, surface, position):
         """ Blit the given surface to our source surface at the given 
