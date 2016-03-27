@@ -75,8 +75,6 @@ class CameraCenterBehavior(CameraBehavior):
         if focal_y + self.camera.camera_resolution[1] > self.camera.source_resolution[1]:
             focal_y = self.camera.source_resolution[1] - self.camera.camera_resolution[1]
 
-        print(focal_x, focal_y, focal_rectangle, self.camera.source_resolution)
-
         position_rect = pygame.Rect((focal_x, focal_y),
                                     self.camera.camera_resolution)
 
