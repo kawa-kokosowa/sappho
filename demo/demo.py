@@ -15,7 +15,8 @@ from sappho import (AnimatedSprite,
                     Tilesheet,
                     tmx_file_to_tilemaps,
                     SurfaceLayers,
-                    Camera)
+                    Camera,
+                    CameraCenterBehavior)
 
 # Constants/game config
 RESOLUTION = [700, 500]
@@ -69,6 +70,8 @@ surface_size = (tilemap_surfaces[0].get_width(),
                 tilemap_surfaces[0].get_height())
 
 camera = Camera(surface_size, RESOLUTION, (80, 80))
+behavior = CameraCenterBehavior(camera)
+camera.behavior = behavior
 
 # The render layers which we draw to
 layers = SurfaceLayers(camera, len(tilemap_surfaces))
