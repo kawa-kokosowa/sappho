@@ -5,8 +5,6 @@
 import pygame
 
 
-# NOTE: this is merely scaffolding to get
-# some ideas across!
 class CameraBehavior(object):
     """How a camera moves. How it handles boundaries,
     character movement, etc.
@@ -166,3 +164,13 @@ class Camera(pygame.surface.Surface):
 
         self.source_surface.blit(surface, position)
         self.update()
+
+    def get_size(self):
+        """Get the size of the source surface.
+
+        Returns:
+            tuple[int, int]: Width and height of the surface
+
+        """
+
+        return self.source_surface.get_size()
