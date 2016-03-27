@@ -74,7 +74,7 @@ behavior = CameraCenterBehavior(camera)
 camera.behavior = behavior
 
 # The render layers which we draw to
-layers = SurfaceLayers(camera, len(tilemap_surfaces))
+layers = SurfaceLayers(camera.source_surface, len(tilemap_surfaces))
  
 # Main program loop
 while not done:

@@ -9,11 +9,16 @@ class CameraBehavior(object):
     """How a camera moves. How it handles boundaries,
     character movement, etc.
 
+    You'll want to inherit this class when creating
+    a CameraBehavior, including overriding the
+    move method.
+
     """
 
     def __init__(self, camera):
         self.camera = camera
 
+    # NOTE: You'll want to override this when you inherit.
     def move(self, focal_rectangle):
         """How the camera centers on an object.
         
@@ -39,13 +44,14 @@ class CameraBehavior(object):
 
 
 class CameraCenterBehavior(CameraBehavior):
-    """A camera behavior that centers the focal rectangle on the screen.
+    """A camera behavior that centers the
+    focal rectangle on the screen.
     
     """
 
     def move(self, focal_rectangle):
-        """Move the camera, keeping the focal rectangle in the center of
-        the screen where possible.
+        """Move the camera, keeping the focal rectangle
+        in the center of the screen where possible.
 
         Arguments:
             focal_rectangle (pygame.Rect): Rectangle which
@@ -164,13 +170,3 @@ class Camera(pygame.surface.Surface):
 
         self.source_surface.blit(surface, position)
         self.update()
-
-    def get_size(self):
-        """Get the size of the source surface.
-
-        Returns:
-            tuple[int, int]: Width and height of the surface
-
-        """
-
-        return self.source_surface.get_size()
