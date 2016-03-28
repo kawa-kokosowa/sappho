@@ -145,6 +145,7 @@ while not done:
 
     # Draw the layers and update the animations with the time
     layers.render()
+    camera.update()
     animated_sprite.update(clock)
  
     # Go ahead and update the screen with what we've drawn.
