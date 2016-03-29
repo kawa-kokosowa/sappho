@@ -9,6 +9,37 @@ from ..sappho import (Camera,
 from .common import compare_surfaces
 
 
+class TestCameraBehavior(object):
+    def test_movement(self):
+        # Create a test surface with a red square at (0, 0) and a blue
+        # square at (1, 1), both being 2x2.
+        test_surface = pygame.surface.Surface((3, 3))
+        test_surface.fill((255, 0, 0), pygame.Rect(0, 0, 2, 2))
+        test_surface.fill((0, 255, 0), pygame.Rect(1, 1, 2, 2))
+
+        # Create our camera
+        camera = Camera((3, 3), (2, 2), (2, 2))
+        behavior = CameraBehavior(camera)
+        camera.behavior = behavior
+
+        # Blit our test surface
+        camera.source_surface.blit(test_surface, (0, 0))
+        camera.update()
+
+        # Set focus to the top left pixel and check that we have a 2x2
+        # view into the test surface in the top left (that is, (0, 0)
+        # to (1, 1) should be visible)
+        camera.scroll_to(pygame.Rect(0, 0, 1, 1))
+        focal_subsurface = test_surface.subsurface(pygame.Rect(0, 0, 2, 2))
+        assert(compare_surfaces(focal_subsurface, camera))
+
+        # Set focus to the pixel in the center of the test surface (1, 1)
+        # and check that (1, 1) to (2, 2) is displayed on the camera
+        camera.scroll_to(pygame.Rect(1, 1, 1, 1))
+        focal_subsurface = test_surface.subsurface(pygame.Rect(1, 1, 2, 2))
+        assert(compare_surfaces(focal_subsurface, camera))
+
+
 class TestCameraCenterBehavior(object):
     def test_movement(self):
         """Test that moving the camera centers the focal rectangle on
