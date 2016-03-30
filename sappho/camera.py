@@ -9,9 +9,16 @@ class CameraBehavior(object):
     """How a camera moves. How it handles boundaries,
     character movement, etc.
 
+    This CameraBehavior, the default, keeps the focal rectangle
+    in the top left of the camera view.
+
     You'll want to inherit this class when creating
     a CameraBehavior, including overriding the
     move method.
+
+    Parameters:
+        camera (sappho.Camera): The camera that this
+            CameraBehavior belongs to.
 
     """
 
@@ -20,16 +27,13 @@ class CameraBehavior(object):
 
     # NOTE: You'll want to override this when you inherit.
     def move(self, focal_rectangle):
-        """How the camera centers on an object.
-        
-        Note that simply putting the character directly
-        in the center of the screen is _really bad_ but does have some 
-        use cases.
-        
+        """Move the camera, keeping the focal rectangle in
+        the top left of the camera view.
+
         Arguments:
             focal_rectangle (pygame.Rect): Rectangle which
                 is used to possibly adjust camera position.
-            
+
         Returns:
             pygame.Rect: the view area, represented as a Pygame
                 rectangle.
@@ -46,7 +50,11 @@ class CameraBehavior(object):
 class CameraCenterBehavior(CameraBehavior):
     """A camera behavior that centers the
     focal rectangle on the screen.
-    
+
+    Parameters:
+        camera (sappho.Camera): The camera that this
+            CameraBehavior belongs to.
+
     """
 
     def move(self, focal_rectangle):
@@ -89,8 +97,11 @@ class Camera(pygame.surface.Surface):
     onto another surface.
 
     Arguments:
-        source_resolution (tuple[int, int]): The overal dimensions
-            of the environment the camera is panning over.
+        source_resolution (tuple[int, int]): Maximum size of the
+            environment being portrayed. If you have a map with many
+            inconsistently sized layers, this should be the size of 
+            all of those layers flattened onto a single new layer.
+            Anything beyond this size will not be on camera.
         target_resolution (tuple[int, int]): Resolution to scale up the
             view of the surface to
         camera_resolution (tuple[int, int]): Resolution of the view onto
@@ -99,19 +110,6 @@ class Camera(pygame.surface.Surface):
     """
 
     def __init__(self, source_resolution, target_resolution, camera_resolution, behavior=None):
-        """
-
-        Arguments:
-            source_resolution (tuple[int, int]): Maximal size of the
-                environment being portrayed. Imagine a map with
-                many inconsistently-sized layers. You'd want the
-                source_resolution of the camera to be what the
-                aformentioned map's dimensions would be if everything
-                were just flattened to a single, new layer. Anything
-                beyond the specified resolution will not be on camera!
-
-        """
-
         super(Camera, self).__init__(target_resolution)
 
         self.source_surface = pygame.surface.Surface(source_resolution,
@@ -138,10 +136,6 @@ class Camera(pygame.surface.Surface):
         the target_resolution. The new subsurface is then
         blit to the camera (which is a surface, itself!).
 
-        Warning:
-            This should only be used internally, to scroll
-            use the scroll() or scroll_absolute() functions.
-
         """
 
         subsurface = self.source_surface.subsurface(self.view_rect)
@@ -154,19 +148,11 @@ class Camera(pygame.surface.Surface):
     def scroll_to(self, focal_rectangle):
         """Scroll to the given focal rectangle using the current behavior.
 
+        Parameters:
+            focal_rectangle (pygame.Rect): Rectangle to possibly update
+                the view position to using the camera's current behavior
+
         """
 
         self.view_rect = self.behavior.move(focal_rectangle)
-        self.update()
-
-    def blit(self, surface, position):
-        """ Blit the given surface to our source surface at the given 
-        position.
-
-        Arguments:
-            surface (Surface): Surface to blit
-            position (tuple[int, int]): Position to blit to
-        """
-
-        self.source_surface.blit(surface, position)
         self.update()
