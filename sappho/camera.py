@@ -106,10 +106,12 @@ class Camera(pygame.surface.Surface):
             view of the surface to
         camera_resolution (tuple[int, int]): Resolution of the view onto
             the source surface
-        behavior (:py:class:`sappho.CameraBehavior` or None): The behavior
-            to use for this Camera. If None is given, the default
-            CameraBehavior will be used. This can be switched on the fly
-            by changing the *behavior* property on the camera.
+        behavior (CameraBehavior): The initial behavior to use for this
+            Camera.
+
+    Attributes:
+        behavior: The :py:class:`CameraBehavior <sappho.CameraBehavior>`
+            that this Camera uses to control movement.
 
     """
 
