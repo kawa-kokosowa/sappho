@@ -53,10 +53,13 @@ class Tilesheet(object):
         path_to_rules_file.
 
         Argument:
-            path_to_rules_file (str):
+            path_to_rules_file (str): Path to the rules file to parse
 
         Returns:
-            str:
+            dict:
+                A dictionary containing an entry for each tile that
+                has a flag set, the value being a list of the flags
+                that are set
 
         """
         
@@ -90,9 +93,9 @@ class Tilesheet(object):
         file, as well as tile width and height specification.
 
         Arguments:
-            file_path (str):
-            tile_width (int):
-            tile_height(int):
+            file_path (str): Path to the tilesheet image
+            tile_width (int): Width of each tile
+            tile_height (int): Height of each tile
 
         """
 
@@ -154,30 +157,19 @@ class TileMap(object):
     """A 2D grid arrangement of tiles, accompanied by
     passability information.
 
-    Notes:
-        You can use this as a layer for a map.
-        Can be used as a tile map layer!
+    This is generally one layer of a larger map, and ideally
+    should be blitted to a :class:`sappho.layers.SurfaceLayers` object
+    to handle multiple map layers.
 
-        You could use a tilemap per "layer" and then
-        move through the layers of TileMap objects
-        respectively, so when you move up stairs
-        you're affected by solids of that same
-        layer/level/TileMap object.
-
-        This is to stress that a 3D tilemap is not
-        only not needed, but a bad idea!
-
+    Arguments:
+        tilesheet (Tilesheet): Tilesheet to use for this map
+        tiles (list[list[Tile]]): List of rows, each containing a list
+            of :class:`Tile` objects representing the tiles in this 
+            TileMap
+ 
     """
 
     def __init__(self, tilesheet, tiles):
-        """
-
-        Arguments:
-            tilesheet
-            tiles (list[Tile]): --
-
-        """
-
         self.tilesheet = tilesheet
         self.tiles = tiles
 
@@ -187,7 +179,9 @@ class TileMap(object):
         attribute.
 
         Returns:
-            list(pygame.Rect): --
+            list[pygame.Rect]:
+                List of :class:`pygame.Rect` objects that represent
+                the solid tiles in this TileMap
 
         """
 
@@ -207,10 +201,11 @@ class TileMap(object):
         return solid_blocks
 
     def to_surface(self):
-        """Blit the tiles to a surface and return it!
+        """Blit the TileMap to a surface 
 
         Returns:
-            pygame.surface.Surface: --
+            pygame.Surface:
+                Surface containing the tilemap
 
         """
 

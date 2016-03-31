@@ -49,8 +49,8 @@ class CameraBehavior(object):
                 is used to possibly adjust camera position.
 
         Returns:
-            pygame.Rect: the view area, represented as a Pygame
-                rectangle.
+            pygame.Rect:
+                The view area, represented as a Pygame rectangle.
 
         """
 
@@ -82,8 +82,8 @@ class CameraCenterBehavior(CameraBehavior):
                 is used to possibly adjust camera position.
             
         Returns:
-            pygame.Rect: the view area, represented as a Pygame
-                rectangle.
+            pygame.Rect:
+                The view area, represented as a Pygame rectangle.
 
         """
 

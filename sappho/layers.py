@@ -2,25 +2,18 @@ import pygame
 
 
 class SurfaceLayers(object):
-    """Ordered series of pygame surfaces the size
-    of the target surface it draws each layer on.
+    """Ordered series of pygame surfaces, each the size of the target
+    surface given at creation time.
+
+    Arguments:
+        target_surface (pygame.Surface): Surface that will have
+            have the layers blitted to when render() is called. The size
+            of this surface is used as the size of the generated layers.
+        number_of_layers (int): Number of layers to generate.
 
     """
 
     def __init__(self, target_surface, number_of_layers):
-        """Create the surface layers and store the target
-        surface to draw to.
-
-        Arguments:
-            target_surface (pygame.surface.Surface): This is
-                used for two things: setting the size of the
-                layer surfaces to be created, and secondly this
-                surface has each layer drawn to it every render().
-            number_of_layers (int): How many surface layers to
-                generate?
-
-        """
-
         self._target_surface = target_surface
         self._surface_layers = self.create_surface_layers(target_surface,
                                                           number_of_layers)
@@ -31,13 +24,13 @@ class SurfaceLayers(object):
         the size of the target surface.
 
         Arguments:
-            target_surface (pygame.surface.Surface): The surface
+            target_surface (pygame.Surface): The surface
                 whose dimensions will be used for each layer.
             number_of_layers (int): The number of surfaces to
                 create/return.
 
-        Return:
-            list[pygame.surface.Surface]
+        Returns:
+            list[pygame.Surface]: List of surfaces
 
         """
 
@@ -59,8 +52,8 @@ class SurfaceLayers(object):
         Raises:
             IndexError: When the z-index is invalid.
 
-        Return:
-            pygame.surface.Surface: The surface belonging
+        Returns:
+            pygame.Surface: The surface belonging
                 to the z-index specified.
 
         """
@@ -89,11 +82,7 @@ class SurfaceLayers(object):
             yield surface
 
     def render(self):
-        """Draw each layer onto the target surface.
-
-        Note:
-            Draws in the same order found in
-            self._surface_layers.
+        """Draw each layer onto the target surface in the correct order.
 
         """
 

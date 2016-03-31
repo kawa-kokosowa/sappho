@@ -6,6 +6,8 @@ acts as a test.
 
 This could also serve as a template in the future.
 
+Needs to use sprite groups.
+
 """
  
 import pygame
