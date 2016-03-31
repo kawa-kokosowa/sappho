@@ -9,6 +9,7 @@ Contents:
    camera
    layers
    tilemap
+   tutorials/index
 
 Indices and tables
 ==================

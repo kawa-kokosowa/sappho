@@ -20,12 +20,6 @@ image. A tilesheet image looks like this:
 
 .. image:: /images/tilesheet.png
 
-Each block on a tilesheet image represents a single tile. Tiles are
-indexed from zero. Assuming the tiles in the above tilesheet are 10x10
-pixels, they would be broken up like this (resized for clarity):
-
-.. image:: /images/tilesheet_annotated.png
-
 A tilesheet is represented in Sappho by the :py:class:`Tilesheet` class.
 It holds information about the size of the tiles on the tilesheet,
 a reference to each tile, and of course, the :py:class:`pygame.Surface`
