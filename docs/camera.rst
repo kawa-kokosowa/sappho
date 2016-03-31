@@ -97,8 +97,7 @@ should constrain the bounds of the view to the surface::
             if y + camera.camera_resolution[1] > camera.source_resolution[1]:
                 y = camera.source_resolution[1] - camera.camera_resolution[1]
 
-            return pygame.Rect((x, y),
-                               self.camera.camera_resolution)
+            return pygame.Rect((x, y), camera.camera_resolution)
 
 We now have a complete CameraBehavior that puts the focal rectangle
 in the top left of the screen without going outside the bounds of the
