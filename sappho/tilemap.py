@@ -53,10 +53,13 @@ class Tilesheet(object):
         path_to_rules_file.
 
         Argument:
-            path_to_rules_file (str):
+            path_to_rules_file (str): Path to the rules file to parse
 
         Returns:
-            str:
+            dict:
+                A dictionary containing an entry for each tile that
+                has a flag set, the value being a list of the flags
+                that are set
 
         """
         
@@ -90,9 +93,9 @@ class Tilesheet(object):
         file, as well as tile width and height specification.
 
         Arguments:
-            file_path (str):
-            tile_width (int):
-            tile_height(int):
+            file_path (str): Path to the tilesheet image
+            tile_width (int): Width of each tile
+            tile_height (int): Height of each tile
 
         """
 

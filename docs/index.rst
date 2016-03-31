@@ -8,6 +8,7 @@ Contents:
 
    camera
    layers
+   tilemap
 
 Indices and tables
 ==================
