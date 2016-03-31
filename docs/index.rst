@@ -9,6 +9,7 @@ Contents:
    camera
    layers
    tilemap
+   animatedsprite
    tutorials/index
 
 Indices and tables

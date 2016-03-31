@@ -455,18 +455,6 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
     Supposed to be mostly uniform with the Sprite API.
 
-    Notes:
-        This is replacing pyganim as a dependency. Currently,
-        does not seem to draw. I assume this is a timedelta
-        or blending problem. In elaboration, this could also
-        be related to the fact that sprites are rendered
-        one-at-a-time, but they SHOULD be rendered through
-        sprite groups.
-
-        The rect attribute is useless; should not be used,
-        should currently be avoided. This is a problem
-        for animated tiles...
-
     Attributes:
         total_duration (int): The total duration of of this
             animation in milliseconds.
