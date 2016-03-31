@@ -99,3 +99,68 @@ example tilesheet::
 
 Easy! Save it as "tilesheet.png.rules" in the same folder as your
 tilesheet image.
+
+Creating a tilemap
+------------------
+
+To get started creating a map, you'll need to install the
+`Tiled map editor <http://mapeditor.org>`_. Once you have it installed,
+start it up and create a new map. You'll need to double check the 
+map settings before continuing though - they should look like this:
+
+.. image:: /images/tilemap_tiled_newmap.png
+
+You can set the map size to whatever you want, but make sure the tile
+size is set to the same size as your tiles in the tilesheet (in the
+example, 10x10 pixels). Click OK, and you'll be presented with a blank
+editor canvas.
+
+The first step is to add the tilesheet you created to the map. To do
+this, under the Tilesets heading on the bottom right, click the New icon.
+
+In the dialog that comes up, click Browse, and find your tilesheet. 
+The window should now look like this:
+
+.. image:: /images/tilemap_tiled_tileset_new.png
+
+Click OK, and your tilesheet should now appear in the Tilesets section
+of the editor window. Because we're working with very small tiles, you
+may want to zoom in, which you can do by adjusting the percentage 
+displayed below the tilesets section. There should be another percentage
+below this, and that is the zoom level for the editor, which you probably
+want to adjust as well, so you can see what you're working with.
+
+Click on your grass tile in the tilesets section, and it will appear
+highlighted. This means that it's selected, and you can now place it on
+the map! Let's fill our map with grass tiles to start. Select the 
+bucket fill tool from the top of the window, and click in the center of
+the editor screen. You should now see a green square in the center. 
+Congratulations! That's the first step towards creating a map.
+
+Before we can place other objects around, like our solid block (or the
+tree I created), we need to create a new map layer. This means that
+the grass blocks are still in the background, and whatever we place
+on the new layer will sit above the grass. This is particularly important
+for the tree that I created in my example - it's background is
+transparent, meaning that if I place it instead of a grass block, just
+black will appear in the background. 
+
+Creating a new layer is easy, though - just click the New button in the
+Layers section (above the tileset section), and click Add Tile Layer.
+Now that we have created the layer for our objects, let's place them.
+
+Since we selected the bucket fill tool earlier to fill our map with 
+grass, we have to switch back to the Stamp Brush tool by clicking it
+at the top of the window. Then, click on a tile in our tilesheet, and
+click anywhere on the map to place it.
+
+You should now have a screen that looks something like this:
+
+.. image:: /images/tilemap_tiled_complete.png
+
+Now, save the tilemap in the same directory as your tilesheet, naming
+it "tilemap.tmx" (".tmx" is the file extension for Tiled maps).
+
+Congratulations! You've successfully created a tilesheet and a map that
+uses it. Take a moment to marvel in your creation, you deserve it.
+ 
