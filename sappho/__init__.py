@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-    __version__ = "0.6.0"
+    __version__ = "0.6.1"
 else:
     import animatedsprite
     import tilemap
