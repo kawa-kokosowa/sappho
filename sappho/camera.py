@@ -17,7 +17,6 @@ class CameraOutOfBounds(Exception):
 
     """
 
-    # TODO: this could be better...
     def __init__(self, camera):
         super(CameraOutOfBounds, self).__init__(camera)
         self.camera = camera
@@ -111,8 +110,6 @@ class Camera(pygame.surface.Surface):
             Anything beyond this size will not be on camera.
         output_resolution (tuple[int, int]): Resolution to scale up the
             view of the surface to
-        view_resolution (tuple[int, int]): Resolution of the view onto
-            the source surface
         view_rect (pygame.Rect): Rectangle area of this camera's view,
             which is used to create the subsurface, which is scaled
             to output_resolution and blit to self/camera.
@@ -124,6 +121,14 @@ class Camera(pygame.surface.Surface):
 
     def __init__(self, source_resolution, output_resolution,
                  view_resolution, behavior=None):
+
+        """Create a Camera!
+
+        Arguments:
+            view_resolution (tuple[int, int]): used to create
+                view_rect attribute.
+
+        """
 
         super(Camera, self).__init__(output_resolution)
 
