@@ -1,0 +1,26 @@
+{
+	"folders":
+	[
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"tab_size": 4,
+		"translate_tabs_to_spaces": true
+	},
+	"build_systems": [
+		{
+			"name": "Sphinx build",
+			"cmd": ["sphinx-build", "-b", "html", "docs", "docs/_build"],
+			"selector": "text.restructuredtext",
+			"working_dir": "${folder}"
+		},
+		{
+			"name": "Run tests",
+			"cmd": ["py.test", "-v"],
+			"selector": "source.python",
+			"working_dir": "${folder}"
+		}
+	]
+}
