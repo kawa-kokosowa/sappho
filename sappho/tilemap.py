@@ -169,7 +169,7 @@ class TileMap(object):
 
     """
 
-    def __init__(self, tilesheet, tiles, solid_blocks=[]):
+    def __init__(self, tilesheet, tiles):
         """
 
         Arguments:
@@ -180,7 +180,31 @@ class TileMap(object):
 
         self.tilesheet = tilesheet
         self.tiles = tiles
-        self.solid_blocks = solid_blocks
+
+    def get_solid_blocks(self):
+        """Return the Pygame rect of all
+        the tiles which have the solid_block
+        attribute.
+
+        Returns:
+            list(pygame.Rect): --
+
+        """
+
+        solid_blocks = []
+
+        for y, row_of_tiles in enumerate(self.tiles):
+
+            for x, tile in enumerate(row_of_tiles):
+                
+                if tile.solid_block:
+                    left_top = (x * self.tilesheet.tile_size[0],
+                                y * self.tilesheet.tile_size[1])
+                    block = pygame.rect.Rect(left_top,
+                                             self.tilesheet.tile_size)
+                    solid_blocks.append(block)
+
+        return solid_blocks
 
     def to_surface(self):
         """Blit the tiles to a surface and return it!
@@ -223,7 +247,6 @@ class TileMap(object):
         """
 
         sheet = []
-        solid_blocks = []
 
         for y, line in enumerate(csv_string.split('\n')):
             row = []
@@ -236,20 +259,11 @@ class TileMap(object):
 
                 tile_id = int(tile_id_string) - firstgid
                 tile = tilesheet.tiles[tile_id]
-
-                if tile.solid_block:
-                    left_top = (x * tilesheet.tile_size[0],
-                                y * tilesheet.tile_size[1])
-                    block = pygame.rect.Rect(left_top, tilesheet.tile_size)
-                    solid_blocks.append(block)
-
-                # create absolute rect and add to group
-
                 row.append(tile)
 
             sheet.append(row)
 
-        return cls(tilesheet, sheet, solid_blocks)
+        return cls(tilesheet, sheet)
 
 
 def index_to_coord(width, i):

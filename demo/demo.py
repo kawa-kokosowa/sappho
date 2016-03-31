@@ -115,7 +115,7 @@ while not done:
                             animated_sprite.image.get_size())
 
     tilemap_on_players_index = layer_tilemaps[ANIMATED_SPRITE_Z_INDEX]
-    solid_blocks_on_players_index = tilemap_on_players_index.solid_blocks
+    solid_blocks_on_players_index = tilemap_on_players_index.get_solid_blocks()
 
     if rect.collidelist(solid_blocks_on_players_index) != -1:
         print("colliding!")
