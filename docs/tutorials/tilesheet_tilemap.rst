@@ -2,8 +2,7 @@ Creating a tilesheet and a map
 ==============================
 
 In this short tutorial, we'll go over how to create a simple tilesheet,
-and use the Tiled editor to create a tilemap. We'll then create a simple
-demo game which loads our creations so we can see Sappho in action!
+and use the Tiled editor to create a tilemap. 
 
 Creating a tilesheet
 --------------------
@@ -37,3 +36,66 @@ which means we'll have a 20x20 tilesheet image.
 Create a new image in your favorite image editing program (for the sake
 of the tutorial, we'll use GIMP) and set the size to 20x20 pixels.
 
+Once the image is created, delete the background layer and create four
+new layers, named Tile 0 through to Tile 3. Then, add guides at the 
+boundary of the tiles, by dragging down from the ruler at the top and
+left, and place the guides at 10 pixels in from those sides. This will
+give us our 2x2 tile grid to work with.
+
+Once that's done, you should have an environment that looks like this:
+
+.. image:: /images/tilesheet_creation_guides.png
+
+Let's start creating our tiles.
+
+First, let's create a grass tile, which will act as the background of
+our map. Select the Tile 0 layer, and fill the top-left square with green,
+by selecting the Rectangle Select Tool in GIMP. This is in your tool
+palette on the left of the screen, and  should be the first icon. Drag
+from the top-left corner down to the center of the image, meeting the
+guides. Then select the bucket fill tool (which looks like a paint
+bucket), select a green color by clicking on the black square below the
+tool palette and choosing a color in the dialog that pops up, click OK,
+and click on the selected square. 
+
+That's our first tile done! Now let's create a few more. For the next
+tile, let's create a black square with a blue border. Later on, we'll 
+make this block solid, so the player can't walk through it. Switch to
+the Tile 1 layer, select the whole square and fill it with blue. Then,
+select the square again, but one pixel in from the edge on all sides,
+and fill that with black. You should now have a tilesheet that looks
+like this: (I took some liberties and added a smiley face)
+
+.. image:: /images/tilesheet_creation_stageone.png
+
+It's up to you what to do with the other two tiles, but for the sake
+of the tutorial, I'll add another grass tile with some texture, and
+a tree.
+
+.. image:: /images/tilesheet_creation_stagetwo.png
+
+Save this as ``tilesheet.png`` in a new folder.
+
+Tilesheet rules
+^^^^^^^^^^^^^^^
+
+Now, we have to create the rules file for our tilesheet.
+
+Tilesheet rule files take a simple format. Each line consists of a tile
+ID, followed by an equals sign, then any flags that the given tile has.
+
+The only flag that is currently implemented is ``solid_block``. This
+means that the tile can not be walked through by the player. We'll
+set this flag on our box tile and our tree tile in this example, but
+if you had something else on your mind for the other two tiles in the
+previous section, this may differ.
+
+The tilesheet rules file name is simply the name of your tilesheet 
+image file, with ".rules" appended. Let's create the rules file for our
+example tilesheet::
+
+    1=solid_block
+    3=solid_block
+
+Easy! Save it as "tilesheet.png.rules" in the same folder as your
+tilesheet image.
