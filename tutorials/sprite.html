@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tutorials &mdash; Sappho 0.6.1 documentation</title>
+  <title>Creating a character sprite &mdash; Sappho 0.6.1 documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="Sappho 0.6.1 documentation" href="../index.html"/>
-        <link rel="next" title="Creating a tilesheet and a map" href="tilesheet_tilemap.html"/>
-        <link rel="prev" title="Animated sprites" href="../animatedsprite.html"/> 
+        <link rel="up" title="Tutorials" href="index.html"/>
+        <link rel="next" title="Creating a game with Sappho" href="game.html"/>
+        <link rel="prev" title="Creating a tilesheet and a map" href="tilesheet_tilemap.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -86,9 +87,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers.html">SurfaceLayers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tilemap.html">Tilesheets and tilemaps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animatedsprite.html">Animated sprites</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="tilesheet_tilemap.html">Creating a tilesheet and a map</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sprite.html">Creating a character sprite</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Creating a character sprite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="game.html">Creating a game with Sappho</a></li>
 </ul>
 </li>
@@ -122,11 +123,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>Tutorials</li>
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+      
+    <li>Creating a character sprite</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/tutorials/index.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/tutorials/sprite.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -136,22 +139,46 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tutorials">
-<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tilesheet_tilemap.html">Creating a tilesheet and a map</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tilesheet_tilemap.html#creating-a-tilesheet">Creating a tilesheet</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tilesheet_tilemap.html#tilesheet-rules">Tilesheet rules</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="tilesheet_tilemap.html#creating-a-tilemap">Creating a tilemap</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="sprite.html">Creating a character sprite</a></li>
-<li class="toctree-l1"><a class="reference internal" href="game.html">Creating a game with Sappho</a></li>
-</ul>
-</div>
+  <div class="section" id="creating-a-character-sprite">
+<h1>Creating a character sprite<a class="headerlink" href="#creating-a-character-sprite" title="Permalink to this headline">¶</a></h1>
+<p>Following on from <a class="reference internal" href="tilesheet_tilemap.html"><span class="doc">the last tutorial</span></a>,
+we&#8217;re going to create a simple
+<a class="reference internal" href="../animatedsprite.html#sappho.animatedsprite.AnimatedSprite" title="sappho.animatedsprite.AnimatedSprite"><code class="xref py py-class docutils literal"><span class="pre">AnimatedSprite</span></code></a> to act
+as our player character in the game we&#8217;re going to create.</p>
+<p>If you already have a GIF of a player sprite, great! You don&#8217;t need to
+create a new one, you can just
+<a class="reference internal" href="game.html"><span class="doc">skip to the next tutorial</span></a>.</p>
+<p>To start off, open the image editor of your choice (we&#8217;ll be using GIMP
+in this example), and create a new image which is 10x10 pixels, the same
+size as the tiles in our tilesheet. Note that it doesn&#8217;t have to be that
+size, it can be any size you want, but 10x10 pixels is enough for a
+simple sprite.</p>
+<p>As before, delete the background layer, leaving us a transparent canvas
+to work on, and create a layer to work on.</p>
+<p>For the sake of the tutorial, let&#8217;s create a small blob that will bob
+up and down. Start off by drawing the outline, a circle will do. Fill
+it with whatever color you like, and draw some eyes on it. I&#8217;m
+going for blue with green eyes, and a blush, because let&#8217;s face it,
+we want our character to be cute.</p>
+<p>Here&#8217;s what we have so far:</p>
+<img alt="../_images/sprite_frameone.png" src="../_images/sprite_frameone.png" />
+<p>Now to add the second frame. We already have everything drawn on our
+first layer, so let&#8217;s duplicate the layer we have already and move the
+top of the character&#8217;s head down, removing the extra pixels on the side.
+That leaves our second frame looking like this:</p>
+<img alt="../_images/sprite_frametwo.png" src="../_images/sprite_frametwo.png" />
+<p>Now comes exporting it as a GIF. GIMP makes this easy - because we have
+our two frames on different layers, it&#8217;s as simple as going to the export
+menu and naming it &#8220;sprite.gif&#8221;. You&#8217;ll get this dialog pop up:</p>
+<img alt="../_images/sprite_export.png" src="../_images/sprite_export.png" />
+<p>In this dialog, you want to tick the &#8220;As animation&#8221; box, set the delay
+to however long you want the sprite to take to move (in the example, I&#8217;ve
+set it to 500 milliseconds, that is, half a second), and tick the &#8220;Use
+delay entered above for all frames&#8221; box. Hit the export button and
+presto, you have an animated sprite!</p>
+<img alt="../_images/sprite_finished.gif" src="../_images/sprite_finished.gif" />
+<p>We&#8217;re now ready to move on and create a game with our character sprite,
+and our tilesheet and map from the earlier tutorial!</p>
 </div>
 
 
@@ -161,10 +188,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tilesheet_tilemap.html" class="btn btn-neutral float-right" title="Creating a tilesheet and a map" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="game.html" class="btn btn-neutral float-right" title="Creating a game with Sappho" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../animatedsprite.html" class="btn btn-neutral" title="Animated sprites" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tilesheet_tilemap.html" class="btn btn-neutral" title="Creating a tilesheet and a map" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

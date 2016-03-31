@@ -1,0 +1,8 @@
+Creating a game with Sappho
+===========================
+
+If you've been following along with the previous tutorials
+(:doc:`creating a tilesheet and map <tilesheet_tilemap>` and
+:doc:`creating a character sprite <sprite>`), you're now ready to move
+on in the world of game development, and create your first simple game!
+
