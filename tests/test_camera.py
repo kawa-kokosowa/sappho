@@ -10,6 +10,7 @@ from .common import compare_surfaces
 
 
 class TestCameraBehavior(object):
+
     def test_movement(self):
         # Create a test surface with a red square at (0, 0) and a blue
         # square at (1, 1), both being 2x2.
@@ -18,9 +19,8 @@ class TestCameraBehavior(object):
         test_surface.fill((0, 255, 0), pygame.Rect(1, 1, 2, 2))
 
         # Create our camera
-        camera = Camera((3, 3), (2, 2), (2, 2))
-        behavior = CameraBehavior(camera)
-        camera.behavior = behavior
+        camera = Camera((3, 3), (2, 2), (2, 2),
+                        behavior=CameraBehavior())
 
         # Blit our test surface
         camera.source_surface.blit(test_surface, (0, 0))
@@ -56,9 +56,8 @@ class TestCameraCenterBehavior(object):
         test_surface.fill((0, 0, 255), pygame.Rect(3, 3, 3, 3))
 
         # Set up our camera
-        camera = Camera((7, 7), (3, 3), (3, 3))
-        behavior = CameraCenterBehavior(camera)
-        camera.behavior = behavior
+        camera = Camera((7, 7), (3, 3), (3, 3),
+                        behavior=CameraCenterBehavior())
 
         # Blit our test surface to the camera
         camera.source_surface.blit(test_surface, (0, 0))

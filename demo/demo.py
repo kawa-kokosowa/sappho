@@ -69,9 +69,8 @@ for layer_tilemap in layer_tilemaps:
 surface_size = (tilemap_surfaces[0].get_width(),
                 tilemap_surfaces[0].get_height())
 
-camera = Camera(surface_size, RESOLUTION, (80, 80))
-behavior = CameraCenterBehavior(camera)
-camera.behavior = behavior
+camera = Camera(surface_size, RESOLUTION, (80, 80),
+                behavior=CameraCenterBehavior())
 
 # The render layers which we draw to
 layers = SurfaceLayers(camera.source_surface, len(tilemap_surfaces))

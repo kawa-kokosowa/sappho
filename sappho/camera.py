@@ -16,21 +16,18 @@ class CameraBehavior(object):
     a CameraBehavior, including overriding the
     move method.
 
-    Parameters:
-        camera (sappho.Camera): The camera that this
-            CameraBehavior belongs to.
-
     """
 
-    def __init__(self, camera):
-        self.camera = camera
-
-    # NOTE: You'll want to override this when you inherit.
-    def move(self, focal_rectangle):
+    @staticmethod
+    def move(camera, focal_rectangle):
         """Move the camera, keeping the focal rectangle in
         the top left of the camera view.
 
+        This method should be overridden in a child class.
+
         Arguments:
+            camera (sappho.camera.Camera): Associated
+                Sappho camera object to control.
             focal_rectangle (pygame.Rect): Rectangle which
                 is used to possibly adjust camera position.
 
@@ -42,7 +39,7 @@ class CameraBehavior(object):
 
         scroll_position = focal_rectangle.topleft
         position_rect = pygame.Rect(scroll_position,
-                                    self.camera.camera_resolution)
+                                    camera.camera_resolution)
 
         return position_rect
 
@@ -51,17 +48,15 @@ class CameraCenterBehavior(CameraBehavior):
     """A camera behavior that centers the
     focal rectangle on the screen.
 
-    Parameters:
-        camera (sappho.Camera): The camera that this
-            CameraBehavior belongs to.
-
     """
 
-    def move(self, focal_rectangle):
+    @staticmethod
+    def move(camera, focal_rectangle):
         """Move the camera, keeping the focal rectangle
         in the center of the screen where possible.
 
         Arguments:
+            camera (sappho.camera.Camera):
             focal_rectangle (pygame.Rect): Rectangle which
                 is used to possibly adjust camera position.
             
@@ -72,25 +67,26 @@ class CameraCenterBehavior(CameraBehavior):
         """
 
         focal_x = (focal_rectangle.x
-                   - (self.camera.camera_resolution[0] / 2) -
+                   - (camera.camera_resolution[0] / 2) -
                    - (focal_rectangle.width / 2))
         focal_y = (focal_rectangle.y
-                   - (self.camera.camera_resolution[1] / 2)
+                   - (camera.camera_resolution[1] / 2)
                    - (focal_rectangle.height / 2))
 
         if focal_x < 0:
             focal_x = 0
         if focal_y < 0:
             focal_y = 0
-        if focal_x + self.camera.camera_resolution[0] > self.camera.source_resolution[0]:
-            focal_x = self.camera.source_resolution[0] - self.camera.camera_resolution[0]
-        if focal_y + self.camera.camera_resolution[1] > self.camera.source_resolution[1]:
-            focal_y = self.camera.source_resolution[1] - self.camera.camera_resolution[1]
+        if focal_x + camera.camera_resolution[0] > camera.source_resolution[0]:
+            focal_x = camera.source_resolution[0] - camera.camera_resolution[0]
+        if focal_y + camera.camera_resolution[1] > camera.source_resolution[1]:
+            focal_y = camera.source_resolution[1] - camera.camera_resolution[1]
 
         position_rect = pygame.Rect((focal_x, focal_y),
-                                    self.camera.camera_resolution)
+                                    camera.camera_resolution)
 
         return position_rect
+
 
 class Camera(pygame.surface.Surface):
     """Surface that acts as a scrollable view, with optional scaling
@@ -115,7 +111,9 @@ class Camera(pygame.surface.Surface):
 
     """
 
-    def __init__(self, source_resolution, target_resolution, camera_resolution, behavior=None):
+    def __init__(self, source_resolution, target_resolution,
+                 camera_resolution, behavior=None):
+
         super(Camera, self).__init__(target_resolution)
 
         self.source_surface = pygame.surface.Surface(source_resolution,
@@ -127,10 +125,7 @@ class Camera(pygame.surface.Surface):
         self.view_rect = pygame.Rect((0, 0),
                                      self.camera_resolution)
 
-        if behavior is None:
-            self.behavior = CameraBehavior(self)
-        else:
-            self.behavior = behavior
+        self.behavior = behavior or CameraBehavior()
 
     def update(self):
         """Update the Camera to point to the
@@ -160,5 +155,5 @@ class Camera(pygame.surface.Surface):
 
         """
 
-        self.view_rect = self.behavior.move(focal_rectangle)
+        self.view_rect = self.behavior.move(self, focal_rectangle)
         self.update()
