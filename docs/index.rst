@@ -7,6 +7,7 @@ Contents:
    :maxdepth: 2
 
    camera
+   layers
 
 Indices and tables
 ==================
