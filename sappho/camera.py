@@ -6,7 +6,8 @@ import pygame
 
 
 class CameraOutOfBounds(Exception):
-    """
+    """The subsurface, which is the camera's view,
+    goes beyond the surface the camera's viewing.
     
     Camera has been moved so that its area exceeds
     the surface it uses to make a subsurface.
@@ -48,17 +49,10 @@ class CameraBehavior(object):
             focal_rectangle (pygame.Rect): Rectangle which
                 is used to possibly adjust camera position.
 
-        Returns:
-            pygame.Rect:
-                The view area, represented as a Pygame rectangle.
-
         """
 
         scroll_position = focal_rectangle.topleft
-        position_rect = pygame.Rect(scroll_position,
-                                    camera.camera_resolution)
-
-        return position_rect
+        camera.view_rect.topleft = scroll_position
 
 
 class CameraCenterBehavior(CameraBehavior):
@@ -80,18 +74,14 @@ class CameraCenterBehavior(CameraBehavior):
             camera (sappho.camera.Camera):
             focal_rectangle (pygame.Rect): Rectangle which
                 is used to possibly adjust camera position.
-            
-        Returns:
-            pygame.Rect:
-                The view area, represented as a Pygame rectangle.
 
         """
 
         focal_x = (focal_rectangle.x
-                   - (camera.camera_resolution[0] / 2) -
+                   - (camera.view_rect.width / 2) -
                    - (focal_rectangle.width / 2))
         focal_y = (focal_rectangle.y
-                   - (camera.camera_resolution[1] / 2)
+                   - (camera.view_rect.height / 2)
                    - (focal_rectangle.height / 2))
 
         if focal_x < 0:
@@ -100,57 +90,48 @@ class CameraCenterBehavior(CameraBehavior):
         if focal_y < 0:
             focal_y = 0
 
-        if focal_x + camera.camera_resolution[0] > camera.source_resolution[0]:
-            focal_x = camera.source_resolution[0] - camera.camera_resolution[0]
+        if focal_x + camera.view_rect.width > camera.source_resolution[0]:
+            focal_x = camera.source_resolution[0] - camera.view_rect.width
 
-        if focal_y + camera.camera_resolution[1] > camera.source_resolution[1]:
-            focal_y = camera.source_resolution[1] - camera.camera_resolution[1]
+        if focal_y + camera.view_rect.height > camera.source_resolution[1]:
+            focal_y = camera.source_resolution[1] - camera.view_rect.height
 
-        position_rect = pygame.Rect((focal_x, focal_y),
-                                    camera.camera_resolution)
-
-        return position_rect
+        camera.view_rect.topleft = (focal_x, focal_y)
 
 
-# NOTE/TODO: maybe camera_resolution should be called
-# viewport_resolution or subsurface_resolution...
 class Camera(pygame.surface.Surface):
     """Surface that acts as a scrollable view, with optional scaling
     onto another surface.
 
-    Arguments:
+    Attributes:
         source_resolution (tuple[int, int]): Maximum size of the
             environment being portrayed. If you have a map with many
             inconsistently sized layers, this should be the size of 
             all of those layers flattened onto a single new layer.
             Anything beyond this size will not be on camera.
-        target_resolution (tuple[int, int]): Resolution to scale up the
+        output_resolution (tuple[int, int]): Resolution to scale up the
             view of the surface to
-        camera_resolution (tuple[int, int]): Resolution of the view onto
+        view_resolution (tuple[int, int]): Resolution of the view onto
             the source surface
+        view_rect (pygame.Rect): Rectangle area of this camera's view,
+            which is used to create the subsurface, which is scaled
+            to output_resolution and blit to self/camera.
         behavior (CameraBehavior): The initial behavior to use for this
-            Camera.
-
-    Attributes:
-        behavior: The :py:class:`CameraBehavior <sappho.CameraBehavior>`
+            Camera. The :py:class:`CameraBehavior <sappho.CameraBehavior>`
             that this Camera uses to control movement.
 
     """
 
-    def __init__(self, source_resolution, target_resolution,
-                 camera_resolution, behavior=None):
+    def __init__(self, source_resolution, output_resolution,
+                 view_resolution, behavior=None):
 
-        super(Camera, self).__init__(target_resolution)
+        super(Camera, self).__init__(output_resolution)
 
         self.source_surface = pygame.surface.Surface(source_resolution,
                                                      pygame.SRCALPHA)
         self.source_resolution = source_resolution
-        self.target_resolution = target_resolution
-        self.camera_resolution = camera_resolution
-
-        self.view_rect = pygame.Rect((0, 0),
-                                     self.camera_resolution)
-
+        self.output_resolution = output_resolution
+        self.view_rect = pygame.Rect((0, 0), view_resolution)
         self.behavior = behavior or CameraBehavior()
 
     def update(self):
@@ -171,7 +152,7 @@ class Camera(pygame.surface.Surface):
             raise CameraOutOfBounds(self)
 
         scaled_surface = pygame.transform.scale(subsurface,
-                                                self.target_resolution)
+                                                self.output_resolution)
 
         # Blit the scaled surface to this camera (which is also a surface)
         super(Camera, self).blit(scaled_surface, (0, 0))
@@ -185,5 +166,5 @@ class Camera(pygame.surface.Surface):
 
         """
 
-        self.view_rect = self.behavior.move(self, focal_rectangle)
+        self.behavior.move(self, focal_rectangle)
         self.update()
