@@ -1,144 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Camera and camera behaviors &mdash; Sappho 0.6.1 documentation</title>
-  
-
-  
-  
-
-  
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="Sappho 0.6.1 documentation" href="index.html"/>
-        <link rel="next" title="SurfaceLayers" href="layers.html"/>
-        <link rel="prev" title="Welcome to Sappho’s documentation!" href="index.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>Camera and camera behaviors &mdash; Sappho 0.7.0 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Sappho 0.7.0 documentation" href="index.html" />
+    <link rel="next" title="SurfaceLayers" href="layers.html" />
+    <link rel="prev" title="Welcome to Sappho’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-          
-            <a href="index.html" class="icon icon-home"> Sappho
-          
+  </head>
+  <body role="document">  
 
-          
-          </a>
-
-          
-            
-            
-              <div class="version">
-                0.6
-              </div>
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Camera and camera behaviors</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#camera">Camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#camera-behaviors">Camera behaviors</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#common-camera-behaviors">Common camera behaviors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#creating-a-custom-camera-behavior">Creating a custom camera behavior</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="layers.html">SurfaceLayers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tilemap.html">Tilesheets and tilemaps</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animatedsprite.html">Animated sprites</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
-</ul>
-
-            
-          
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Sappho</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          
-
- 
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Camera and camera behaviors</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="_sources/camera.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <div class="section" id="module-sappho.camera">
 <span id="camera-and-camera-behaviors"></span><h1>Camera and camera behaviors<a class="headerlink" href="#module-sappho.camera" title="Permalink to this headline">¶</a></h1>
@@ -151,34 +49,46 @@ view to fill an 800x600 pixel window but only allow viewing a part of
 the map at a time.</p>
 <dl class="class">
 <dt id="sappho.camera.Camera">
-<em class="property">class </em><code class="descclassname">sappho.camera.</code><code class="descname">Camera</code><span class="sig-paren">(</span><em>source_resolution</em>, <em>target_resolution</em>, <em>camera_resolution</em>, <em>behavior=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/camera.html#Camera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.camera.Camera" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">sappho.camera.</code><code class="descname">Camera</code><span class="sig-paren">(</span><em>source_resolution</em>, <em>output_resolution</em>, <em>view_resolution</em>, <em>behavior=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/camera.html#Camera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.camera.Camera" title="Permalink to this definition">¶</a></dt>
 <dd><p>Surface that acts as a scrollable view, with optional scaling
 onto another surface.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>source_resolution</strong> (<em>tuple[int, int]</em>) &#8211; Maximum size of the
+<dl class="attribute">
+<dt id="sappho.camera.Camera.source_resolution">
+<code class="descname">source_resolution</code><a class="headerlink" href="#sappho.camera.Camera.source_resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple[int, int]</em> &#8211; Maximum size of the
 environment being portrayed. If you have a map with many
 inconsistently sized layers, this should be the size of
 all of those layers flattened onto a single new layer.
-Anything beyond this size will not be on camera.</li>
-<li><strong>target_resolution</strong> (<em>tuple[int, int]</em>) &#8211; Resolution to scale up the
-view of the surface to</li>
-<li><strong>camera_resolution</strong> (<em>tuple[int, int]</em>) &#8211; Resolution of the view onto
-the source surface</li>
-<li><strong>behavior</strong> (<a class="reference internal" href="#sappho.camera.CameraBehavior" title="sappho.camera.CameraBehavior"><em>CameraBehavior</em></a>) &#8211; The initial behavior to use for this
-Camera.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+Anything beyond this size will not be on camera.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.camera.Camera.output_resolution">
+<code class="descname">output_resolution</code><a class="headerlink" href="#sappho.camera.Camera.output_resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple[int, int]</em> &#8211; Resolution to scale up the
+view of the surface to</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.camera.Camera.view_resolution">
+<code class="descname">view_resolution</code><a class="headerlink" href="#sappho.camera.Camera.view_resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple[int, int]</em> &#8211; Resolution of the view onto
+the source surface</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.camera.Camera.view_rect">
+<code class="descname">view_rect</code><a class="headerlink" href="#sappho.camera.Camera.view_rect" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>pygame.Rect</em> &#8211; Rectangle area of this camera&#8217;s view,
+which is used to create the subsurface, which is scaled
+to output_resolution and blit to self/camera.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="sappho.camera.Camera.behavior">
 <code class="descname">behavior</code><a class="headerlink" href="#sappho.camera.Camera.behavior" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <code class="xref py py-class docutils literal"><span class="pre">CameraBehavior</span></code>
+<dd><p><em>CameraBehavior</em> &#8211; The initial behavior to use for this
+Camera. The <code class="xref py py-class docutils literal"><span class="pre">CameraBehavior</span></code>
 that this Camera uses to control movement.</p>
 </dd></dl>
 
@@ -217,7 +127,9 @@ blit to the camera (which is a surface, itself!).</p>
 <dl class="exception">
 <dt id="sappho.camera.CameraOutOfBounds">
 <em class="property">exception </em><code class="descclassname">sappho.camera.</code><code class="descname">CameraOutOfBounds</code><span class="sig-paren">(</span><em>camera</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/camera.html#CameraOutOfBounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.camera.CameraOutOfBounds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Camera has been moved so that its area exceeds
+<dd><p>The subsurface, which is the camera&#8217;s view,
+goes beyond the surface the camera&#8217;s viewing.</p>
+<p>Camera has been moved so that its area exceeds
 the surface it uses to make a subsurface.</p>
 <dl class="attribute">
 <dt id="sappho.camera.CameraOutOfBounds.camera">
@@ -256,18 +168,12 @@ the top left of the camera view.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>camera</strong> (<a class="reference internal" href="#sappho.camera.Camera" title="sappho.camera.Camera"><em>sappho.camera.Camera</em></a>) &#8211; Associated
 Sappho camera object to control.</li>
 <li><strong>focal_rectangle</strong> (<a class="reference external" href="http://www.pygame.org/docs/ref/rect.html#pygame.Rect" title="(in Pygame v1.9.2)"><em>pygame.Rect</em></a>) &#8211; Rectangle which
 is used to possibly adjust camera position.</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The view area, represented as a Pygame rectangle.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://www.pygame.org/docs/ref/rect.html#pygame.Rect" title="(in Pygame v1.9.2)">pygame.Rect</a></p>
 </td>
 </tr>
 </tbody>
@@ -302,16 +208,15 @@ the focal point of the view onto the source surface. It returns another
 that should be displayed. The Rect can not go outside the bounds of the
 source surface, as when the camera is updated, it creates a subsurface
 of the source surface with the Rect that is returned by the move function.</p>
-<p>The simplest implementation of a CameraBehavior would be to put the
-focal rectangle in the top left. This would be achieved by returning a
-Rect that had the x and y attributes set to the x and y attributes of the
-focal rectangle, with the width and height of the camera size (specified
-by the <code class="docutils literal"><span class="pre">camera_resolution</span></code> property of the  <a class="reference internal" href="#sappho.camera.Camera" title="sappho.camera.Camera"><code class="xref py py-class docutils literal"><span class="pre">Camera</span></code></a> that
-is passed to the <code class="docutils literal"><span class="pre">move</span></code> method):</p>
+<p>The simplest implementation of a <cite>CameraBehavior</cite> would be to
+set the <cite>camera.view_rect.topleft</cite> to the <cite>topleft</cite> of the
+<cite>focal_rectangle</cite> within its <cite>move()</cite> method. This effectively sets
+the region/area of the <cite>source_surface</cite> used for a subsurface. Said
+subsurface is scaled up to the <cite>camera.output_resolution</cite> and then
+blit&#8217;d to <cite>Camera</cite> itself:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TopLeftBehavior</span><span class="p">(</span><span class="n">CameraBehavior</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera</span><span class="p">,</span> <span class="n">focal_rectangle</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">focal_rectangle</span><span class="o">.</span><span class="n">topleft</span><span class="p">,</span>
-                           <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">)</span>
+        <span class="n">camera</span><span class="o">.</span><span class="n">view_rect</span><span class="o">.</span><span class="n">topleft</span> <span class="o">=</span> <span class="n">focal_rectangle</span><span class="o">.</span><span class="n">topleft</span>
 </pre></div>
 </div>
 <p>Hovever, this does not constrain the view to the bounds of the source
@@ -321,8 +226,8 @@ plus the width of height of the view is greater than the width/height
 of the source surface, an error will occur because you can not create
 a subsurface of the source surface that goes outside of the bounds of
 the source surface. A <a class="reference internal" href="#sappho.camera.CameraOutOfBounds" title="sappho.camera.CameraOutOfBounds"><code class="xref py py-exc docutils literal"><span class="pre">CameraOutOfBounds</span></code></a> exception is raised
-by the <a class="reference internal" href="#sappho.camera.Camera.update" title="sappho.camera.Camera.update"><code class="xref py py-func docutils literal"><span class="pre">Camera.update()</span></code></a> function if the Rect returned by the
-move function is out of bounds. This can be useful in some cases, but
+by the <a class="reference internal" href="#sappho.camera.Camera.update" title="sappho.camera.Camera.update"><code class="xref py py-func docutils literal"><span class="pre">Camera.update()</span></code></a> function if <cite>camera.view_rect</cite> (as set by
+<cite>move()</cite>) is out of bounds. This can be useful in some cases, but
 for our case, we don&#8217;t want to be able to go out of bounds, and instead
 should constrain the bounds of the view to the surface:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TopLeftBehavior</span><span class="p">(</span><span class="n">CameraBehavior</span><span class="p">):</span>
@@ -337,12 +242,12 @@ should constrain the bounds of the view to the surface:</p>
             <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1"># Make sure we don&#39;t go off the bottom or right of the source surface</span>
-        <span class="k">if</span> <span class="n">x</span> <span class="o">+</span> <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">y</span> <span class="o">+</span> <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">+</span> <span class="n">camera</span><span class="o">.</span><span class="n">view_rect</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">camera</span><span class="o">.</span><span class="n">view_rect</span><span class="o">.</span><span class="n">width</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="o">+</span> <span class="n">camera</span><span class="o">.</span><span class="n">view_rect</span><span class="o">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">camera</span><span class="o">.</span><span class="n">view_rect</span><span class="o">.</span><span class="n">height</span>
 
-        <span class="k">return</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">)</span>
+        <span class="n">camera</span><span class="o">.</span><span class="n">view_rect</span><span class="o">.</span><span class="n">topleft</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We now have a complete CameraBehavior that puts the focal rectangle
@@ -353,71 +258,68 @@ source surface!</p>
 </div>
 
 
-           </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="layers.html" class="btn btn-neutral float-right" title="SurfaceLayers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral" title="Welcome to Sappho’s documentation!" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2016, Hypatia Software Organization.
-
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Camera and camera behaviors</a><ul>
+<li><a class="reference internal" href="#camera">Camera</a></li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li><a class="reference internal" href="#camera-behaviors">Camera behaviors</a><ul>
+<li><a class="reference internal" href="#common-camera-behaviors">Common camera behaviors</a></li>
+<li><a class="reference internal" href="#creating-a-custom-camera-behavior">Creating a custom camera behavior</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Sappho&#8217;s documentation!</a></li>
+      <li>Next: <a href="layers.html" title="next chapter">SurfaceLayers</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/camera.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hypatia Software Organization.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/camera.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-    </section>
+    
 
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.6.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+    
+  </body>
 </html>

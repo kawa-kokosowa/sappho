@@ -4,5 +4,3 @@ Tutorials
 .. toctree::
 
    tilesheet_tilemap
-   sprite
-   game
