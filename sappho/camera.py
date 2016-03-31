@@ -5,6 +5,23 @@
 import pygame
 
 
+class CameraOutOfBounds(Exception):
+    """
+    
+    Camera has been moved so that its area exceeds
+    the surface it uses to make a subsurface.
+
+    Attributes:
+        camera (Camera):
+
+    """
+
+    # TODO: this could be better...
+    def __init__(self, camera):
+        super(CameraOutOfBounds, self).__init__(camera)
+        self.camera = camera
+
+
 class CameraBehavior(object):
     """How a camera moves. How it handles boundaries,
     character movement, etc.
@@ -48,6 +65,10 @@ class CameraCenterBehavior(CameraBehavior):
     """A camera behavior that centers the
     focal rectangle on the screen.
 
+    Will not cause Camera.update() to raise
+    CameraOutOfBounds, because the move logic
+    prevents such from occuring!
+
     """
 
     @staticmethod
@@ -75,10 +96,13 @@ class CameraCenterBehavior(CameraBehavior):
 
         if focal_x < 0:
             focal_x = 0
+
         if focal_y < 0:
             focal_y = 0
+
         if focal_x + camera.camera_resolution[0] > camera.source_resolution[0]:
             focal_x = camera.source_resolution[0] - camera.camera_resolution[0]
+
         if focal_y + camera.camera_resolution[1] > camera.source_resolution[1]:
             focal_y = camera.source_resolution[1] - camera.camera_resolution[1]
 
@@ -88,6 +112,8 @@ class CameraCenterBehavior(CameraBehavior):
         return position_rect
 
 
+# NOTE/TODO: maybe camera_resolution should be called
+# viewport_resolution or subsurface_resolution...
 class Camera(pygame.surface.Surface):
     """Surface that acts as a scrollable view, with optional scaling
     onto another surface.
@@ -139,7 +165,11 @@ class Camera(pygame.surface.Surface):
 
         """
 
-        subsurface = self.source_surface.subsurface(self.view_rect)
+        try:
+            subsurface = self.source_surface.subsurface(self.view_rect)
+        except ValueError:
+            raise CameraOutOfBounds(self)
+
         scaled_surface = pygame.transform.scale(subsurface,
                                                 self.target_resolution)
 

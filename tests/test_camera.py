@@ -1,15 +1,36 @@
 import os
 
 import pygame
+import pytest
 
 from ..sappho import (Camera,
                       CameraBehavior,
-                      CameraCenterBehavior)
+                      CameraCenterBehavior,
+                      CameraOutOfBounds)
 
 from .common import compare_surfaces
 
 
 class TestCameraBehavior(object):
+
+    def test_out_of_bounds(self):
+        """Test the CameraOutOfBounds exception through
+        testing through the default camera behavior movement.
+
+        1. Create a camera
+        2. Create a rectangle whose topleft is out-of-bounds
+           of the Camera source surface.
+        3. Assert exception is raised!
+
+        """
+
+        camera = Camera((800, 600), (1080, 1050), (300, 300))
+
+        out_of_bounds_coord = (2000, 2000)
+        out_of_bounds_rect = pygame.Rect(out_of_bounds_coord, [32, 32])
+
+        with pytest.raises(CameraOutOfBounds):
+            camera.scroll_to(out_of_bounds_rect)
 
     def test_movement(self):
         # Create a test surface with a red square at (0, 0) and a blue
@@ -41,6 +62,11 @@ class TestCameraBehavior(object):
 
 
 class TestCameraCenterBehavior(object):
+    """Notably does not raise exception
+    when out-of-bounds.
+
+    """
+
     def test_movement(self):
         """Test that moving the camera centers the focal rectangle on
         the screen. Creates a 7x7 surface, blitting red, green, and blue
