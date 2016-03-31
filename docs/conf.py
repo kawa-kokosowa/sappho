@@ -2,6 +2,12 @@
 import sys
 import os
 
+try:
+    import sphinx_rtd_theme
+    RTD_THEME = True
+except ImportError:
+    RTD_THEME = False
+
 # Add the Sappho repository directory to the module
 # search path
 sys.path.insert(0, os.path.abspath('..'))
@@ -41,8 +47,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # Output style options
 pygments_style = 'sphinx'
-html_theme = 'alabaster'
 html_static_path = ['_static']
+
+html_theme = 'alabaster'
+if RTD_THEME:
+    html_theme = "sphinx_rtd_theme"
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Intersphinx mapping
 intersphinx_mapping = {

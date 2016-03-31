@@ -7,6 +7,9 @@ installed. You can install it via pip:
 pip install --user sphinx
 ```
 
+Optionally, you can install `sphinx_rtd_theme` too, to get a prettier 
+themed output, using the theme used by [readthedocs.org](https://readthedocs.org/).
+
 Then, to build the documentation, run `sphinx-build` from this directory,
 like so:
 
