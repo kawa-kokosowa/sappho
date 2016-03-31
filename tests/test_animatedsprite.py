@@ -2,8 +2,8 @@ import os
 
 import pygame
 
-from .. import sappho
-from ..sappho.animatedsprite import Frame
+from ..sappho import animatedsprite
+from .common import compare_surfaces
 
 
 class MockClock(object):
@@ -23,7 +23,7 @@ class TestAnimatedSprite(object):
         clock = MockClock()
 
         # Create the AnimatedSprite object from the test GIF file
-        animsprite = sappho.AnimatedSprite.from_file(path)
+        animsprite = animatedsprite.AnimatedSprite.from_file(path)
 
         # Create surfaces to compare against
         frameone = pygame.surface.Surface((10, 10))
@@ -35,14 +35,7 @@ class TestAnimatedSprite(object):
         outputsurface = pygame.surface.Surface((10, 10))
         outputsurface.blit(animsprite.image, (0, 0))
 
-        output_view = outputsurface.get_view()
-        frameone_view = frameone.get_view()
-
-        assert(output_view.raw == frameone_view.raw)
-
-        del output_view
-        del frameone_view
-        del outputsurface
+        assert(compare_surfaces(outputsurface, frameone))
 
         # Update the AnimatedSprite
         animsprite.update(clock)
@@ -51,15 +44,7 @@ class TestAnimatedSprite(object):
         outputsurface = pygame.surface.Surface((10, 10))
         outputsurface.blit(animsprite.image, (0, 0))
 
-        output_view = outputsurface.get_view()
-        frametwo_view = frametwo.get_view()
-
-        assert(output_view.raw == frametwo_view.raw)
-
-        del output_view
-        del frametwo_view
-        del outputsurface
-
+        assert(compare_surfaces(outputsurface, frametwo))
 
     def test_animation(self):
         # Create two surfaces with different colors
@@ -69,27 +54,20 @@ class TestAnimatedSprite(object):
         frametwo_surface.fill((0, 255, 0))
 
         # Create frames from these surfaces
-        frameone = Frame(frameone_surface, 0, 1000)
-        frametwo = Frame(frametwo_surface, 1000, 2000)
+        frameone = animatedsprite.Frame(frameone_surface, 0, 1000)
+        frametwo = animatedsprite.Frame(frametwo_surface, 1000, 2000)
 
         # Create a mock Clock object for the AnimatedSprite
         clock = MockClock()
 
         # Create the AnimatedSprite with our frames
-        animsprite = sappho.AnimatedSprite([frameone, frametwo])
+        animsprite = animatedsprite.AnimatedSprite([frameone, frametwo])
 
         # Blit the AnimatedSprite (which should give us our first frame)
         outputsurface = pygame.surface.Surface((10, 10))
         outputsurface.blit(animsprite.image, (0, 0))
 
-        output_view = outputsurface.get_view()
-        frameone_view = frameone_surface.get_view()
-
-        assert(output_view.raw == frameone_view.raw)
-
-        del output_view
-        del frameone_view
-        del outputsurface
+        assert(compare_surfaces(outputsurface, frameone_surface))
 
         # Update the AnimatedSprite
         animsprite.update(clock)
@@ -98,11 +76,5 @@ class TestAnimatedSprite(object):
         outputsurface = pygame.surface.Surface((10, 10))
         outputsurface.blit(animsprite.image, (0, 0))
 
-        output_view = outputsurface.get_view()
-        frametwo_view = frametwo_surface.get_view()
+        assert(compare_surfaces(outputsurface, frametwo_surface))
 
-        assert(output_view.raw == frametwo_view.raw)
-
-        del output_view
-        del frametwo_view
-        del outputsurface

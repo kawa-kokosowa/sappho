@@ -10,13 +10,10 @@ This could also serve as a template in the future.
  
 import pygame
 
-from sappho import (AnimatedSprite,
-                    TileMap,
-                    Tilesheet,
-                    tmx_file_to_tilemaps,
-                    SurfaceLayers,
-                    Camera,
-                    CameraCenterBehavior)
+from sappho.animatedsprite import AnimatedSprite
+from sappho.tilemap import TileMap, Tilesheet, tmx_file_to_tilemaps
+from sappho.layers import SurfaceLayers
+from sappho.camera import Camera, CameraCenterBehavior
 
 # Constants/game config
 RESOLUTION = [700, 500]

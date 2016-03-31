@@ -19,7 +19,7 @@ class TestSurfaceLayers(object):
 
     def setup(self):
         self.target_surface = pygame.surface.Surface(self.TARGET_SURFACE_SIZE)
-        self.surface_layers = sappho.SurfaceLayers(self.target_surface,
+        self.surface_layers = sappho.layers.SurfaceLayers(self.target_surface,
                                                    self.NUMBER_OF_LAYERS)
 
     def test_getitem(self):
@@ -69,7 +69,7 @@ class TestSurfaceLayers(object):
         test_surface.blit(rect3, rect3pos)
 
         # Create the SurfaceLayers object and fill it with our layers
-        surface_layers = sappho.SurfaceLayers(self.target_surface, 4)
+        surface_layers = sappho.layers.SurfaceLayers(self.target_surface, 4)
         surface_layers[0].blit(background, (0, 0))
         surface_layers[1].blit(rect1, rect1pos)
         surface_layers[2].blit(rect2, rect2pos)

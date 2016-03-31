@@ -3,10 +3,10 @@ import os
 import pygame
 import pytest
 
-from ..sappho import (Camera,
-                      CameraBehavior,
-                      CameraCenterBehavior,
-                      CameraOutOfBounds)
+from ..sappho.camera import (Camera,
+                             CameraBehavior,
+                             CameraCenterBehavior,
+                             CameraOutOfBounds)
 
 from .common import compare_surfaces
 
