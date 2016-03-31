@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Animated sprites &mdash; Sappho 0.6.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Sappho 0.6.1 documentation" href="index.html"/>
+        <link rel="next" title="Tutorials" href="tutorials/index.html"/>
+        <link rel="prev" title="Tilesheets and tilemaps" href="tilemap.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sappho
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera.html">Camera and camera behaviors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">SurfaceLayers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tilemap.html">Tilesheets and tilemaps</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Animated sprites</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#animatedsprite-overview">AnimatedSprite overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#anchoring-system">Anchoring system</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Sappho</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Animated sprites</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/animatedsprite.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-sappho.animatedsprite">
+<span id="animated-sprites"></span><h1>Animated sprites<a class="headerlink" href="#module-sappho.animatedsprite" title="Permalink to this headline">¶</a></h1>
+<p>Tools to create animated sprites in Pygame. This module
+also provides a <code class="xref py py-class docutils literal"><span class="pre">FrameAnchors</span></code> system, so you may
+line up two separate animations with
+frame-specific-coordinate data.</p>
+<div class="section" id="animatedsprite-overview">
+<h2>AnimatedSprite overview<a class="headerlink" href="#animatedsprite-overview" title="Permalink to this headline">¶</a></h2>
+<p>An <a class="reference internal" href="#sappho.animatedsprite.AnimatedSprite" title="sappho.animatedsprite.AnimatedSprite"><code class="xref py py-class docutils literal"><span class="pre">AnimatedSprite</span></code></a> is typically loaded from GIF with
+<a class="reference internal" href="#sappho.animatedsprite.AnimatedSprite.from_file" title="sappho.animatedsprite.AnimatedSprite.from_file"><code class="xref py py-meth docutils literal"><span class="pre">AnimatedSprite.from_file()</span></code></a>, which loads both
+animation and <code class="xref py py-class docutils literal"><span class="pre">Anchor</span></code> data.</p>
+<dl class="classmethod">
+<dt id="sappho.animatedsprite.AnimatedSprite.from_file">
+<em class="property">classmethod </em><code class="descclassname">AnimatedSprite.</code><code class="descname">from_file</code><span class="sig-paren">(</span><em>path_or_readable</em>, <em>anchors_config=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/animatedsprite.html#AnimatedSprite.from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.animatedsprite.AnimatedSprite.from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>The default is to create from gif bytes, but this can
+also be done from other methods...</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path_or_readable</strong> (<em>str|file-like-object</em>) &#8211; Either a string
+or an object with a read() method. So, either a path
+to an animated GIF, or a file-like-object/buffer of
+an animated GIF.</li>
+<li><strong>anchors_config</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/configparser.html#module-configparser" title="(in Python v3.4)"><em>configparser</em></a>) &#8211; INI/config file associated
+with providing anchors for this animation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>&#8211;</p>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#sappho.animatedsprite.AnimatedSprite" title="sappho.animatedsprite.AnimatedSprite">AnimatedSprite</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>So to create an <a class="reference internal" href="#sappho.animatedsprite.AnimatedSprite" title="sappho.animatedsprite.AnimatedSprite"><code class="xref py py-class docutils literal"><span class="pre">AnimatedSprite</span></code></a> from a GIF, you&#8217;d
+do something like this code sample below:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sprite</span> <span class="o">=</span> <span class="n">AnimatedSprite</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s1">&#39;somedir/walk.gif&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sprite</span><span class="o">.</span><span class="n">image</span>
+<span class="go">&lt;Surface(10x10x32 SW)&gt;</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="#sappho.animatedsprite.AnimatedSprite.from_file" title="sappho.animatedsprite.AnimatedSprite.from_file"><code class="xref py py-meth docutils literal"><span class="pre">AnimatedSprite.from_file()</span></code></a> method will build
+the respective <code class="xref py py-class docutils literal"><span class="pre">Frame</span></code> objects and their
+<code class="xref py py-class docutils literal"><span class="pre">FrameAnchors</span></code>. These frames are sent to the
+<a class="reference internal" href="#sappho.animatedsprite.AnimatedSprite" title="sappho.animatedsprite.AnimatedSprite"><code class="xref py py-class docutils literal"><span class="pre">AnimatedSprite</span></code></a> constructor, as seen below.</p>
+<dl class="method">
+<dt id="sappho.animatedsprite.AnimatedSprite.__init__">
+<code class="descclassname">AnimatedSprite.</code><code class="descname">__init__</code><span class="sig-paren">(</span><em>frames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/animatedsprite.html#AnimatedSprite.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.animatedsprite.AnimatedSprite.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create this AnimatedSprite using
+a list of Frame instances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frames</strong> (<em>list[Frame]</em>) &#8211; <p>A properly assembled list of frames,
+which assumes that each Frame&#8217;s start_time is greater
+than the previous element and is the previous element&#8217;s
+start time + previous element/Frame&#8217;s duration. Here
+is an example of aformentioned:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">frame_one_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame_one</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">frame_one_surface</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame_two_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame_two</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">frame_two_surface</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the future I may add a method for verifying the
+validity of Frame start_times and durations.</p>
+</div>
+</dd></dl>
+
+<p>Here&#8217;s what an <cite>AnimatedSprite</cite> looks like:</p>
+<dl class="class">
+<dt id="sappho.animatedsprite.AnimatedSprite">
+<em class="property">class </em><code class="descclassname">sappho.animatedsprite.</code><code class="descname">AnimatedSprite</code><span class="sig-paren">(</span><em>frames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/animatedsprite.html#AnimatedSprite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.animatedsprite.AnimatedSprite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Animated sprite with mask, loaded from GIF.</p>
+<p>Supposed to be mostly uniform with the Sprite API.</p>
+<dl class="attribute">
+<dt id="sappho.animatedsprite.AnimatedSprite.total_duration">
+<code class="descname">total_duration</code><a class="headerlink" href="#sappho.animatedsprite.AnimatedSprite.total_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; The total duration of of this
+animation in milliseconds.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.animatedsprite.AnimatedSprite.image">
+<code class="descname">image</code><a class="headerlink" href="#sappho.animatedsprite.AnimatedSprite.image" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>pygame.Surface</em> &#8211; Current surface belonging to
+the active frame. Set once per tick through
+the AnimatedSprite.update() method.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.animatedsprite.AnimatedSprite.rect">
+<code class="descname">rect</code><a class="headerlink" href="#sappho.animatedsprite.AnimatedSprite.rect" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>pygame.Rect</em> &#8211; Does not reflect position, only
+area. Updated once per tick, to reflect current
+frame&#8217;s rect, in AnimatedSprite.update().</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.animatedsprite.AnimatedSprite.active_frame_index">
+<code class="descname">active_frame_index</code><a class="headerlink" href="#sappho.animatedsprite.AnimatedSprite.active_frame_index" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; Frame # which is being
+rendered/to be rendered. Also updated once per
+tick, see the AnimatedSprite.update() method.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.animatedsprite.AnimatedSprite.active_frame">
+<code class="descname">active_frame</code><a class="headerlink" href="#sappho.animatedsprite.AnimatedSprite.active_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current surface representing this
+animation at its current animation position. Set
+once per tick through the update() method.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.animatedsprite.AnimatedSprite.animation_position">
+<code class="descname">animation_position</code><a class="headerlink" href="#sappho.animatedsprite.AnimatedSprite.animation_position" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; Animation position in
+milliseconds; milleseconds elapsed in this
+animation. This is used for determining
+which frame to select. Set once per tick through
+the AnimatedSprite.update() method.</p>
+</dd></dl>
+
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<ul class="last simple">
+<li><a class="reference external" href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite" title="(in Pygame v1.9.2)"><code class="xref py py-class docutils literal"><span class="pre">pygame.sprite.Sprite</span></code></a></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">Frame</span></code></li>
+</ul>
+</div>
+</dd></dl>
+
+<p>To update the animation, so that it progresses, you need
+to pass the <a class="reference external" href="http://www.pygame.org/docs/ref/time.html#pygame.time.Clock" title="(in Pygame v1.9.2)"><code class="xref py py-class docutils literal"><span class="pre">pygame.time.Clock</span></code></a> you
+<a class="reference external" href="http://www.pygame.org/docs/ref/time.html#pygame.time.Clock.tick" title="(in Pygame v1.9.2)"><code class="xref py py-meth docutils literal"><span class="pre">pygame.time.Clock.tick()</span></code></a> in your main loop. You
+should look at the <cite>demo.py</cite> included from the GitHub repo,
+but here&#8217;s another sample of how you&#8217;d use <a class="reference internal" href="#sappho.animatedsprite.AnimatedSprite" title="sappho.animatedsprite.AnimatedSprite"><code class="xref py py-class docutils literal"><span class="pre">AnimatedSprite</span></code></a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+<span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">([</span><span class="mi">700</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
+<span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+<span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+   <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+       <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+           <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+
+   <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">animated_sprite</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+   <span class="n">animated_sprite</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">clock</span><span class="p">)</span>
+   <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+   <span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>
+
+<span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="anchoring-system">
+<h2>Anchoring system<a class="headerlink" href="#anchoring-system" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorials/index.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tilemap.html" class="btn btn-neutral" title="Tilesheets and tilemaps" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hypatia Software Organization.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.6.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

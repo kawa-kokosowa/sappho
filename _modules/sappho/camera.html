@@ -1,0 +1,383 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sappho.camera &mdash; Sappho 0.6.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Sappho 0.6.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Sappho
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../camera.html">Camera and camera behaviors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers.html">SurfaceLayers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tilemap.html">Tilesheets and tilemaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animatedsprite.html">Animated sprites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Sappho</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>sappho.camera</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sappho.camera</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Camera control on a surface.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pygame</span>
+
+
+<div class="viewcode-block" id="CameraOutOfBounds"><a class="viewcode-back" href="../../camera.html#sappho.camera.CameraOutOfBounds">[docs]</a><span class="k">class</span> <span class="nc">CameraOutOfBounds</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Camera has been moved so that its area exceeds</span>
+<span class="sd">    the surface it uses to make a subsurface.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        camera (Camera):</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: this could be better...</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CameraOutOfBounds</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">camera</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span></div>
+
+
+<div class="viewcode-block" id="CameraBehavior"><a class="viewcode-back" href="../../camera.html#sappho.camera.CameraBehavior">[docs]</a><span class="k">class</span> <span class="nc">CameraBehavior</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;How a camera moves. How it handles boundaries,</span>
+<span class="sd">    character movement, etc.</span>
+
+<span class="sd">    This CameraBehavior, the default, keeps the focal rectangle</span>
+<span class="sd">    in the top left of the camera view.</span>
+
+<span class="sd">    You&#39;ll want to inherit this class when creating</span>
+<span class="sd">    a CameraBehavior, including overriding the</span>
+<span class="sd">    move method.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="CameraBehavior.move"><a class="viewcode-back" href="../../camera.html#sappho.camera.CameraBehavior.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="n">focal_rectangle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Move the camera, keeping the focal rectangle in</span>
+<span class="sd">        the top left of the camera view.</span>
+
+<span class="sd">        This method should be overridden in a child class.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            camera (sappho.camera.Camera): Associated</span>
+<span class="sd">                Sappho camera object to control.</span>
+<span class="sd">            focal_rectangle (pygame.Rect): Rectangle which</span>
+<span class="sd">                is used to possibly adjust camera position.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pygame.Rect:</span>
+<span class="sd">                The view area, represented as a Pygame rectangle.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">scroll_position</span> <span class="o">=</span> <span class="n">focal_rectangle</span><span class="o">.</span><span class="n">topleft</span>
+        <span class="n">position_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">scroll_position</span><span class="p">,</span>
+                                    <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">position_rect</span></div></div>
+
+
+<div class="viewcode-block" id="CameraCenterBehavior"><a class="viewcode-back" href="../../camera.html#sappho.camera.CameraCenterBehavior">[docs]</a><span class="k">class</span> <span class="nc">CameraCenterBehavior</span><span class="p">(</span><span class="n">CameraBehavior</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A camera behavior that centers the</span>
+<span class="sd">    focal rectangle on the screen.</span>
+
+<span class="sd">    Will not cause Camera.update() to raise</span>
+<span class="sd">    CameraOutOfBounds, because the move logic</span>
+<span class="sd">    prevents such from occuring!</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="n">focal_rectangle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Move the camera, keeping the focal rectangle</span>
+<span class="sd">        in the center of the screen where possible.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            camera (sappho.camera.Camera):</span>
+<span class="sd">            focal_rectangle (pygame.Rect): Rectangle which</span>
+<span class="sd">                is used to possibly adjust camera position.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            pygame.Rect:</span>
+<span class="sd">                The view area, represented as a Pygame rectangle.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">focal_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">focal_rectangle</span><span class="o">.</span><span class="n">x</span>
+                   <span class="o">-</span> <span class="p">(</span><span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span>
+                   <span class="o">-</span> <span class="p">(</span><span class="n">focal_rectangle</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">focal_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">focal_rectangle</span><span class="o">.</span><span class="n">y</span>
+                   <span class="o">-</span> <span class="p">(</span><span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                   <span class="o">-</span> <span class="p">(</span><span class="n">focal_rectangle</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">focal_x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">focal_x</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">focal_y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">focal_y</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">focal_x</span> <span class="o">+</span> <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">focal_x</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">focal_y</span> <span class="o">+</span> <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">focal_y</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">source_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">position_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">((</span><span class="n">focal_x</span><span class="p">,</span> <span class="n">focal_y</span><span class="p">),</span>
+                                    <span class="n">camera</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">position_rect</span></div>
+
+
+<span class="c1"># NOTE/TODO: maybe camera_resolution should be called</span>
+<span class="c1"># viewport_resolution or subsurface_resolution...</span>
+<div class="viewcode-block" id="Camera"><a class="viewcode-back" href="../../camera.html#sappho.camera.Camera">[docs]</a><span class="k">class</span> <span class="nc">Camera</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">Surface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Surface that acts as a scrollable view, with optional scaling</span>
+<span class="sd">    onto another surface.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        source_resolution (tuple[int, int]): Maximum size of the</span>
+<span class="sd">            environment being portrayed. If you have a map with many</span>
+<span class="sd">            inconsistently sized layers, this should be the size of </span>
+<span class="sd">            all of those layers flattened onto a single new layer.</span>
+<span class="sd">            Anything beyond this size will not be on camera.</span>
+<span class="sd">        target_resolution (tuple[int, int]): Resolution to scale up the</span>
+<span class="sd">            view of the surface to</span>
+<span class="sd">        camera_resolution (tuple[int, int]): Resolution of the view onto</span>
+<span class="sd">            the source surface</span>
+<span class="sd">        behavior (CameraBehavior): The initial behavior to use for this</span>
+<span class="sd">            Camera.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        behavior: The :py:class:`CameraBehavior &lt;sappho.CameraBehavior&gt;`</span>
+<span class="sd">            that this Camera uses to control movement.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_resolution</span><span class="p">,</span> <span class="n">target_resolution</span><span class="p">,</span>
+                 <span class="n">camera_resolution</span><span class="p">,</span> <span class="n">behavior</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Camera</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">target_resolution</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">source_resolution</span><span class="p">,</span>
+                                                     <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_resolution</span> <span class="o">=</span> <span class="n">source_resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_resolution</span> <span class="o">=</span> <span class="n">target_resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_resolution</span> <span class="o">=</span> <span class="n">camera_resolution</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">camera_resolution</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">behavior</span> <span class="o">=</span> <span class="n">behavior</span> <span class="ow">or</span> <span class="n">CameraBehavior</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Camera.update"><a class="viewcode-back" href="../../camera.html#sappho.camera.Camera.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update the Camera to point to the</span>
+<span class="sd">        current scroll position.</span>
+
+<span class="sd">        Gets the &quot;view&quot; from the current scroll position</span>
+<span class="sd">        and camera resolution. That view is used to create</span>
+<span class="sd">        a subsurface of the &quot;source subsurface,&quot; scaled to</span>
+<span class="sd">        the target_resolution. The new subsurface is then</span>
+<span class="sd">        blit to the camera (which is a surface, itself!).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">subsurface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_surface</span><span class="o">.</span><span class="n">subsurface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view_rect</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CameraOutOfBounds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">scaled_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">subsurface</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">target_resolution</span><span class="p">)</span>
+
+        <span class="c1"># Blit the scaled surface to this camera (which is also a surface)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Camera</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">scaled_surface</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Camera.scroll_to"><a class="viewcode-back" href="../../camera.html#sappho.camera.Camera.scroll_to">[docs]</a>    <span class="k">def</span> <span class="nf">scroll_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">focal_rectangle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Scroll to the given focal rectangle using the current behavior.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            focal_rectangle (pygame.Rect): Rectangle to possibly update</span>
+<span class="sd">                the view position to using the camera&#39;s current behavior</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">behavior</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">focal_rectangle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hypatia Software Organization.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.6.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

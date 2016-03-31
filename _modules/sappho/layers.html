@@ -1,0 +1,289 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sappho.layers &mdash; Sappho 0.6.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Sappho 0.6.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Sappho
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../camera.html">Camera and camera behaviors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers.html">SurfaceLayers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tilemap.html">Tilesheets and tilemaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animatedsprite.html">Animated sprites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Sappho</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>sappho.layers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sappho.layers</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pygame</span>
+
+
+<div class="viewcode-block" id="SurfaceLayers"><a class="viewcode-back" href="../../layers.html#sappho.layers.SurfaceLayers">[docs]</a><span class="k">class</span> <span class="nc">SurfaceLayers</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Ordered series of pygame surfaces, each the size of the target</span>
+<span class="sd">    surface given at creation time.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        target_surface (pygame.Surface): Surface that will have</span>
+<span class="sd">            have the layers blitted to when render() is called. The size</span>
+<span class="sd">            of this surface is used as the size of the generated layers.</span>
+<span class="sd">        number_of_layers (int): Number of layers to generate.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_surface</span><span class="p">,</span> <span class="n">number_of_layers</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_surface</span> <span class="o">=</span> <span class="n">target_surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surface_layers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_surface_layers</span><span class="p">(</span><span class="n">target_surface</span><span class="p">,</span>
+                                                          <span class="n">number_of_layers</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SurfaceLayers.create_surface_layers"><a class="viewcode-back" href="../../layers.html#sappho.layers.SurfaceLayers.create_surface_layers">[docs]</a>    <span class="k">def</span> <span class="nf">create_surface_layers</span><span class="p">(</span><span class="n">target_surface</span><span class="p">,</span> <span class="n">number_of_layers</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a list of pygame surfaces</span>
+<span class="sd">        the size of the target surface.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            target_surface (pygame.Surface): The surface</span>
+<span class="sd">                whose dimensions will be used for each layer.</span>
+<span class="sd">            number_of_layers (int): The number of surfaces to</span>
+<span class="sd">                create/return.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[pygame.Surface]: List of surfaces</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">surface_layers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_layers</span><span class="p">):</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">target_surface</span><span class="o">.</span><span class="n">get_size</span><span class="p">(),</span>
+                                             <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+            <span class="n">surface_layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">surface_layers</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Access a surface by z-index.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            key (int): The z-index of the surface.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            IndexError: When the z-index is invalid.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pygame.Surface: The surface belonging</span>
+<span class="sd">                to the z-index specified.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface_layers</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the number of layers.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of members in self.surface_layers.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface_layers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate through the surface layers.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            pygame.surface.Surface</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">surface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface_layers</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">surface</span>
+
+<div class="viewcode-block" id="SurfaceLayers.render"><a class="viewcode-back" href="../../layers.html#sappho.layers.SurfaceLayers.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw each layer onto the target surface in the correct order.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">surface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface_layers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_target_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="n">target_surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_surface</span>
+        <span class="n">number_of_layers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface_layers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surface_layers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_surface_layers</span><span class="p">(</span><span class="n">target_surface</span><span class="p">,</span>
+                                                          <span class="n">number_of_layers</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hypatia Software Organization.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.6.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

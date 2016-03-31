@@ -1,0 +1,424 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tilesheets and tilemaps &mdash; Sappho 0.6.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Sappho 0.6.1 documentation" href="index.html"/>
+        <link rel="next" title="Animated sprites" href="animatedsprite.html"/>
+        <link rel="prev" title="SurfaceLayers" href="layers.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sappho
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera.html">Camera and camera behaviors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">SurfaceLayers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tilesheets and tilemaps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tile">Tile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tilesheet">Tilesheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tilemap">TileMap</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="animatedsprite.html">Animated sprites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Sappho</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Tilesheets and tilemaps</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/tilemap.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-sappho.tilemap">
+<span id="tilesheets-and-tilemaps"></span><h1>Tilesheets and tilemaps<a class="headerlink" href="#module-sappho.tilemap" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="tile">
+<h2>Tile<a class="headerlink" href="#tile" title="Permalink to this headline">¶</a></h2>
+<p>The Tile class is the base for all tilesheets. It represents a single
+tile on the map, and contains the tile&#8217;s flags, such as whether the tile
+is solid (ie, can&#8217;t be walked through).</p>
+<dl class="class">
+<dt id="sappho.tilemap.Tile">
+<em class="property">class </em><code class="descclassname">sappho.tilemap.</code><code class="descname">Tile</code><span class="sig-paren">(</span><em>id_</em>, <em>image</em>, <em>solid_block=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/tilemap.html#Tile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.tilemap.Tile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A tile object is a sprite, which is typically
+a subsurface of a tilesheet.</p>
+<dl class="attribute">
+<dt id="sappho.tilemap.Tile.id_">
+<code class="descname">id_</code><a class="headerlink" href="#sappho.tilemap.Tile.id_" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; The ID of this tile in its respective
+tilesheet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.tilemap.Tile.image">
+<code class="descname">image</code><a class="headerlink" href="#sappho.tilemap.Tile.image" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>pygame.surface.Surface</em></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.tilemap.Tile.solid_block">
+<code class="descname">solid_block</code><a class="headerlink" href="#sappho.tilemap.Tile.solid_block" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> &#8211; If true, this entire tile
+is completely impassible.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="tilesheet">
+<h2>Tilesheet<a class="headerlink" href="#tilesheet" title="Permalink to this headline">¶</a></h2>
+<p>A tilesheet is a collection of tiles, usually loaded from a tilesheet
+image. A tilesheet image looks like this:</p>
+<img alt="_images/tilesheet.png" src="_images/tilesheet.png" />
+<p>A tilesheet is represented in Sappho by the <a class="reference internal" href="#sappho.tilemap.Tilesheet" title="sappho.tilemap.Tilesheet"><code class="xref py py-class docutils literal"><span class="pre">Tilesheet</span></code></a> class.
+It holds information about the size of the tiles on the tilesheet,
+a reference to each tile, and of course, the <a class="reference external" href="http://www.pygame.org/docs/ref/surface.html#pygame.Surface" title="(in Pygame v1.9.2)"><code class="xref py py-class docutils literal"><span class="pre">pygame.Surface</span></code></a>
+that holds the tilesheet itself.</p>
+<dl class="class">
+<dt id="sappho.tilemap.Tilesheet">
+<em class="property">class </em><code class="descclassname">sappho.tilemap.</code><code class="descname">Tilesheet</code><span class="sig-paren">(</span><em>surface</em>, <em>tiles</em>, <em>tile_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/tilemap.html#Tilesheet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.tilemap.Tilesheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Efficient place to  update, subsurface tile
+graphics.</p>
+<dl class="attribute">
+<dt id="sappho.tilemap.Tilesheet.surface">
+<code class="descname">surface</code><a class="headerlink" href="#sappho.tilemap.Tilesheet.surface" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>pygame.surface.Surface</em></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.tilemap.Tilesheet.tiles">
+<code class="descname">tiles</code><a class="headerlink" href="#sappho.tilemap.Tilesheet.tiles" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list[Tile]</em> &#8211; The tiles composing this
+Tilesheet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sappho.tilemap.Tilesheet.tile_size">
+<code class="descname">tile_size</code><a class="headerlink" href="#sappho.tilemap.Tilesheet.tile_size" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple[int, int]</em> &#8211; The size of each
+tile in pixels (x, y).</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="sappho.tilemap.Tilesheet.from_file">
+<em class="property">classmethod </em><code class="descname">from_file</code><span class="sig-paren">(</span><em>file_path</em>, <em>tile_width</em>, <em>tile_height</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/tilemap.html#Tilesheet.from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.tilemap.Tilesheet.from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a tilesheet, and its tiles, from a
+file, as well as tile width and height specification.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; Path to the tilesheet image</li>
+<li><strong>tile_width</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; Width of each tile</li>
+<li><strong>tile_height</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; Height of each tile</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="sappho.tilemap.Tilesheet.parse_rules">
+<em class="property">static </em><code class="descname">parse_rules</code><span class="sig-paren">(</span><em>path_to_rules_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/tilemap.html#Tilesheet.parse_rules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.tilemap.Tilesheet.parse_rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get properties for tile IDs from the
+path_to_rules_file.</p>
+<dl class="docutils">
+<dt>Argument:</dt>
+<dd>path_to_rules_file (str): Path to the rules file to parse</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A dictionary containing an entry for each tile that
+has a flag set, the value being a list of the flags
+that are set</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="tilemap">
+<h2>TileMap<a class="headerlink" href="#tilemap" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#sappho.tilemap.TileMap" title="sappho.tilemap.TileMap"><code class="xref py py-class docutils literal"><span class="pre">TileMap</span></code></a> class represents the ordered collection of
+tiles that make up a game map. Typically, you won&#8217;t create a TileMap
+instance yourself, instead you would load the TileMap from a TMX file
+using <a class="reference internal" href="#sappho.tilemap.tmx_file_to_tilemaps" title="sappho.tilemap.tmx_file_to_tilemaps"><code class="xref py py-meth docutils literal"><span class="pre">tmx_file_to_tilemaps()</span></code></a>, which creates a TileMap for each
+layer of the TMX map that is passed to it.</p>
+<dl class="method">
+<dt id="sappho.tilemap.tmx_file_to_tilemaps">
+<code class="descclassname">tilemap.</code><code class="descname">tmx_file_to_tilemaps</code><span class="sig-paren">(</span><em>tmx_file_path</em>, <em>tilesheet</em><span class="sig-paren">)</span><a class="headerlink" href="#sappho.tilemap.tmx_file_to_tilemaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read TMX file from path and return
+a list of TileMaps (one TileMap per layer).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tmx_file_path</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; </li>
+<li><strong>tilesheet</strong> (<a class="reference internal" href="#sappho.tilemap.Tilesheet" title="sappho.tilemap.Tilesheet"><em>Tilesheet</em></a>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Each layer gets its own TileMap!</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list[TileMap]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Uses CSV layers; TMX allows all kinds, but
+CSV is the default.</p>
+</div>
+</dd></dl>
+
+<p>Once the TileMap has been created, there are a number of methods available
+on it that are useful, such as getting the solid blocks in the map, and
+rendering it to a surface.</p>
+<dl class="class">
+<dt id="sappho.tilemap.TileMap">
+<em class="property">class </em><code class="descclassname">sappho.tilemap.</code><code class="descname">TileMap</code><span class="sig-paren">(</span><em>tilesheet</em>, <em>tiles</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/tilemap.html#TileMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.tilemap.TileMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>A 2D grid arrangement of tiles, accompanied by
+passability information.</p>
+<p>This is generally one layer of a larger map, and ideally
+should be blitted to a <a class="reference internal" href="layers.html#sappho.layers.SurfaceLayers" title="sappho.layers.SurfaceLayers"><code class="xref py py-class docutils literal"><span class="pre">sappho.layers.SurfaceLayers</span></code></a> object
+to handle multiple map layers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tilesheet</strong> (<a class="reference internal" href="#sappho.tilemap.Tilesheet" title="sappho.tilemap.Tilesheet"><em>Tilesheet</em></a>) &#8211; Tilesheet to use for this map</li>
+<li><strong>tiles</strong> (<em>list[list[Tile]]</em>) &#8211; List of rows, each containing a list
+of <a class="reference internal" href="#sappho.tilemap.Tile" title="sappho.tilemap.Tile"><code class="xref py py-class docutils literal"><span class="pre">Tile</span></code></a> objects representing the tiles in this
+TileMap</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="sappho.tilemap.TileMap.get_solid_blocks">
+<code class="descname">get_solid_blocks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/tilemap.html#TileMap.get_solid_blocks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.tilemap.TileMap.get_solid_blocks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Pygame rect of all
+the tiles which have the solid_block
+attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of <a class="reference external" href="http://www.pygame.org/docs/ref/rect.html#pygame.Rect" title="(in Pygame v1.9.2)"><code class="xref py py-class docutils literal"><span class="pre">pygame.Rect</span></code></a> objects that represent
+the solid tiles in this TileMap</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list[pygame.Rect]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sappho.tilemap.TileMap.to_surface">
+<code class="descname">to_surface</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/tilemap.html#TileMap.to_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.tilemap.TileMap.to_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blit the TileMap to a surface</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Surface containing the tilemap</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://www.pygame.org/docs/ref/surface.html#pygame.Surface" title="(in Pygame v1.9.2)">pygame.Surface</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="animatedsprite.html" class="btn btn-neutral float-right" title="Animated sprites" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="layers.html" class="btn btn-neutral" title="SurfaceLayers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hypatia Software Organization.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.6.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

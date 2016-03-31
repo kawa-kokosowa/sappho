@@ -1,0 +1,950 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sappho.animatedsprite &mdash; Sappho 0.6.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Sappho 0.6.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Sappho
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../camera.html">Camera and camera behaviors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers.html">SurfaceLayers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tilemap.html">Tilesheets and tilemaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animatedsprite.html">Animated sprites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Sappho</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>sappho.animatedsprite</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sappho.animatedsprite</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;AnimatedSprite is a pygame sprite, which is</span>
+<span class="sd">animated! The image is changed by sending update()</span>
+<span class="sd">the game clock.</span>
+
+<span class="sd">AnimatedSprites also allow for &quot;anchoring,&quot; meaning</span>
+<span class="sd">you can pin one AnimatedSprite to another! A file</span>
+<span class="sd">gives you frame-by-frame control of the anchor point</span>
+<span class="sd">of each AnimatedSprite. An AnimatedSprite is anchored</span>
+<span class="sd">to another by lining up said anchor points on either</span>
+<span class="sd">AnimatedSprite.</span>
+
+<span class="sd">Warning: this module is pretty technical, the only</span>
+<span class="sd">thing you should really be concerned about is</span>
+<span class="sd">AnimatedSprite.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pygame</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+
+<span class="k">class</span> <span class="nc">Anchor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A coordinate on a surface which is used for pinning to another</span>
+<span class="sd">    surface Anchor. Used when attempting to afix one surface to</span>
+<span class="sd">    another, lining up their corresponding anchors.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        x (int): x-axis coordinate on a surface to place anchor at</span>
+<span class="sd">        y (int): y-axis coordinate on a surface to place anchor at</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; anchor = Anchor(5, 3)</span>
+<span class="sd">        &gt;&gt;&gt; anchor.x</span>
+<span class="sd">        5</span>
+<span class="sd">        &gt;&gt;&gt; anchor.y</span>
+<span class="sd">        3</span>
+<span class="sd">        &gt;&gt;&gt; coordinate_tuple = (1, 2)</span>
+<span class="sd">        &gt;&gt;&gt; anchor = Anchor(*coordinate_tuple)</span>
+<span class="sd">        &gt;&gt;&gt; anchor.x</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; anchor.y</span>
+<span class="sd">        2</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create an Anchor using two integers to</span>
+<span class="sd">        represent this Anchor&#39;s coordinate.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (int): X-axis position of the supplied</span>
+<span class="sd">                coordinate in pixels.</span>
+<span class="sd">            y (int): Y-axis position of the supplied</span>
+<span class="sd">                coordinate in pixels.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+
+    <span class="k">def</span> <span class="nf">_coords_are_ints</span><span class="p">(</span><span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if a two-element tuple representing 2D</span>
+<span class="sd">        coordinates consists of two integers.</span>
+
+<span class="sd">        This presumes that coordinates is indeed a</span>
+<span class="sd">        two-element tuple.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            coordinates (tuple):</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the coordinates are integers, False</span>
+<span class="sd">                otherwise.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Represent the class/anchor with its coordinates.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; anchor = Anchor(1, 2)</span>
+<span class="sd">            &gt;&gt;&gt; print(anchor)</span>
+<span class="sd">            &lt;Anchor at (1, 2)&gt;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;&lt;Anchor at (</span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds X-Y coordinates to the coordinates of an Anchor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coordinates (Union[Anchor|Tuple[int, int]]):</span>
+<span class="sd">                The X-Y coordinates to add to the coordinates</span>
+<span class="sd">                of the current Anchor.  The argument may be</span>
+<span class="sd">                another Anchor object or tuple of two integers.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Anchor: A new Anchor with the coordinates of</span>
+<span class="sd">                the first and second added together.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplemented: If `coordinates` is not an `Anchor`</span>
+<span class="sd">                or a 2-tuple of integers.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; anchor_a = Anchor(4, 1)</span>
+<span class="sd">            &gt;&gt;&gt; anchor_b = Anchor(2, 0)</span>
+<span class="sd">            &gt;&gt;&gt; anchor_a + anchor_b</span>
+<span class="sd">            &lt;Anchor at (6, 1)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; coordinate_tuple = (10, 20)</span>
+<span class="sd">            &gt;&gt;&gt; anchor_a + coordinate_tuple</span>
+<span class="sd">            &lt;Anchor at (14, 21)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; coordinate_tuple + anchor_a</span>
+<span class="sd">            &lt;Anchor at (14, 21)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; anchor_a + 1.5 # doctest: +SKIP</span>
+<span class="sd">            Traceback (most recent call last):</span>
+<span class="sd">            TypeError: &#39;float&#39; object is not subscriptable</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">Anchor</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="n">Anchor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">_coords_are_ints</span><span class="p">(</span><span class="n">coordinates</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="n">Anchor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implements addition when the Anchor is the right-hand operand.</span>
+
+<span class="sd">        See Also: `Anchor.__add__()`</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; coordinates = (1, 2)</span>
+<span class="sd">            &gt;&gt;&gt; anchor = Anchor(100, 200)</span>
+<span class="sd">            &gt;&gt;&gt; coordinates + anchor</span>
+<span class="sd">            &lt;Anchor at (101, 202)&gt;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">+</span> <span class="n">coordinates</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Subtracts the given X-Y coordinates from the Anchor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coordinates (Union[Anchor|Tuple[int, int]]):</span>
+<span class="sd">                The X-Y coordinates to subtract from the coordinates</span>
+<span class="sd">                of the current Anchor.  The argument may be another</span>
+<span class="sd">                Anchor object or tuple of two integers.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Anchor: A new Anchor with the coordinates of</span>
+<span class="sd">                the second subtracted from the first.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplemented: If `coordinates` is not an `Anchor`</span>
+<span class="sd">                or a 2-tuple of integers.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; anchor_a = Anchor(4, 1)</span>
+<span class="sd">            &gt;&gt;&gt; anchor_b = Anchor(2, 0)</span>
+<span class="sd">            &gt;&gt;&gt; anchor_a - anchor_b</span>
+<span class="sd">            &lt;Anchor at (2, 1)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; coordinate_tuple = (3, 0)</span>
+<span class="sd">            &gt;&gt;&gt; anchor_a - coordinate_tuple</span>
+<span class="sd">            &lt;Anchor at (1, 1)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; coordinate_tuple - anchor_b</span>
+<span class="sd">            &lt;Anchor at (1, 0)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; anchor_a - 3.2 # doctest: +SKIP</span>
+<span class="sd">            Traceback (most recent call last):</span>
+<span class="sd">            TypeError: &#39;float&#39; object is not subscriptable</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">Anchor</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="n">Anchor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">_coords_are_ints</span><span class="p">(</span><span class="n">coordinates</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="n">Anchor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="nf">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implements subtraction when the Anchor is the right-hand operand.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; coordinates = (100, 200)</span>
+<span class="sd">            &gt;&gt;&gt; anchor = Anchor(1, 1)</span>
+<span class="sd">            &gt;&gt;&gt; coordinates - anchor</span>
+<span class="sd">            &lt;Anchor at (99, 199)&gt;</span>
+
+<span class="sd">        See Also: `Anchor.__sub__()`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The naive implementation would be...</span>
+        <span class="c1">#</span>
+        <span class="c1">#     return self - coordinates</span>
+        <span class="c1">#</span>
+        <span class="c1"># ...but that produces the wrong result because subtraction is</span>
+        <span class="c1"># not commutative.  We also cannot write...</span>
+        <span class="c1">#</span>
+        <span class="c1">#     return coordinates - self</span>
+        <span class="c1">#</span>
+        <span class="c1"># ...because then we&#39;re invoking this method again, i.e. we</span>
+        <span class="c1"># create a never-ending loop.</span>
+        <span class="c1">#</span>
+        <span class="c1"># To deal with this problem we take advantage of the fact that</span>
+        <span class="c1"># the following mathematical expressions are equivalent for</span>
+        <span class="c1"># natural numbers:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     x - y</span>
+        <span class="c1">#     (-x) + y</span>
+        <span class="c1">#</span>
+        <span class="c1"># Therefore we create a new `Anchor` which is the inverse of</span>
+        <span class="c1"># the `self`, i.e. the `x` in the example above, and then we</span>
+        <span class="c1"># *add* the coordinates (`y`) to that, which gives us the</span>
+        <span class="c1"># correct result.</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">coordinates</span>
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Multiplies the X-Y coordinates of an Anchor by an integer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            multiplier (int): The number to multiply to each coordinate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Anchor: A new Anchor object with X-Y coordinates multiplied</span>
+<span class="sd">                by the `multiplier` argument.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplemented: If `multiplier` is not an integer.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; anchor = Anchor(3, 5)</span>
+<span class="sd">            &gt;&gt;&gt; anchor * -1</span>
+<span class="sd">            &lt;Anchor at (-3, -5)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; anchor * 0</span>
+<span class="sd">            &lt;Anchor at (0, 0)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; 2 * anchor</span>
+<span class="sd">            &lt;Anchor at (6, 10)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; anchor * 1.5 # doctest: +SKIP</span>
+<span class="sd">            Traceback (most recent call last):</span>
+<span class="sd">            TypeError: exceptions must derive from BaseException</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">multiplier</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">Anchor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="nf">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Allows the Anchor to be on the right-hand of multiplication.</span>
+
+<span class="sd">        See Also: `Anchor.__mul__()`</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; 10 * Anchor(1, 2)</span>
+<span class="sd">            &lt;Anchor at (10, 20)&gt;</span>
+<span class="sd">            &gt;&gt;&gt; 2.5 * Anchor(0, 0) # doctest: +SKIP</span>
+<span class="sd">            Traceback (most recent call last):</span>
+<span class="sd">            TypeError: exceptions must derive from BaseException</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">*</span> <span class="n">multiplier</span>
+
+    <span class="k">def</span> <span class="nf">as_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Represent this anchors&#39;s (x, y)</span>
+<span class="sd">        coordinates as a Python tuple.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple(int, int): (x, y) coordinate tuple</span>
+<span class="sd">                of this Anchor.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">FrameAnchors</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Labeled anchors for a frame. Each anchor point has</span>
+<span class="sd">    an associated and unique label, e.g. &quot;head.&quot; This is</span>
+<span class="sd">    the anchors attribute on any given Frame instance.</span>
+
+<span class="sd">    Not much distinguishes this from a regular dictionary,</span>
+<span class="sd">    besides the method to create a FrameAnchors using</span>
+<span class="sd">    a configparser object. This object exists in case</span>
+<span class="sd">    more advance operations with frame anchors are</span>
+<span class="sd">    performed, or perhaps new/more static methods for</span>
+<span class="sd">    creating FrameAnchors.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        * Frame</span>
+<span class="sd">        * Frame.anchors</span>
+<span class="sd">        * AnimatedSprite</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        May add &quot;belongs_to_frame_index&quot; attribute in</span>
+<span class="sd">        the future since I&#39;m just discarding that info</span>
+<span class="sd">        in from_config().</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labeled_anchors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the _labeled_anchors private attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            labeled_anchors (dict): A dictionary whose keys</span>
+<span class="sd">                are &quot;labels&quot; for an anchor (the value). For</span>
+<span class="sd">                example:</span>
+
+<span class="sd">                &gt;&gt;&gt; an_anchor = Anchor(5, 88)</span>
+<span class="sd">                &gt;&gt;&gt; labeled_anchors = {&#39;head&#39;: an_anchor}</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            * FrameAnchors.from_config()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labeled_anchors</span> <span class="o">=</span> <span class="n">labeled_anchors</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the anchor corresponding to label.</span>
+
+<span class="sd">        Arg:</span>
+<span class="sd">            label (str): The label associated with</span>
+<span class="sd">                the anchor you want.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            KeyError: label does not correspond to anything.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Anchor: The anchor associated with</span>
+<span class="sd">                the provided label.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labeled_anchors</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="n">anchors_config</span><span class="p">,</span> <span class="n">frame_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load the anchors from a GIF&#39;s anchor config file.</span>
+
+<span class="sd">        Look for this frame&#39;s anchors in an configparser</span>
+<span class="sd">        object, where the sections are anchor labels, and</span>
+<span class="sd">        the key/value pairs are &quot;frame index=(x, y)&quot;.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            anchors_config (ConfigParser): This configparser</span>
+<span class="sd">                is used for finding this frame&#39;s anchors. This</span>
+<span class="sd">                is the INI which is associated with a Walkabout</span>
+<span class="sd">                animation or sprite, e.g., walk_down.ini.</span>
+<span class="sd">            frame_index (int): Which animation frame do the</span>
+<span class="sd">                anchors belong to?</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            KeyError: INI has no anchor entry for frame_index.</span>
+<span class="sd">            ValueError: INI&#39;s corresponding anchor entry is</span>
+<span class="sd">                malformed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            FrameAnchors: Instance created from supplied</span>
+<span class="sd">                anchors_config dictionary and the frame index.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">labeled_anchors</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">anchors_config</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+            <span class="n">anchor_for_frame</span> <span class="o">=</span> <span class="n">anchors_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">frame_index</span><span class="p">))</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">anchor_for_frame</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">labeled_anchors</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">Anchor</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">FrameAnchors</span><span class="p">(</span><span class="n">labeled_anchors</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Frame</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A frame of an AnimatedSprite animation.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        surface (pygame.Surface): The pygame image which is used</span>
+<span class="sd">            for a frame of an animation.</span>
+<span class="sd">        duration (integer): Milliseconds this frame lasts. How</span>
+<span class="sd">            long this frame is displayed in corresponding animation.</span>
+<span class="sd">        start_time (integer): The animation position in milleseconds,</span>
+<span class="sd">            when this frame will start being displayed.</span>
+<span class="sd">        anchors (LabeledSurfaceAnchors): Optional positional anchors</span>
+<span class="sd">            used when afixing other surfaces upon another.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        * AnimatedSprite.frames_from_gif()</span>
+<span class="sd">        * AnimatedSprite.animation_position</span>
+<span class="sd">        * FrameAnchors</span>
+<span class="sd">        * Anchor</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">anchors</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a frame using a pygame surface, the start time,</span>
+<span class="sd">        duration time, and, optionally,  FrameAnchors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The surface/image for this</span>
+<span class="sd">                frame.</span>
+<span class="sd">            start_time (int): Millisecond this frame starts. This</span>
+<span class="sd">                frame is a part of a larger series of frames and</span>
+<span class="sd">                in order to render the animation properly we</span>
+<span class="sd">                need to know when each frame begins to be drawn,</span>
+<span class="sd">                while duration signifies when it ends.</span>
+<span class="sd">            duration (integer): Milleseconds this frame lasts. See:</span>
+<span class="sd">                start_time argument description.</span>
+<span class="sd">            anchors (FrameAnchors): This frame&#39;s anchor points.</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            * FrameAnchors</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">surface</span> <span class="o">=</span> <span class="n">surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anchors</span> <span class="o">=</span> <span class="n">anchors</span> <span class="ow">or</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&lt;Frame duration(</span><span class="si">%s</span><span class="s2">) start_time(</span><span class="si">%s</span><span class="s2">) end_time(</span><span class="si">%s</span><span class="s2">)&gt;&quot;</span>
+
+        <span class="k">return</span> <span class="n">s</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AnimatedSprite"><a class="viewcode-back" href="../../animatedsprite.html#sappho.animatedsprite.AnimatedSprite">[docs]</a><span class="k">class</span> <span class="nc">AnimatedSprite</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">sprite</span><span class="o">.</span><span class="n">Sprite</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Animated sprite with mask, loaded from GIF.</span>
+
+<span class="sd">    Supposed to be mostly uniform with the Sprite API.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        total_duration (int): The total duration of of this</span>
+<span class="sd">            animation in milliseconds.</span>
+<span class="sd">        image (pygame.Surface): Current surface belonging to</span>
+<span class="sd">            the active frame. Set once per tick through</span>
+<span class="sd">            the AnimatedSprite.update() method.</span>
+<span class="sd">        rect (pygame.Rect): Does not reflect position, only</span>
+<span class="sd">            area. Updated once per tick, to reflect current</span>
+<span class="sd">            frame&#39;s rect, in AnimatedSprite.update().</span>
+<span class="sd">        active_frame_index (int): Frame # which is being</span>
+<span class="sd">            rendered/to be rendered. Also updated once per</span>
+<span class="sd">            tick, see the AnimatedSprite.update() method.</span>
+<span class="sd">        active_frame: The current surface representing this</span>
+<span class="sd">            animation at its current animation position. Set</span>
+<span class="sd">            once per tick through the update() method.</span>
+<span class="sd">        animation_position (int): Animation position in</span>
+<span class="sd">            milliseconds; milleseconds elapsed in this</span>
+<span class="sd">            animation. This is used for determining</span>
+<span class="sd">            which frame to select. Set once per tick through</span>
+<span class="sd">            the AnimatedSprite.update() method.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        * :class:`pygame.sprite.Sprite`</span>
+<span class="sd">        * :class:`Frame`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AnimatedSprite.__init__"><a class="viewcode-back" href="../../animatedsprite.html#sappho.animatedsprite.AnimatedSprite.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create this AnimatedSprite using</span>
+<span class="sd">        a list of Frame instances.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frames (list[Frame]): A properly assembled list of frames,</span>
+<span class="sd">                which assumes that each Frame&#39;s start_time is greater</span>
+<span class="sd">                than the previous element and is the previous element&#39;s</span>
+<span class="sd">                start time + previous element/Frame&#39;s duration. Here</span>
+<span class="sd">                is an example of aformentioned:</span>
+
+<span class="sd">                &gt;&gt;&gt; frame_one_surface = pygame.Surface((16, 16))</span>
+<span class="sd">                &gt;&gt;&gt; frame_one = Frame(frame_one_surface, 0, 100)</span>
+<span class="sd">                &gt;&gt;&gt; frame_two_surface = pygame.Surface((16, 16))</span>
+<span class="sd">                &gt;&gt;&gt; frame_two = Frame(frame_two_surface, 100, 50)</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            In the future I may add a method for verifying the</span>
+<span class="sd">            validity of Frame start_times and durations.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">AnimatedSprite</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frames</span> <span class="o">=</span> <span class="n">frames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_duration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_frame_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">active_frame_index</span><span class="p">]</span>
+
+        <span class="c1"># animation position in milliseconds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">animation_position</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># this gets updated depending on the frame/time</span>
+        <span class="c1"># needs to be a surface.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">surface</span>
+
+        <span class="c1"># represents the animated sprite&#39;s position</span>
+        <span class="c1"># on screen.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">get_rect</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the frame corresponding to</span>
+<span class="sd">        the supplied frame_index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_index (int): Index number to lookup</span>
+<span class="sd">                a frame by element number in the</span>
+<span class="sd">                self.frames list.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Frame: The frame of this animation at the</span>
+<span class="sd">                specified index of frame_index.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="n">frame_index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">largest_frame_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the largest frame&#39;s (by area)</span>
+<span class="sd">        dimensions as tuple(int x, int y).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple (x, y): pixel dimensions of the largest</span>
+<span class="sd">                frame surface in this AnimatedSprite.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">largest_frame_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">:</span>
+            <span class="n">largest_x</span><span class="p">,</span> <span class="n">largest_y</span> <span class="o">=</span> <span class="n">largest_frame_size</span>
+            <span class="n">largest_area</span> <span class="o">=</span> <span class="n">largest_x</span> <span class="o">*</span> <span class="n">largest_y</span>
+
+            <span class="n">frame_size</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+            <span class="n">frame_x</span><span class="p">,</span> <span class="n">frame_y</span> <span class="o">=</span> <span class="n">frame_size</span>
+            <span class="n">frame_area</span> <span class="o">=</span> <span class="n">frame_x</span> <span class="o">*</span> <span class="n">frame_y</span>
+
+            <span class="k">if</span> <span class="n">frame_area</span> <span class="o">&gt;</span> <span class="n">largest_area</span><span class="p">:</span>
+                <span class="n">largest_frame_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">frame_size</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">largest_frame_size</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_surface_duration_list</span><span class="p">(</span><span class="n">surface_duration_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Support PygAnimation-style frames.</span>
+
+<span class="sd">        A list like [(surface, int duration in ms)]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface_duration_list (list[tuple]): A list</span>
+<span class="sd">                of tuples, first element is a surface,</span>
+<span class="sd">                second element being how long said surface</span>
+<span class="sd">                is displayed for. For example:</span>
+
+<span class="sd">                &gt;&gt;&gt; a_surface = pygame.Surface((10, 10))</span>
+<span class="sd">                &gt;&gt;&gt; duration = 100  # 100 MS</span>
+<span class="sd">                &gt;&gt;&gt; surface_duration_list = [(a_surface, duration)]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            AnimatedSprite: The animated sprite constructed</span>
+<span class="sd">                from the provided surface_duration_list.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">running_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">surface</span><span class="p">,</span> <span class="n">duration</span> <span class="ow">in</span> <span class="n">surface_duration_list</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">running_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+            <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+            <span class="n">running_time</span> <span class="o">+=</span> <span class="n">duration</span>
+
+        <span class="k">return</span> <span class="n">AnimatedSprite</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AnimatedSprite.from_file"><a class="viewcode-back" href="../../animatedsprite.html#sappho.animatedsprite.AnimatedSprite.from_file">[docs]</a>    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">path_or_readable</span><span class="p">,</span> <span class="n">anchors_config</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The default is to create from gif bytes, but this can</span>
+<span class="sd">        also be done from other methods...</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path_or_readable (str|file-like-object): Either a string</span>
+<span class="sd">                or an object with a read() method. So, either a path</span>
+<span class="sd">                to an animated GIF, or a file-like-object/buffer of</span>
+<span class="sd">                an animated GIF.</span>
+<span class="sd">            anchors_config (configparser): INI/config file associated</span>
+<span class="sd">                with providing anchors for this animation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            AnimatedSprite: --</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">frames</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">frames_from_gif</span><span class="p">(</span><span class="n">path_or_readable</span><span class="p">,</span> <span class="n">anchors_config</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">AnimatedSprite</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Manipulate the state of this AnimatedSprite, namely</span>
+<span class="sd">        the on-screen/viewport position (not absolute) and</span>
+<span class="sd">        using the clock to do animation manipulations.</span>
+
+<span class="sd">        Using the game&#39;s clock we decipher the animation position,</span>
+<span class="sd">        which in turn allows us to locate the correct frame.</span>
+
+<span class="sd">        Sets the image attribute to the current frame&#39;s image. Updates</span>
+<span class="sd">        the rect attribute to the new relative position and frame size.</span>
+
+<span class="sd">        Warning:</span>
+<span class="sd">            Since we&#39;re changing the rect size on-the-fly, this can</span>
+<span class="sd">            get the player stuck in certain boundaries. I will be</span>
+<span class="sd">            remedying this in the future.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            clock (pygame.time.Clock): THE game clock, typically</span>
+<span class="sd">                found as the attribute Game.screen.clock.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">animation_position</span> <span class="o">+=</span> <span class="n">clock</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">animation_position</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_duration</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">animation_position</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">animation_position</span> <span class="o">%</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">total_duration</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active_frame_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">animation_position</span> <span class="o">&gt;</span>
+               <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">active_frame_index</span><span class="p">]</span><span class="o">.</span><span class="n">end_time</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">active_frame_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># NOTE: the fact that I&#39;m using -1 here seems sloppy/hacky</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">active_frame_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">surface</span>
+
+        <span class="n">image_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+
+        <span class="c1"># we&#39;re only using self.rect for size for now...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">Rect</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">image_size</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">active_frame_index</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_total_duration</span><span class="p">(</span><span class="n">frames</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the total duration of the animation in milliseconds,</span>
+<span class="sd">        milliseconds, from animation frame durations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frames (List[AnimatedSpriteFrame]): --</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The sum of all the frame&#39;s &quot;duration&quot; attribute.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">frame</span><span class="o">.</span><span class="n">duration</span> <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">frames</span><span class="p">])</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">frames_from_gif</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">path_or_readable</span><span class="p">,</span> <span class="n">anchors_config</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a list of surfaces (frames) and a list of their</span>
+<span class="sd">        respective frame durations from an animated GIF.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path_or_readable (str|file-like-object): Path to</span>
+<span class="sd">                an animated-or-not GIF.</span>
+<span class="sd">            anchors_config (configparser): The anchors ini file</span>
+<span class="sd">                associated with this GIF.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">            (List[pygame.Surface], List[int]): --</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pil_gif</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path_or_readable</span><span class="p">)</span>
+
+        <span class="n">frame_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">time_position</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="n">pil_gif</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
+                <span class="n">frame_sprite</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">pil_image_to_pygame_surface</span><span class="p">(</span><span class="n">pil_gif</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">anchors_config</span><span class="p">:</span>
+                    <span class="n">frame_anchors</span> <span class="o">=</span> <span class="n">FrameAnchors</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">anchors_config</span><span class="p">,</span>
+                                                             <span class="n">frame_index</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">frame_anchors</span> <span class="o">=</span> <span class="bp">None</span>
+
+                <span class="n">frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">surface</span><span class="o">=</span><span class="n">frame_sprite</span><span class="p">,</span>
+                              <span class="n">start_time</span><span class="o">=</span><span class="n">time_position</span><span class="p">,</span>
+                              <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+                              <span class="n">anchors</span><span class="o">=</span><span class="n">frame_anchors</span><span class="p">)</span>
+                <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+                <span class="n">frame_index</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">time_position</span> <span class="o">+=</span> <span class="n">duration</span>
+                <span class="n">pil_gif</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">pil_gif</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">EOFError</span><span class="p">:</span>
+
+            <span class="k">pass</span>  <span class="c1"># end of sequence</span>
+
+        <span class="k">return</span> <span class="n">frames</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">pil_image_to_pygame_surface</span><span class="p">(</span><span class="n">pil_image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert PIL Image() to RGBA pygame Surface.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pil_image (Image): image to convert to pygame.Surface().</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pygame.Surface: the converted image</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; import zipfile</span>
+<span class="sd">            &gt;&gt;&gt; from io import BytesIO</span>
+<span class="sd">            &gt;&gt;&gt; from PIL import Image</span>
+<span class="sd">            &gt;&gt;&gt; path = &#39;resources/walkabouts/debug.zip&#39;</span>
+<span class="sd">            &gt;&gt;&gt; file_name = &#39;only.gif&#39;</span>
+<span class="sd">            &gt;&gt;&gt; sample = zipfile.ZipFile(path).open(file_name).read()</span>
+<span class="sd">            &gt;&gt;&gt; gif = Image.open(BytesIO(sample))</span>
+<span class="sd">            &gt;&gt;&gt; AnimatedSprite.pil_image_to_pygame_surface(gif)</span>
+<span class="sd">            &lt;Surface(10x10x32 SW)&gt;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">image_as_string</span> <span class="o">=</span> <span class="n">pil_image</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGBA&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">image_as_string</span><span class="p">,</span>
+                                       <span class="n">pil_image</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                                       <span class="s1">&#39;RGBA&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hypatia Software Organization.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.6.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>SurfaceLayers &mdash; Sappho 0.6.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Sappho 0.6.1 documentation" href="index.html"/>
+        <link rel="next" title="Tilesheets and tilemaps" href="tilemap.html"/>
+        <link rel="prev" title="Camera and camera behaviors" href="camera.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sappho
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera.html">Camera and camera behaviors</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">SurfaceLayers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#typical-usage">Typical usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tilemap.html">Tilesheets and tilemaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animatedsprite.html">Animated sprites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Sappho</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>SurfaceLayers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/layers.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-sappho.layers">
+<span id="surfacelayers"></span><h1>SurfaceLayers<a class="headerlink" href="#module-sappho.layers" title="Permalink to this headline">¶</a></h1>
+<p>In a game, you&#8217;ll typically want to have multiple layers of drawable
+objects - for example, one for the background, one for collidable
+objects, one for the character, and one for your overlay, or HUD.
+The SurfaceLayers class provides a way to keep these layers in order,
+and render them correctly.</p>
+<dl class="class">
+<dt id="sappho.layers.SurfaceLayers">
+<em class="property">class </em><code class="descclassname">sappho.layers.</code><code class="descname">SurfaceLayers</code><span class="sig-paren">(</span><em>target_surface</em>, <em>number_of_layers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/layers.html#SurfaceLayers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.layers.SurfaceLayers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ordered series of pygame surfaces, each the size of the target
+surface given at creation time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>target_surface</strong> (<a class="reference external" href="http://www.pygame.org/docs/ref/surface.html#pygame.Surface" title="(in Pygame v1.9.2)"><em>pygame.Surface</em></a>) &#8211; Surface that will have
+have the layers blitted to when render() is called. The size
+of this surface is used as the size of the generated layers.</li>
+<li><strong>number_of_layers</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; Number of layers to generate.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="staticmethod">
+<dt id="sappho.layers.SurfaceLayers.create_surface_layers">
+<em class="property">static </em><code class="descname">create_surface_layers</code><span class="sig-paren">(</span><em>target_surface</em>, <em>number_of_layers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/layers.html#SurfaceLayers.create_surface_layers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.layers.SurfaceLayers.create_surface_layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list of pygame surfaces
+the size of the target surface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target_surface</strong> (<a class="reference external" href="http://www.pygame.org/docs/ref/surface.html#pygame.Surface" title="(in Pygame v1.9.2)"><em>pygame.Surface</em></a>) &#8211; The surface
+whose dimensions will be used for each layer.</li>
+<li><strong>number_of_layers</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; The number of surfaces to
+create/return.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of surfaces</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list[pygame.Surface]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sappho.layers.SurfaceLayers.render">
+<code class="descname">render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sappho/layers.html#SurfaceLayers.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sappho.layers.SurfaceLayers.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw each layer onto the target surface in the correct order.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="typical-usage">
+<h2>Typical usage<a class="headerlink" href="#typical-usage" title="Permalink to this headline">¶</a></h2>
+<p>Typically, you will want two <a class="reference internal" href="#sappho.layers.SurfaceLayers" title="sappho.layers.SurfaceLayers"><code class="xref py py-class docutils literal"><span class="pre">SurfaceLayers</span></code></a> objects, one for
+the game&#8217;s map (which would ideally be rendering to a
+<a class="reference internal" href="camera.html#sappho.camera.Camera" title="sappho.camera.Camera"><code class="xref py py-class docutils literal"><span class="pre">Camera</span></code></a>), and one for the game as a
+whole, containing the aforementioned Camera, and your game elements,
+such as a heads up display. This setup would look something like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Screen resolution.</span>
+<span class="n">RESOLUTION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+
+<span class="c1"># Map camera and layers</span>
+<span class="n">map_surfaces</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="n">map_camera</span> <span class="o">=</span> <span class="n">sappho</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Camera</span><span class="p">(</span><span class="n">map_surfaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_size</span><span class="p">(),</span>
+                                  <span class="n">RESOLUTION</span><span class="p">,</span> <span class="c1"># Screen resolution</span>
+                                  <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span> <span class="c1"># Size of the view</span>
+<span class="n">map_layers</span> <span class="o">=</span> <span class="n">sappho</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">SurfaceLayers</span><span class="p">(</span><span class="n">map_camera</span><span class="o">.</span><span class="n">source_surface</span><span class="p">,</span>
+                                         <span class="nb">len</span><span class="p">(</span><span class="n">map_surfaces</span><span class="p">))</span>
+
+<span class="c1"># Heads up display (created with RESOLUTION as to fill the whole screen)</span>
+<span class="n">hud</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">RESOLUTION</span><span class="p">)</span>
+
+<span class="c1"># Overall game layers.</span>
+<span class="c1"># 2 layers - one for the map camera, one for the HUD</span>
+<span class="n">game_layers</span> <span class="o">=</span> <span class="n">sappho</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">SurfaceLayers</span><span class="p">(</span><span class="n">screen</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="n">game_is_running</span><span class="p">:</span>
+    <span class="c1"># Any code that needs to be run before screen updates can go here,</span>
+    <span class="c1"># for example, updating the HUD</span>
+    <span class="o">...</span>
+
+    <span class="c1"># Render the map surfaces to the map SurfaceLayers object</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">surface</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">map_surfaces</span><span class="p">):</span>
+        <span class="n">map_layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1"># Render the map_layers to the camera then update the camera</span>
+    <span class="n">map_layers</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+    <span class="n">map_camera</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+    <span class="c1"># Render the map camera and the HUD to game_layers</span>
+    <span class="n">game_layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">map_camera</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">game_layers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">hud</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1"># Render everything to the screen and update it with our changes</span>
+    <span class="n">game_layers</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+    <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tilemap.html" class="btn btn-neutral float-right" title="Tilesheets and tilemaps" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="camera.html" class="btn btn-neutral" title="Camera and camera behaviors" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hypatia Software Organization.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.6.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

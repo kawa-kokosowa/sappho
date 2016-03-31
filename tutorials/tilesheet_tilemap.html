@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Creating a tilesheet and a map &mdash; Sappho 0.6.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Sappho 0.6.1 documentation" href="../index.html"/>
+        <link rel="up" title="Tutorials" href="index.html"/>
+        <link rel="prev" title="Tutorials" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Sappho
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../camera.html">Camera and camera behaviors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers.html">SurfaceLayers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tilemap.html">Tilesheets and tilemaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animatedsprite.html">Animated sprites</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Creating a tilesheet and a map</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-tilesheet">Creating a tilesheet</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tilesheet-rules">Tilesheet rules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-tilemap">Creating a tilemap</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Sappho</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+      
+    <li>Creating a tilesheet and a map</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/tutorials/tilesheet_tilemap.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="creating-a-tilesheet-and-a-map">
+<h1>Creating a tilesheet and a map<a class="headerlink" href="#creating-a-tilesheet-and-a-map" title="Permalink to this headline">¶</a></h1>
+<p>In this short tutorial, we&#8217;ll go over how to create a simple tilesheet,
+and use the Tiled editor to create a tilemap.</p>
+<div class="section" id="creating-a-tilesheet">
+<h2>Creating a tilesheet<a class="headerlink" href="#creating-a-tilesheet" title="Permalink to this headline">¶</a></h2>
+<p>A tilesheet is an image made up of smaller images that represents
+a tile. A simple tilesheet, with 10x10 pixel tiles, would look like
+this:</p>
+<img alt="../_images/tilesheet.png" src="../_images/tilesheet.png" />
+<p>Tiles are indexed from zero in Sappho, and indexing goes right then down.
+Let&#8217;s look at an annotated and enlarged version of the above tilesheet:</p>
+<img alt="../_images/tilesheet_annotated.png" src="../_images/tilesheet_annotated.png" />
+<p>To start creating a tilesheet, you need to decide on a couple of things:</p>
+<ol class="arabic simple">
+<li>The size of the tiles. All tiles in the tilesheet will share the
+same size, but if you run out of room, you can always make one thing
+span multiple tiles (you&#8217;d just have to arrange them right when it
+comes to creating your map)</li>
+<li>How many tiles you need in your tilesheet. You can always resize it
+later, but it&#8217;s a good idea to keep the width of the tilesheet the
+same, so you don&#8217;t throw out your tile indexing (remember, right then
+down). If you resize your tilesheet to add more tiles at the bottom,
+all the tiles above the resize will keep the same tile ID.</li>
+</ol>
+<p>Let&#8217;s create a simple 4-tile tilesheet. We&#8217;ll make each tile 10x10 pixels,
+which means we&#8217;ll have a 20x20 tilesheet image.</p>
+<p>Create a new image in your favorite image editing program (for the sake
+of the tutorial, we&#8217;ll use GIMP) and set the size to 20x20 pixels.</p>
+<p>Once the image is created, delete the background layer and create four
+new layers, named Tile 0 through to Tile 3. Then, add guides at the
+boundary of the tiles, by dragging down from the ruler at the top and
+left, and place the guides at 10 pixels in from those sides. This will
+give us our 2x2 tile grid to work with.</p>
+<p>Once that&#8217;s done, you should have an environment that looks like this:</p>
+<img alt="../_images/tilesheet_creation_guides.png" src="../_images/tilesheet_creation_guides.png" />
+<p>Let&#8217;s start creating our tiles.</p>
+<p>First, let&#8217;s create a grass tile, which will act as the background of
+our map. Select the Tile 0 layer, and fill the top-left square with green,
+by selecting the Rectangle Select Tool in GIMP. This is in your tool
+palette on the left of the screen, and  should be the first icon. Drag
+from the top-left corner down to the center of the image, meeting the
+guides. Then select the bucket fill tool (which looks like a paint
+bucket), select a green color by clicking on the black square below the
+tool palette and choosing a color in the dialog that pops up, click OK,
+and click on the selected square.</p>
+<p>That&#8217;s our first tile done! Now let&#8217;s create a few more. For the next
+tile, let&#8217;s create a black square with a blue border. Later on, we&#8217;ll
+make this block solid, so the player can&#8217;t walk through it. Switch to
+the Tile 1 layer, select the whole square and fill it with blue. Then,
+select the square again, but one pixel in from the edge on all sides,
+and fill that with black. You should now have a tilesheet that looks
+like this: (I took some liberties and added a smiley face)</p>
+<img alt="../_images/tilesheet_creation_stageone.png" src="../_images/tilesheet_creation_stageone.png" />
+<p>It&#8217;s up to you what to do with the other two tiles, but for the sake
+of the tutorial, I&#8217;ll add another grass tile with some texture, and
+a tree.</p>
+<img alt="../_images/tilesheet_creation_stagetwo.png" src="../_images/tilesheet_creation_stagetwo.png" />
+<p>Save this as <code class="docutils literal"><span class="pre">tilesheet.png</span></code> in a new folder.</p>
+<div class="section" id="tilesheet-rules">
+<h3>Tilesheet rules<a class="headerlink" href="#tilesheet-rules" title="Permalink to this headline">¶</a></h3>
+<p>Now, we have to create the rules file for our tilesheet.</p>
+<p>Tilesheet rule files take a simple format. Each line consists of a tile
+ID, followed by an equals sign, then any flags that the given tile has.</p>
+<p>The only flag that is currently implemented is <code class="docutils literal"><span class="pre">solid_block</span></code>. This
+means that the tile can not be walked through by the player. We&#8217;ll
+set this flag on our box tile and our tree tile in this example, but
+if you had something else on your mind for the other two tiles in the
+previous section, this may differ.</p>
+<p>The tilesheet rules file name is simply the name of your tilesheet
+image file, with &#8221;.rules&#8221; appended. Let&#8217;s create the rules file for our
+example tilesheet:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="o">=</span><span class="n">solid_block</span>
+<span class="mi">3</span><span class="o">=</span><span class="n">solid_block</span>
+</pre></div>
+</div>
+<p>Easy! Save it as &#8220;tilesheet.png.rules&#8221; in the same folder as your
+tilesheet image.</p>
+</div>
+</div>
+<div class="section" id="creating-a-tilemap">
+<h2>Creating a tilemap<a class="headerlink" href="#creating-a-tilemap" title="Permalink to this headline">¶</a></h2>
+<p>To get started creating a map, you&#8217;ll need to install the
+<a class="reference external" href="http://mapeditor.org">Tiled map editor</a>. Once you have it installed,
+start it up and create a new map. You&#8217;ll need to double check the
+map settings before continuing though - they should look like this:</p>
+<img alt="../_images/tilemap_tiled_newmap.png" src="../_images/tilemap_tiled_newmap.png" />
+<p>You can set the map size to whatever you want, but make sure the tile
+size is set to the same size as your tiles in the tilesheet (in the
+example, 10x10 pixels). Click OK, and you&#8217;ll be presented with a blank
+editor canvas.</p>
+<p>The first step is to add the tilesheet you created to the map. To do
+this, under the Tilesets heading on the bottom right, click the New icon.</p>
+<p>In the dialog that comes up, click Browse, and find your tilesheet.
+The window should now look like this:</p>
+<img alt="../_images/tilemap_tiled_tileset_new.png" src="../_images/tilemap_tiled_tileset_new.png" />
+<p>Click OK, and your tilesheet should now appear in the Tilesets section
+of the editor window. Because we&#8217;re working with very small tiles, you
+may want to zoom in, which you can do by adjusting the percentage
+displayed below the tilesets section. There should be another percentage
+below this, and that is the zoom level for the editor, which you probably
+want to adjust as well, so you can see what you&#8217;re working with.</p>
+<p>Click on your grass tile in the tilesets section, and it will appear
+highlighted. This means that it&#8217;s selected, and you can now place it on
+the map! Let&#8217;s fill our map with grass tiles to start. Select the
+bucket fill tool from the top of the window, and click in the center of
+the editor screen. You should now see a green square in the center.
+Congratulations! That&#8217;s the first step towards creating a map.</p>
+<p>Before we can place other objects around, like our solid block (or the
+tree I created), we need to create a new map layer. This means that
+the grass blocks are still in the background, and whatever we place
+on the new layer will sit above the grass. This is particularly important
+for the tree that I created in my example - it&#8217;s background is
+transparent, meaning that if I place it instead of a grass block, just
+black will appear in the background.</p>
+<p>Creating a new layer is easy, though - just click the New button in the
+Layers section (above the tileset section), and click Add Tile Layer.
+Now that we have created the layer for our objects, let&#8217;s place them.</p>
+<p>Since we selected the bucket fill tool earlier to fill our map with
+grass, we have to switch back to the Stamp Brush tool by clicking it
+at the top of the window. Then, click on a tile in our tilesheet, and
+click anywhere on the map to place it.</p>
+<p>You should now have a screen that looks something like this:</p>
+<img alt="../_images/tilemap_tiled_complete.png" src="../_images/tilemap_tiled_complete.png" />
+<p>Now, save the tilemap in the same directory as your tilesheet, naming
+it &#8220;tilemap.tmx&#8221; (&#8221;.tmx&#8221; is the file extension for Tiled maps).</p>
+<p>Congratulations! You&#8217;ve successfully created a tilesheet and a map that
+uses it. Take a moment to marvel in your creation, you deserve it.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Tutorials" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hypatia Software Organization.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.6.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
