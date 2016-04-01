@@ -26,7 +26,7 @@ this checklist:
 
 ### Releases
 
-  * Each pull request reviewed by at least one lead developer
+  * Each pull request reviewed by Lillian Lemmer
   * `master` is for releases
   * Delete merged branches
   * Tag release after merging a branch and setting
