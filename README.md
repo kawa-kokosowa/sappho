@@ -10,6 +10,18 @@ Sappho is a 2D game engine written with Python and pygame.
 The purpose of this repo is to rewrite Hypatia Engine
 and eventually replace Hypatia Engine as "Sappho."
 
+## Design Philosophy
+
+  1. Don't interfere with the way people build their pygame games
+  2. We are not automating game logic
+  3. Sappho modules _may not_ import other Sappho modules
+  4. Inherit from pygame objects when possible; use conventional
+     pygame models/architecture.
+  5. Consistency.
+  6. Simplicity trumps all else.
+  7. Well documented.
+  8. Code is easy-to-test. We show that with our 100% test coverage.
+
 ## Getting Started
 
   1. Install: `pip install -r requirements.txt .`
@@ -22,15 +34,3 @@ on how Sappho is used.
 We also have some good docs: http://sappho.hypatiasoftware.org/
 
 If you wanna contribute, please read `CONTRIBUTING.md`!
-
-## Design Philosophy
-
-  1. Don't interfere with the way people build their pygame games
-  2. We are not automating game logic
-  3. Sappho modules _may not_ import other Sappho modules
-  4. Inherit from pygame objects when possible; use conventional
-     pygame models/architecture.
-  5. Consistency.
-  6. Simplicity trumps all else.
-  7. Well documented.
-  8. Code is easy-to-test. We show that with our 100% test coverage.
