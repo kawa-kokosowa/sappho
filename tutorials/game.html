@@ -140,10 +140,163 @@
             
   <div class="section" id="creating-a-game-with-sappho">
 <h1>Creating a game with Sappho<a class="headerlink" href="#creating-a-game-with-sappho" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This document is a work in progress and may be incomplete.</p>
+</div>
 <p>If you&#8217;ve been following along with the previous tutorials
 (<a class="reference internal" href="tilesheet_tilemap.html"><span class="doc">creating a tilesheet and map</span></a> and
 <a class="reference internal" href="sprite.html"><span class="doc">creating a character sprite</span></a>), you&#8217;re now ready to move
 on in the world of game development, and create your first simple game!</p>
+<p>Let&#8217;s have a look at what we have so far. Our game directory should now
+have these files in it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">game</span><span class="o">/</span>
+<span class="o">|-</span> <span class="n">tilesheet</span><span class="o">.</span><span class="n">png</span>
+<span class="o">|-</span> <span class="n">tilesheet</span><span class="o">.</span><span class="n">png</span><span class="o">.</span><span class="n">rules</span>
+<span class="o">|-</span> <span class="n">tilemap</span><span class="o">.</span><span class="n">tmx</span>
+<span class="o">|</span>
+<span class="o">|-</span> <span class="n">sprite</span><span class="o">.</span><span class="n">gif</span>
+</pre></div>
+</div>
+<p>From here, let&#8217;s create a <code class="docutils literal"><span class="pre">game.py</span></code> file to house our game code.</p>
+<p>To start off, let&#8217;s import pygame and the Sappho modules we need:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygame</span>
+
+<span class="kn">from</span> <span class="nn">sappho.camera</span> <span class="k">import</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">CameraCenterBehavior</span>
+<span class="kn">from</span> <span class="nn">sappho.layers</span> <span class="k">import</span> <span class="n">SurfaceLayers</span>
+<span class="kn">from</span> <span class="nn">sappho.animatedsprite</span> <span class="k">import</span> <span class="n">AnimatedSprite</span>
+<span class="kn">from</span> <span class="nn">sappho.tilemap</span> <span class="k">import</span> <span class="n">Tilesheet</span><span class="p">,</span> <span class="n">tmx_file_to_tilemaps</span>
+</pre></div>
+</div>
+<p>Next, let&#8217;s define a few constants, like the names of our files,
+our screen resolution, and how big we want the viewport onto the map to
+be:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">RESOLUTION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+<span class="n">VIEWPORT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="c1"># 5 by 5 tiles</span>
+
+<span class="n">SPRITE_FILE</span> <span class="o">=</span> <span class="s2">&quot;sprite.gif&quot;</span>
+<span class="n">TILESHEET_FILE</span> <span class="o">=</span> <span class="s2">&quot;tilesheet.png&quot;</span>
+<span class="n">MAP_FILE</span> <span class="o">=</span> <span class="s2">&quot;tilemap.tmx&quot;</span>
+
+<span class="c1"># Number of pixels to move each tick</span>
+<span class="n">MOVEMENT_SPEED</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Now we can get down to the initialization of the game. First, we need
+to initialize Pygame and create our screen:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Initialize Pygame</span>
+<span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+<span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">RESOLUTION</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, we need to create our game structures.</p>
+<p>First, let&#8217;s load our tilesheet:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Load tilesheet, telling the Tilesheet class that our tilesheet has</span>
+<span class="c1"># 10x10 tiles</span>
+<span class="n">tilesheet</span> <span class="o">=</span> <span class="n">Tilesheet</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">TILESHEET_FILE</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then load our tilemap and retrieve the surfaces for each map layer:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Load tilemap</span>
+<span class="n">tilemap_layers</span> <span class="o">=</span> <span class="n">tmx_file_to_tilemaps</span><span class="p">(</span><span class="n">MAP_FILE</span><span class="p">,</span> <span class="n">tilesheet</span><span class="p">)</span>
+<span class="n">tilemap_surfaces</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">map_layer</span> <span class="ow">in</span> <span class="n">tilemap_layers</span><span class="p">:</span>
+    <span class="n">tilemap_surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">map_layer</span><span class="o">.</span><span class="n">to_surface</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>All our map layers are the same size, so we can take the size of the first
+tilemap layer surface and use that as the size of our camera&#8217;s source
+surface. Let&#8217;s create the camera now:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Create camera</span>
+<span class="n">camera</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="n">tilemap_surfaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_size</span><span class="p">(),</span> <span class="n">RESOLUTION</span><span class="p">,</span> <span class="n">VIEWPORT</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we need to create a <a class="reference internal" href="../layers.html#sappho.layers.SurfaceLayers" title="sappho.layers.SurfaceLayers"><code class="xref py py-class docutils literal"><span class="pre">SurfaceLayers</span></code></a>
+object. The SurfaceLayers object will handle drawing the map layers in
+the right order, and making sure our character doesn&#8217;t get obscured by
+anything on the map.</p>
+<p>We pass the Camera we created earlier to the SurfaceLayers object, so that
+when the layers are rendered, they are rendered directly to the camera.
+We also need to give the SurfaceLayers object the number of layers we
+have - which is the number of map layers we have, plus one for the
+character sprite.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Create SurfaceLayers to handle rendering</span>
+<span class="n">layers</span> <span class="o">=</span> <span class="n">SurfaceLayers</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tilemap_surfaces</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let&#8217;s now load our sprite.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Load our AnimatedSprite</span>
+<span class="n">sprite</span> <span class="o">=</span> <span class="n">AnimatedSprite</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">SPRITE_FILE</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Lastly for the initialization, we need to create a clock. This clock
+will keep track of the time between frames, and act as a frame limiter
+so that we don&#8217;t choke CPU time rendering too fast.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Create clock</span>
+<span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Before we start the grunt of the game, let&#8217;s initialize a couple
+variables that control where our sprite is positioned on the map:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Position our character one tile from the left and one tile from</span>
+<span class="c1"># the top of the screen</span>
+<span class="n">x_coord</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">y_coord</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># Current movement speed per frame</span>
+<span class="n">x_speed</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">y_speed</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Now, we can start our game&#8217;s main loop. This is where the magic happens.</p>
+<p>Let&#8217;s create a variable that tells us whether the game is still running:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Now, let&#8217;s start the loop by processing any Pygame events that the game
+receives. These events will include the close button being pressed,
+key presses and releases, and various other things, but we only want to
+handle closing and key presses. The key presses will set the speed
+at which the character is moving.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">running</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+
+        <span class="c1"># Handle the close button being pressed</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+            <span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># User pressed down on a key</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
+
+            <span class="c1"># Figure out if it was an arrow key. If so</span>
+            <span class="c1"># adjust speed.</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LEFT</span><span class="p">:</span>
+                <span class="n">x_speed</span> <span class="o">=</span> <span class="n">MOVEMENT_SPEED</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_RIGHT</span><span class="p">:</span>
+                <span class="n">x_speed</span> <span class="o">=</span> <span class="n">MOVEMENT_SPEED</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_UP</span><span class="p">:</span>
+                <span class="n">y_speed</span> <span class="o">=</span> <span class="n">MOVEMENT_SPEED</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_DOWN</span><span class="p">:</span>
+                <span class="n">y_speed</span> <span class="o">=</span> <span class="n">MOVEMENT_SPEED</span>
+
+        <span class="c1"># User let up on a key</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYUP</span><span class="p">:</span>
+
+            <span class="c1"># If it is an arrow key, reset vector back to zero</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LEFT</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_RIGHT</span><span class="p">:</span>
+                <span class="n">x_speed</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_UP</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_DOWN</span><span class="p">:</span>
+                <span class="n">y_speed</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Blit our map surfaces to the SurfaceLayers object</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">surface</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tilemap_surfaces</span><span class="p">):</span>
+    <span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">tilemap_surfaces</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="c1"># Blit our character to the SurfaceLayers object</span>
+<span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="p">(</span><span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span><span class="p">))</span>
+</pre></div>
+</div>
 </div>
 
 

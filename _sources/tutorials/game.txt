@@ -1,8 +1,173 @@
 Creating a game with Sappho
 ===========================
 
+.. warning::
+   This document is a work in progress and may be incomplete.
+
 If you've been following along with the previous tutorials
 (:doc:`creating a tilesheet and map <tilesheet_tilemap>` and
 :doc:`creating a character sprite <sprite>`), you're now ready to move
 on in the world of game development, and create your first simple game!
+
+Let's have a look at what we have so far. Our game directory should now
+have these files in it::
+
+    game/
+    |- tilesheet.png
+    |- tilesheet.png.rules
+    |- tilemap.tmx
+    |
+    |- sprite.gif
+
+From here, let's create a ``game.py`` file to house our game code.
+
+To start off, let's import pygame and the Sappho modules we need::
+
+    import pygame
+
+    from sappho.camera import Camera, CameraCenterBehavior
+    from sappho.layers import SurfaceLayers
+    from sappho.animatedsprite import AnimatedSprite
+    from sappho.tilemap import Tilesheet, tmx_file_to_tilemaps
+
+Next, let's define a few constants, like the names of our files,
+our screen resolution, and how big we want the viewport onto the map to
+be::
+
+    RESOLUTION = (800, 600)
+    VIEWPORT = (50, 50) # 5 by 5 tiles
+
+    SPRITE_FILE = "sprite.gif"
+    TILESHEET_FILE = "tilesheet.png"
+    MAP_FILE = "tilemap.tmx"
+
+    # Number of pixels to move each tick
+    MOVEMENT_SPEED = 1
+
+Now we can get down to the initialization of the game. First, we need
+to initialize Pygame and create our screen::
+
+    # Initialize Pygame
+    pygame.init()
+    screen = pygame.display.set_mode(RESOLUTION)
+
+Next, we need to create our game structures. 
+
+First, let's load our tilesheet::
+
+    # Load tilesheet, telling the Tilesheet class that our tilesheet has
+    # 10x10 tiles
+    tilesheet = Tilesheet.from_file(TILESHEET_FILE, 10, 10)
+
+And then load our tilemap and retrieve the surfaces for each map layer::
+
+    # Load tilemap
+    tilemap_layers = tmx_file_to_tilemaps(MAP_FILE, tilesheet)
+    tilemap_surfaces = []
+    for map_layer in tilemap_layers:
+        tilemap_surfaces.append(map_layer.to_surface())
+
+All our map layers are the same size, so we can take the size of the first
+tilemap layer surface and use that as the size of our camera's source 
+surface. Let's create the camera now::
+
+    # Create camera
+    camera = Camera(tilemap_surfaces[0].get_size(), RESOLUTION, VIEWPORT)
+
+Now we need to create a :class:`SurfaceLayers <sappho.layers.SurfaceLayers>`
+object. The SurfaceLayers object will handle drawing the map layers in
+the right order, and making sure our character doesn't get obscured by
+anything on the map.
+
+We pass the Camera we created earlier to the SurfaceLayers object, so that
+when the layers are rendered, they are rendered directly to the camera.
+We also need to give the SurfaceLayers object the number of layers we
+have - which is the number of map layers we have, plus one for the
+character sprite.
+
+::
+
+    # Create SurfaceLayers to handle rendering
+    layers = SurfaceLayers(camera, len(tilemap_surfaces) + 1)
+
+Let's now load our sprite.
+
+::
+
+    # Load our AnimatedSprite
+    sprite = AnimatedSprite.from_file(SPRITE_FILE)
+
+Lastly for the initialization, we need to create a clock. This clock
+will keep track of the time between frames, and act as a frame limiter
+so that we don't choke CPU time rendering too fast.
+
+::
+
+    # Create clock
+    clock = pygame.time.Clock()
+
+Before we start the grunt of the game, let's initialize a couple 
+variables that control where our sprite is positioned on the map::
+
+    # Position our character one tile from the left and one tile from
+    # the top of the screen
+    x_coord = 10
+    y_coord = 10
+
+    # Current movement speed per frame
+    x_speed = 0
+    y_speed = 0
+
+Now, we can start our game's main loop. This is where the magic happens.
+
+Let's create a variable that tells us whether the game is still running::
+
+    running = True
+
+Now, let's start the loop by processing any Pygame events that the game
+receives. These events will include the close button being pressed,
+key presses and releases, and various other things, but we only want to
+handle closing and key presses. The key presses will set the speed
+at which the character is moving.
+
+::
+
+    while running:
+        for event in pygame.event.get():
+
+            # Handle the close button being pressed
+            if event.type == pygame.QUIT:
+                running = False
+
+            # User pressed down on a key
+            elif event.type == pygame.KEYDOWN:
+
+                # Figure out if it was an arrow key. If so
+                # adjust speed.
+                if event.key == pygame.K_LEFT:
+                    x_speed = MOVEMENT_SPEED * -1
+                elif event.key == pygame.K_RIGHT:
+                    x_speed = MOVEMENT_SPEED
+                elif event.key == pygame.K_UP:
+                    y_speed = MOVEMENT_SPEED * -1
+                elif event.key == pygame.K_DOWN:
+                    y_speed = MOVEMENT_SPEED
+     
+            # User let up on a key
+            elif event.type == pygame.KEYUP:
+
+                # If it is an arrow key, reset vector back to zero
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    x_speed = 0
+                elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                    y_speed = 0
+
+::
+
+    # Blit our map surfaces to the SurfaceLayers object
+    for i, surface in enumerate(tilemap_surfaces):
+        layers[i].blit(tilemap_surfaces, (0, 0))
+
+    # Blit our character to the SurfaceLayers object
+    layers[-1].blit(sprite, (x_coord, y_coord))
 

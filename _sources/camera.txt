@@ -56,16 +56,17 @@ that should be displayed. The Rect can not go outside the bounds of the
 source surface, as when the camera is updated, it creates a subsurface
 of the source surface with the Rect that is returned by the move function.
 
-The simplest implementation of a `CameraBehavior` would be to
-set the `camera.view_rect.topleft` to the `topleft` of the
-`focal_rectangle` within its `move()` method. This effectively sets
-the region/area of the `source_surface` used for a subsurface. Said
-subsurface is scaled up to the `camera.output_resolution` and then
-blit'd to `Camera` itself::
+The simplest implementation of a CameraBehavior would be to put the 
+focal rectangle in the top left. This would be achieved by returning a
+Rect that had the x and y attributes set to the x and y attributes of the
+focal rectangle, with the width and height of the camera size (specified
+by the ``camera_resolution`` property of the  :py:class:`Camera` that
+is passed to the ``move`` method)::
 
     class TopLeftBehavior(CameraBehavior): 
         def move(self, camera, focal_rectangle):
-            camera.view_rect.topleft = focal_rectangle.topleft
+            return pygame.Rect(focal_rectangle.topleft,
+                               camera.camera_resolution)
 
 Hovever, this does not constrain the view to the bounds of the source
 surface, meaning that if the focal rectangle goes off the screen, or
@@ -74,8 +75,8 @@ plus the width of height of the view is greater than the width/height
 of the source surface, an error will occur because you can not create
 a subsurface of the source surface that goes outside of the bounds of
 the source surface. A :py:exc:`CameraOutOfBounds` exception is raised 
-by the :py:func:`Camera.update` function if `camera.view_rect` (as set by
-`move()`) is out of bounds. This can be useful in some cases, but
+by the :py:func:`Camera.update` function if the Rect returned by the 
+move function is out of bounds. This can be useful in some cases, but
 for our case, we don't want to be able to go out of bounds, and instead
 should constrain the bounds of the view to the surface::
 
@@ -91,12 +92,12 @@ should constrain the bounds of the view to the surface::
                 y = 0
 
             # Make sure we don't go off the bottom or right of the source surface
-            if x + camera.view_rect.width > camera.source_resolution[0]:
-                x = camera.source_resolution[0] - camera.view_rect.width
-            if y + camera.view_rect.height > camera.source_resolution[1]:
-                y = camera.source_resolution[1] - camera.view_rect.height
+            if x + camera.camera_resolution[0] > camera.source_resolution[0]:
+                x = camera.source_resolution[0] - camera.camera_resolution[0]
+            if y + camera.camera_resolution[1] > camera.source_resolution[1]:
+                y = camera.source_resolution[1] - camera.camera_resolution[1]
 
-            camera.view_rect.topleft = (x, y)
+            return pygame.Rect((x, y), camera.camera_resolution)
 
 We now have a complete CameraBehavior that puts the focal rectangle
 in the top left of the screen without going outside the bounds of the
