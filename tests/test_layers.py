@@ -3,6 +3,7 @@ import os
 import pygame
 
 from .. import sappho
+from .common import compare_surfaces
 
 
 class TestSurfaceLayers(object):
@@ -79,10 +80,5 @@ class TestSurfaceLayers(object):
         surface_layers.render()
 
         # Compare the two surfaces
-        target_view = self.target_surface.get_view().raw
-        test_view = test_surface.get_view().raw
-
-        # The returned value is a bytes (str in python2) object so we can 
-        # just do a straight compare
-        assert(target_view == test_view)
+        assert(compare_surfaces(self.target_surface, test_surface))
 
