@@ -1,5 +1,8 @@
 import pygame
 
+PY3 = sys.version_info[0] == 3
+_range = range if PY3 else xrange
+
 
 class SurfaceLayers(object):
     """Ordered series of pygame surfaces, each the size of the target
@@ -36,7 +39,7 @@ class SurfaceLayers(object):
 
         surface_layers = []
 
-        for i in range(number_of_layers):
+        for i in _range(number_of_layers):
             surface = pygame.surface.Surface(target_surface.get_size(),
                                              pygame.SRCALPHA, 32)
             surface_layers.append(surface)
