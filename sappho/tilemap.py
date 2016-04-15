@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 
 
 PY3 = sys.version_info[0] == 3
-_range = range if PY3 else xrange
+range = range if PY3 else xrange
 
 
 class Tile(pygame.sprite.Sprite):
@@ -85,7 +85,7 @@ class Tilesheet(object):
                     first_id = int(first_id)
                     last_id = int(last_id)
 
-                    for tile_id in _range(first_id, last_id + 1):
+                    for tile_id in range(first_id, last_id + 1):
                         tile_rules[int(tile_id)] = flags
 
                 tile_rules[int(tile_id)] = flags
@@ -116,7 +116,7 @@ class Tilesheet(object):
         # tile initialization; buid all the tiles
         tiles = []
 
-        for tile_id in _range(total_tiles):
+        for tile_id in range(total_tiles):
             subsurface = cls.tile_subsurface_from_tile_id(tilesheet_surface,
                                                           tile_size,
                                                           tile_id)
