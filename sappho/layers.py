@@ -1,5 +1,8 @@
 import pygame
 
+PY3 = sys.version_info[0] == 3
+range = range if PY3 else xrange
+
 
 class SurfaceLayers(object):
     """Ordered series of pygame surfaces, each the size of the target
