@@ -1,3 +1,4 @@
+import sys
 import pygame
 
 PY3 = sys.version_info[0] == 3
