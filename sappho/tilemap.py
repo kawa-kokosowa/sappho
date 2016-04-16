@@ -57,6 +57,15 @@ class Tilesheet(object):
         """Get properties for tile IDs from the
         path_to_rules_file.
 
+        A rule file looks something like this:
+
+            83,99,44-77=BLOCK,SOMEFLAG
+            40,110=BLOCK
+            10=SOMEFLAG
+
+        So as you can see, you can set multiple tile's properties
+        by listing them out and using ranges of tile IDs.
+
         Argument:
             path_to_rules_file (str): Path to the rules file to parse
 
@@ -67,28 +76,37 @@ class Tilesheet(object):
                 that are set
 
         """
-        
-        with open(path_to_rules_file) as f:
-            rules = f.readlines()
 
         tile_rules = {}
 
+        with open(path_to_rules_file) as f:
+            rules = [line.strip() for line in f.readlines()]
+
+        # For each line, basically
         for rule in rules:
             tile_ids_affected, flags = rule.split('=')
-            tile_ids_affected = [id_ for id_ in tile_ids_affected.split(',')]
+            tile_ids_affected = tile_ids_affected.split(',')
             flags = [flag.strip() for flag in flags.split(',')]
 
             for tile_id in tile_ids_affected:
-                
+
                 if '-' in tile_id:
+                    # This is a range of tile IDs!
                     first_id, last_id = tile_id.split('-')
-                    first_id = int(first_id)
-                    last_id = int(last_id)
+                else:
+                    # Just one tile ID!
+                    first_id = last_id = tile_id
 
-                    for tile_id in range(first_id, last_id + 1):
-                        tile_rules[int(tile_id)] = flags
-
-                tile_rules[int(tile_id)] = flags
+                # Create a dictionary whose keys are
+                # first_id through last_id, and values
+                # are the flags defined in the rule.
+                tile_id_range = range(int(first_id), int(last_id) + 1)
+                this_iteration_rules = dict.fromkeys(tile_id_range,
+                                                     flags)
+                # ... finally updating our overall collection
+                # of all the tile rules with the rules found
+                # this iteration!
+                tile_rules.update(this_iteration_rules)
 
         return tile_rules
 
@@ -313,7 +331,7 @@ def tmx_file_to_tilemaps(tmx_file_path, tilesheet):
 
     firstgid = int(root.findall(".//tileset")[0].attrib["firstgid"])
 
-    csv_layers = []
+    tilemaps = []
 
     for layer_data in root.findall(".//layer/data"):
         data_encoding = layer_data.attrib['encoding']
@@ -323,12 +341,7 @@ def tmx_file_to_tilemaps(tmx_file_path, tilesheet):
             raise TMXLayersNotCSV(data_encoding)
 
         layer_csv = layer_data.text.strip()
-        csv_layers.append(layer_csv)
-
-    tilemaps = []
-
-    for layer in csv_layers:
-        layer_tilemap = TileMap.from_csv_string_and_tilesheet(layer,
+        layer_tilemap = TileMap.from_csv_string_and_tilesheet(layer_csv,
                                                               tilesheet,
                                                               firstgid)
 
