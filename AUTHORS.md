@@ -4,9 +4,8 @@
 
 lillian.lemmer@hypatiasoftware.org
 
-Lillian is the project lead/benevolent
-dictator. Lily also is the founder/CEO
-of Hypatia Software Organization.
+Lillian is the project mom and President/CEO,
+founder of Hypatia Software Organization.
 
 ## Alice Jenkinson
 
