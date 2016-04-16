@@ -67,28 +67,26 @@ class Tilesheet(object):
                 that are set
 
         """
-        
-        with open(path_to_rules_file) as f:
-            rules = f.readlines()
-
         tile_rules = {}
 
-        for rule in rules:
-            tile_ids_affected, flags = rule.split('=')
-            tile_ids_affected = [id_ for id_ in tile_ids_affected.split(',')]
-            flags = [flag.strip() for flag in flags.split(',')]
+        with open(path_to_rules_file) as f:
+            for rule in f:
+                tile_ids_affected, flags = rule.split('=')
+                tile_ids_affected = tile_ids_affected.split(',')
+                flags = [flag.strip() for flag in flags.split(',')]
 
-            for tile_id in tile_ids_affected:
-                
-                if '-' in tile_id:
-                    first_id, last_id = tile_id.split('-')
-                    first_id = int(first_id)
-                    last_id = int(last_id)
+                for tile_id in tile_ids_affected:
+                    if '-' in tile_id:
+                        first_id, last_id = tile_id.split('-')
+                    else:
+                        first_id = last_id = tile_id
 
-                    for tile_id in range(first_id, last_id + 1):
-                        tile_rules[int(tile_id)] = flags
+                    this_iteration_rules = dict.fromkeys(
+                        range(int(first_id), int(last_id) + 1),
+                        flags
+                    )
 
-                tile_rules[int(tile_id)] = flags
+                    tile_rules.update(this_iteration_rules)
 
         return tile_rules
 
