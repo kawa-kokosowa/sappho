@@ -50,6 +50,21 @@ class TestTilesheet(object):
 
         assert(compare_surfaces(target_surface, master_surface))
 
+    def test_parse_rules(self):
+        testpath = os.path.realpath(__file__)
+        path = os.path.abspath(os.path.join(testpath,
+                                            "..",
+                                            "resources",
+                                            "tilesheet.png.rules"))
+
+        rules = sappho.tilemap.Tilesheet.parse_rules(path)
+        
+        assert(rules[0] == ['solid_block'])
+        assert(rules[1] == ['solid_block'])
+        assert(rules[2] == ['solid_block'])
+        assert(rules[3] == ['solid_block'])
+        assert(rules[4] == ['solid_block'])
+
 
 class TestTilemap(object):
     TILEMAP_CSV = """
@@ -77,7 +92,7 @@ class TestTilemap(object):
         # in the tilemap. Here, we check that a solid block has been correctly
         # entered into the tilemap.
         solid_blocks = tilemap.get_solid_blocks()
-        assert(len(solid_blocks) == 1)
+        assert(len(solid_blocks) == 5)
         assert(solid_blocks[0].topleft == (0, 0))
         assert(solid_blocks[0].bottomright == (1, 1))
 
@@ -93,7 +108,7 @@ class TestTilemap(object):
 
         # Same as the above test, check for the solid block
         solid_blocks = tilemap.get_solid_blocks()
-        assert(len(solid_blocks) == 1)
+        assert(len(solid_blocks) == 5)
         assert(solid_blocks[0].topleft == (0, 0))
         assert(solid_blocks[0].bottomright == (1, 1))
 
