@@ -57,6 +57,15 @@ class Tilesheet(object):
         """Get properties for tile IDs from the
         path_to_rules_file.
 
+        A rule file looks something like this:
+
+            83,99,44-77=BLOCK,SOMEFLAG
+            40,110=BLOCK
+            10=SOMEFLAG
+
+        So as you can see, you can set multiple tile's properties
+        by listing them out and using ranges of tile IDs.
+
         Argument:
             path_to_rules_file (str): Path to the rules file to parse
 
@@ -67,26 +76,37 @@ class Tilesheet(object):
                 that are set
 
         """
+
         tile_rules = {}
 
         with open(path_to_rules_file) as f:
-            for rule in f:
-                tile_ids_affected, flags = rule.split('=')
-                tile_ids_affected = tile_ids_affected.split(',')
-                flags = [flag.strip() for flag in flags.split(',')]
+            rules = [line.strip() for line in f.readlines()]
 
-                for tile_id in tile_ids_affected:
-                    if '-' in tile_id:
-                        first_id, last_id = tile_id.split('-')
-                    else:
-                        first_id = last_id = tile_id
+        # For each line, basically
+        for rule in rules:
+            tile_ids_affected, flags = rule.split('=')
+            tile_ids_affected = tile_ids_affected.split(',')
+            flags = [flag.strip() for flag in flags.split(',')]
 
-                    this_iteration_rules = dict.fromkeys(
-                        range(int(first_id), int(last_id) + 1),
-                        flags
-                    )
+            for tile_id in tile_ids_affected:
 
-                    tile_rules.update(this_iteration_rules)
+                if '-' in tile_id:
+                    # This is a range of tile IDs!
+                    first_id, last_id = tile_id.split('-')
+                else:
+                    # Just one tile ID!
+                    first_id = last_id = tile_id
+
+                # Create a dictionary whose keys are
+                # first_id through last_id, and values
+                # are the flags defined in the rule.
+                tile_id_range = range(int(first_id), int(last_id) + 1)
+                this_iteration_rules = dict.fromkeys(tile_id_range,
+                                                     flags)
+                # ... finally updating our overall collection
+                # of all the tile rules with the rules found
+                # this iteration!
+                tile_rules.update(this_iteration_rules)
 
         return tile_rules
 
