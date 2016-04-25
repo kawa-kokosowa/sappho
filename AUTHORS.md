@@ -1,4 +1,4 @@
-# Major Contributors
+# Authors and Rights
 
 ## Lillian Gardenia Seabreeze
 
