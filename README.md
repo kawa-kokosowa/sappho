@@ -10,7 +10,7 @@ Sappho is a 2D game engine written with Python and pygame.
 The purpose of this repo is to rewrite Hypatia Engine
 and eventually replace Hypatia Engine as "Sappho."
 
-Lillian Gardenia Seabreeze is this project's mom and owner.
+[Lillian Gardenia Seabreeze](http://about.lillian.link/) is this project's mom and owner.
 
 ## Design Philosophy
 
