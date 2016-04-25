@@ -1,11 +1,12 @@
 # Major Contributors
 
-## Lillian Lemmer
+## Lillian Gardenia Seabreeze
 
-lillian.lemmer@hypatiasoftware.org
+lillian.gardenia.seabreeze@hypatiasoftware.org
 
-Lillian is the project mom and President/CEO,
-founder of Hypatia Software Organization.
+Lillian owns and reserves all rights to this project.
+
+Lillian is the Sappho project mom.
 
 ## Alice Jenkinson
 
