@@ -34,3 +34,7 @@ on how Sappho is used.
 We also have some good docs: http://sappho.hypatiasoftware.org/
 
 If you wanna contribute, please read `CONTRIBUTING.md`!
+
+# Note from Mom
+
+Lillian Gardenia Seabreeze is this project's mom and owner, but she promises to always keep MIT Licensed (open source, free software, permissively licensed [for commercial or any use]).
