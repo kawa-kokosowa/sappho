@@ -9,6 +9,8 @@ Sappho is a 2D game engine written with Python and pygame.
 
 ![sappho in action](https://github.com/lillian-gardenia-seabreeze/sappho/blob/master/game-demo.gif)
 
+[Lillian Gardenia Seabreeze](http://about.lillian.link/) is this project's mom and owner.
+
 ## Design Philosophy
 
   1. Don't interfere with the way people build their pygame games
