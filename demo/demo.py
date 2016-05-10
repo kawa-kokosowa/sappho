@@ -18,13 +18,27 @@ from sappho.layers import SurfaceLayers
 from sappho.camera import Camera, CameraCenterBehavior
 
 # Constants/game config
+
+# Window resolution in pixels (Width, Height)
 RESOLUTION = [700, 500]
+
+# The title that will appear in the window's title bar 
 WINDOW_TITLE = "Sappho Engine Test"
+
+# The path to the file that's being used to represent the player
 ANIMATED_SPRITE_PATH = "test.gif"
+
+# The path to the file being used as the tilesheet
 TILESHEET_PATH = "test_scene/tilesheet.png"
+
+# The Tiled Map Editor file which the player explores
 TMX_PATH = "test_scene/test.tmx"
+
+# The layer that the player's sprite will be rendered on 
 ANIMATED_SPRITE_Z_INDEX = 0
 
+
+# Runtime/Main
 
 # Setup
 pygame.init()
@@ -32,6 +46,7 @@ pygame.init()
 # Set the width and height of the screen [width,height]
 screen = pygame.display.set_mode(RESOLUTION)
  
+# Set the caption in the title bar
 pygame.display.set_caption(WINDOW_TITLE)
  
 # Loop until the user clicks the close button.
@@ -51,7 +66,7 @@ y_speed = 0
 x_coord = 10
 y_coord = 10
 
-# The player will be able to control this with arrow keys.
+# The sprite which the player controls
 animated_sprite = AnimatedSprite.from_file(ANIMATED_SPRITE_PATH)
 
 # Load the scene, namely the layered map. Layered maps are
@@ -65,6 +80,10 @@ tilemap_surfaces = []
 for layer_tilemap in layer_tilemaps:
     tilemap_surfaces.append(layer_tilemap.to_surface())
 
+# Set up the camera
+
+# XXX: Is it possible that the first tile map
+# surface could be smaller than the others?
 surface_size = (tilemap_surfaces[0].get_width(),
                 tilemap_surfaces[0].get_height())
 
@@ -106,28 +125,24 @@ while not done:
             elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 y_speed = 0
  
-    # GAME LOGIC
- 
+    # Test if the player is going to collide with any other objects
+    # and if not, move the player
+
     # Move the object according to the speed vector.
     potential_x_coord = x_coord + x_speed
     potential_y_coord = y_coord + y_speed
 
-    rect = pygame.rect.Rect((potential_x_coord, potential_y_coord),
+    potential_rect = pygame.rect.Rect((potential_x_coord, potential_y_coord),
                             animated_sprite.image.get_size())
 
     tilemap_on_players_index = layer_tilemaps[ANIMATED_SPRITE_Z_INDEX]
     solid_blocks_on_players_index = tilemap_on_players_index.get_solid_blocks()
 
-    if rect.collidelist(solid_blocks_on_players_index) != -1:
+    if potential_rect.collidelist(solid_blocks_on_players_index) != -1:
         print("colliding!")
     else:
         y_coord = potential_y_coord
         x_coord = potential_x_coord
-
-        # XXX
-        # Scroll the viewport to where our character is. This could be improved
-        # to only scroll when reaching the edges of the viewport, but this
-        # works for now.
         camera.scroll_to(rect)
         #camera.scroll_absolute(x_coord - 10, y_coord - 10)
  
