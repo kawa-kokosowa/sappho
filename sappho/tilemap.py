@@ -14,6 +14,11 @@ PY3 = sys.version_info[0] == 3
 range = range if PY3 else xrange
 
 
+class Flags(object):
+    SOLID_BLOCK = "solid_block"
+    AUTO_MASK = "auto_mask"
+
+
 class Tile(pygame.sprite.Sprite):
     """A tile object is a sprite, which is typically
     a subsurface of a tilesheet.
@@ -29,11 +34,11 @@ class Tile(pygame.sprite.Sprite):
 
     """
 
-    def __init__(self, id_, image, flags):
+    def __init__(self, id_, image, flags=None):
         super(Tile, self).__init__()
         self.id_ = id_
         self.image = image
-        self.flags = flags
+        self.flags = flags or set([])
 
 
 class Tilesheet(object):
@@ -218,7 +223,7 @@ class TileMap(object):
 
             for x, tile in enumerate(row_of_tiles):
                 
-                if "solid_block" in tile.flags:
+                if Flags.SOLID_BLOCK in tile.flags:
                     left_top = (x * self.tilesheet.tile_size[0],
                                 y * self.tilesheet.tile_size[1])
                     block = pygame.rect.Rect(left_top,

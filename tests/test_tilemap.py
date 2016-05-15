@@ -13,7 +13,8 @@ class TestTile(object):
         tile = sappho.tilemap.Tile(0, surface)
 
         assert(tile.id_ == 0)
-        assert(tile.solid_block == False) # default is False so check that
+        assert(len(tile.flags) == 0)
+        assert(isinstance(tile.flags, set))
 
 
 class TestTilesheet(object):
@@ -27,7 +28,8 @@ class TestTilesheet(object):
         tilesheet = sappho.tilemap.Tilesheet.from_file(path, 1, 1)
 
         # Test that tile rules are loaded correctly
-        assert(tilesheet.tiles[0].solid_block == True)
+        assert(sappho.tilemap.Flags.SOLID_BLOCK in
+               tilesheet.tiles[0].flags)
 
     def test_subsurface(self):
         testpath = os.path.realpath(__file__)
@@ -59,11 +61,11 @@ class TestTilesheet(object):
 
         rules = sappho.tilemap.Tilesheet.parse_rules(path)
         
-        assert(rules[0] == ['solid_block'])
-        assert(rules[1] == ['solid_block'])
-        assert(rules[2] == ['solid_block'])
-        assert(rules[3] == ['solid_block'])
-        assert(rules[4] == ['solid_block'])
+        assert(rules[0] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
+        assert(rules[1] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
+        assert(rules[2] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
+        assert(rules[3] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
+        assert(rules[4] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
 
 
 class TestTilemap(object):
