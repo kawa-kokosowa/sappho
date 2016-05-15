@@ -22,16 +22,18 @@ class Tile(pygame.sprite.Sprite):
         id_ (str): The ID of this tile in its respective
             tilesheet.
         image (pygame.surface.Surface):
-        solid_block (bool): If true, this entire tile
-            is completely impassible.
+        flags (set): a series of strings which
+            represent a boolean state of something
+            about this tile, e.g., "solid_block"
+            or "auto_mask".
 
     """
 
-    def __init__(self, id_, image, solid_block=False):
+    def __init__(self, id_, image, flags):
         super(Tile, self).__init__()
         self.id_ = id_
         self.image = image
-        self.solid_block = solid_block
+        self.flags = flags
 
 
 class Tilesheet(object):
@@ -70,10 +72,12 @@ class Tilesheet(object):
             path_to_rules_file (str): Path to the rules file to parse
 
         Returns:
-            dict:
-                A dictionary containing an entry for each tile that
-                has a flag set, the value being a list of the flags
-                that are set
+            dict: You can lookup a tile by id (key) and get its
+                rules (value, set). It should look something like
+                this:
+
+                >>> {0: set(['auto_mask']),
+                ...  1: set(['solid_block', 'auto_mask'])}
 
         """
 
@@ -86,7 +90,7 @@ class Tilesheet(object):
         for rule in rules:
             tile_ids_affected, flags = rule.split('=')
             tile_ids_affected = tile_ids_affected.split(',')
-            flags = [flag.strip() for flag in flags.split(',')]
+            flags = set([flag.strip() for flag in flags.split(',')])
 
             for tile_id in tile_ids_affected:
 
@@ -139,10 +143,10 @@ class Tilesheet(object):
                                                           tile_size,
                                                           tile_id)
 
-            solid = tile_id in tile_rules and 'solid_block' in tile_rules[tile_id]
+            flags = tile_rules[tile_id] if tile_id in tile_rules else set([])
             tile = Tile(id_=tile_id,
                         image=subsurface,
-                        solid_block=solid)
+                        flags=flags)
             tiles.append(tile)
 
         return Tilesheet(tilesheet_surface, tiles, tile_size)
@@ -214,7 +218,7 @@ class TileMap(object):
 
             for x, tile in enumerate(row_of_tiles):
                 
-                if tile.solid_block:
+                if "solid_block" in tile.flags:
                     left_top = (x * self.tilesheet.tile_size[0],
                                 y * self.tilesheet.tile_size[1])
                     block = pygame.rect.Rect(left_top,

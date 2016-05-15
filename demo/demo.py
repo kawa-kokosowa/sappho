@@ -140,7 +140,7 @@ while not done:
     else:
         y_coord = potential_y_coord
         x_coord = potential_x_coord
-        camera.scroll_to(rect)
+        camera.scroll_to(potential_rect)
         #camera.scroll_absolute(x_coord - 10, y_coord - 10)
  
     # DRAWING/RENDER CODE
