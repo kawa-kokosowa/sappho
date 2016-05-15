@@ -81,9 +81,6 @@ for layer_tilemap in layer_tilemaps:
     tilemap_surfaces.append(layer_tilemap.to_surface())
 
 # Set up the camera
-
-# XXX: Is it possible that the first tile map
-# surface could be smaller than the others?
 surface_size = (tilemap_surfaces[0].get_width(),
                 tilemap_surfaces[0].get_height())
 
