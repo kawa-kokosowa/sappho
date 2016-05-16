@@ -2,11 +2,11 @@
 
 ## Lillian Gardenia Seabreeze
 
-lillian.gardenia.seabreeze@hypatiasoftware.org
+  * lillian.gardenia.seabreeze@hypatiasoftware.org
+  * http://about.lillian.link/
 
-Lillian owns and reserves all rights to this project.
-
-Lillian is the Sappho project mom.
+Lillian owns and reserves all rights to this project,
+as the Sappho project mom.
 
 ## Alice Jenkinson
 

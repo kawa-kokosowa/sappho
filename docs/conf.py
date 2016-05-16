@@ -14,8 +14,8 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # Project information
 project = u'Sappho'
-copyright = u'2016, Hypatia Software Organization'
-author = u'Hypatia Software Organization'
+copyright = u'2016, Lillian Gardenia Seabreeze'
+author = u'Lillian Gardenia Seabreeze'
 
 # Read the version information from the Sappho code
 sappho_init_path = os.path.join(os.path.abspath('..'),
