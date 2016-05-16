@@ -3,6 +3,7 @@ python:
     - "2.7"
     - "3.4"
 before_install:
+    # this will install pygame and main depends too! yay!
     - "pip install -r requirements/travis.txt"
 install:
     - "pip install ."
