@@ -118,7 +118,6 @@ class TestTilemap(object):
         csv = textwrap.dedent(self.TILEMAP_CSV).strip()
         tilemap = (sappho.tilemap.TileMap.
                    from_csv_string_and_tilesheet(csv, self.tilesheet))
-                                                                       
 
         # Create a surface that has 1x2 strips of red, green, and
         # blue to against the rendered tilemap. This surface has
