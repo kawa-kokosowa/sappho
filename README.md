@@ -4,6 +4,7 @@
 [![PyPI Version](https://img.shields.io/pypi/v/sappho.svg?style=flat-square)](https://pypi.python.org/pypi/sappho/)
 [![Code Climate](https://img.shields.io/codeclimate/github/lillian-gardenia-seabreeze/sappho.svg?style=flat-square)](https://codeclimate.com/github/lillian-gardenia-seabreeze/sappho)
 [![Travis](https://img.shields.io/travis/lillian-gardenia-seabreezee/sappho.svg?style=flat-square)](https://travis-ci.org/lillian-gardenia-seabreeze/sappho)
+[![Coverage Status](https://coveralls.io/repos/github/lillian-gardenia-seabreeze/sappho/badge.svg?branch=master)](https://coveralls.io/github/lillian-gardenia-seabreeze/sappho?branch=master)
 [![Donate with Paypal](https://img.shields.io/badge/paypal-donate-ff69b4.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZU5EVKVY2DX2S)
 
 Sappho is a 2D game engine written with Python and pygame.
