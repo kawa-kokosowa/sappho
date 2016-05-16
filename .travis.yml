@@ -1,0 +1,12 @@
+language: python
+python:
+    - "2.7"
+    - "3.4"
+before_install:
+    - "pip install -r requirements/travis.txt"
+install:
+    - "pip install ."
+script:
+    - py.test tests --doctest-modules --pep8 sappho -v --cov-report term-missing --cov=sappho
+after_success:
+    - coveralls
