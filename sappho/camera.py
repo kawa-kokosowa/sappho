@@ -8,7 +8,7 @@ import pygame
 class CameraOutOfBounds(Exception):
     """The subsurface, which is the camera's view,
     goes beyond the surface the camera's viewing.
-    
+
     Camera has been moved so that its area exceeds
     the surface it uses to make a subsurface.
 
@@ -105,7 +105,7 @@ class Camera(pygame.surface.Surface):
     Attributes:
         source_resolution (tuple[int, int]): Maximum size of the
             environment being portrayed. If you have a map with many
-            inconsistently sized layers, this should be the size of 
+            inconsistently sized layers, this should be the size of
             all of those layers flattened onto a single new layer.
             Anything beyond this size will not be on camera.
         output_resolution (tuple[int, int]): Resolution to scale up the

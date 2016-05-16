@@ -58,6 +58,7 @@ class Anchor(object):
         self.x = x
         self.y = y
 
+    @staticmethod
     def _coords_are_ints(coordinates):
         """Check if a two-element tuple representing 2D
         coordinates consists of two integers.
@@ -126,7 +127,7 @@ class Anchor(object):
             return Anchor(self.x + coordinates.x,
                           self.y + coordinates.y)
 
-        elif _coords_are_ints(coordinates):
+        elif self._coords_are_ints(coordinates):
 
             return Anchor(self.x + coordinates[0],
                           self.y + coordinates[1])
@@ -188,7 +189,7 @@ class Anchor(object):
             return Anchor(self.x - coordinates.x,
                           self.y - coordinates.y)
 
-        elif _coords_are_ints(coordinates):
+        elif self._coords_are_ints(coordinates):
 
             return Anchor(self.x - coordinates[0],
                           self.y - coordinates[1])

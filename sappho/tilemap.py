@@ -82,7 +82,7 @@ class Tilesheet(object):
                 this:
 
                 >>> {0: set(['auto_mask']),
-                ...  1: set(['solid_block', 'auto_mask'])}
+                ...  1: set(['solid_block', 'auto_mask'])}  # doctest: +SKIP
 
         """
 
@@ -196,7 +196,7 @@ class TileMap(object):
     Arguments:
         tilesheet (Tilesheet): Tilesheet to use for this map
         tiles (list[list[Tile]]): List of rows, each containing a list
-            of :class:`Tile` objects representing the tiles in this 
+            of :class:`Tile` objects representing the tiles in this
             TileMap
  
     """
@@ -222,7 +222,7 @@ class TileMap(object):
         for y, row_of_tiles in enumerate(self.tiles):
 
             for x, tile in enumerate(row_of_tiles):
-                
+
                 if Flags.SOLID_BLOCK in tile.flags:
                     left_top = (x * self.tilesheet.tile_size[0],
                                 y * self.tilesheet.tile_size[1])
@@ -233,7 +233,7 @@ class TileMap(object):
         return solid_blocks
 
     def to_surface(self):
-        """Blit the TileMap to a surface 
+        """Blit the TileMap to a surface
 
         Returns:
             pygame.Surface:
