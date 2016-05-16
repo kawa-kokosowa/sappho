@@ -20,8 +20,9 @@ class TestSurfaceLayers(object):
 
     def setup(self):
         self.target_surface = pygame.surface.Surface(self.TARGET_SURFACE_SIZE)
-        self.surface_layers = sappho.layers.SurfaceLayers(self.target_surface,
-                                                   self.NUMBER_OF_LAYERS)
+        self.surface_layers = (sappho.layers.
+                               SurfaceLayers(self.target_surface,
+                                             self.NUMBER_OF_LAYERS))
 
     def test_getitem(self):
 
@@ -81,4 +82,3 @@ class TestSurfaceLayers(object):
 
         # Compare the two surfaces
         assert(compare_surfaces(self.target_surface, test_surface))
-
