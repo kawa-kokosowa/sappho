@@ -27,7 +27,7 @@ Sappho is a 2D game engine written with Python and pygame.
 
 ## Getting Started
 
-  1. Install: `pip install -r requirements.txt .`
+  1. Install: `pip install -r requirements/main.txt .`
   2. `cd demo/`
   3. `python demo.py`
 
