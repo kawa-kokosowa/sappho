@@ -77,7 +77,7 @@ class CameraCenterBehavior(CameraBehavior):
         """
 
         focal_x = (focal_rectangle.x
-                   - (camera.view_rect.width / 2) -
+                   - (camera.view_rect.width / 2)
                    - (focal_rectangle.width / 2))
         focal_y = (focal_rectangle.y
                    - (camera.view_rect.height / 2)
