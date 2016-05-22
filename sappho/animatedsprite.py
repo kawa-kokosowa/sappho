@@ -727,7 +727,6 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         return frames
 
-    # FIXME: Example is somewhat outdated.
     @staticmethod
     def pil_image_to_pygame_surface(pil_image):
         """Convert PIL Image() to RGBA pygame Surface.
