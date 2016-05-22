@@ -60,7 +60,7 @@ class TestTilesheet(object):
                                             "tilesheet.png.rules"))
 
         rules = sappho.tilemap.Tilesheet.parse_rules(path)
-        
+
         assert(rules[0] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
         assert(rules[1] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
         assert(rules[2] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
@@ -73,7 +73,7 @@ class TestTilemap(object):
     0,1,2
     5,3,4
     """
-    
+
     def setup(self):
         # Load a tilesheet to use for our tilemap
 
@@ -87,12 +87,12 @@ class TestTilemap(object):
 
     def test_from_csv(self):
         csv = textwrap.dedent(self.TILEMAP_CSV).strip()
-        tilemap = sappho.tilemap.TileMap.from_csv_string_and_tilesheet(csv,
-                                                                       self.tilesheet)
+        tilemap = (sappho.tilemap.TileMap.
+                   from_csv_string_and_tilesheet(csv, self.tilesheet))
 
-        # The tile ID 0 is set as a solid block, and this is at (0, 0) to (1, 1)
-        # in the tilemap. Here, we check that a solid block has been correctly
-        # entered into the tilemap.
+        # The tile ID 0 is set as a solid block, and this is at (0, 0)
+        # to (1, 1) in the tilemap. Here, we check that a solid block
+        # has been correctly entered into the tilemap.
         solid_blocks = tilemap.get_solid_blocks()
         assert(len(solid_blocks) == 5)
         assert(solid_blocks[0].topleft == (0, 0))
@@ -116,12 +116,13 @@ class TestTilemap(object):
 
     def test_render(self):
         csv = textwrap.dedent(self.TILEMAP_CSV).strip()
-        tilemap = sappho.tilemap.TileMap.from_csv_string_and_tilesheet(csv,
-                                                                       self.tilesheet)
+        tilemap = (sappho.tilemap.TileMap.
+                   from_csv_string_and_tilesheet(csv, self.tilesheet))
 
-        # Create a surface that has 1x2 strips of red, green, and blue to compare
-        # against the rendered tilemap. This surface has to have the SRCALPHA flag
-        # and a depth of 32 to match the surface returned by the render function.
+        # Create a surface that has 1x2 strips of red, green, and
+        # blue to against the rendered tilemap. This surface has
+        # to have the SRCALPHA flag and a depth of 32 to match
+        # the surface returned by the render function.
         test_surface = pygame.surface.Surface((3, 2), pygame.SRCALPHA, 32)
         test_surface.fill((255, 0, 0), pygame.Rect(0, 0, 1, 2))
         test_surface.fill((0, 255, 0), pygame.Rect(1, 0, 1, 2))
@@ -132,4 +133,3 @@ class TestTilemap(object):
 
         # Compare the two surfaces
         assert(compare_surfaces(test_surface, output_surface))
-

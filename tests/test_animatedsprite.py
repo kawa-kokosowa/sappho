@@ -10,6 +10,7 @@ class MockClock(object):
     def get_time(self):
         return 1000
 
+
 class TestAnimatedSprite(object):
 
     def test_gif_loading(self):
@@ -77,4 +78,3 @@ class TestAnimatedSprite(object):
         outputsurface.blit(animsprite.image, (0, 0))
 
         assert(compare_surfaces(outputsurface, frametwo_surface))
-

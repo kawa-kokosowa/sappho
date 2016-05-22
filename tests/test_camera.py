@@ -71,7 +71,8 @@ class TestCameraCenterBehavior(object):
         """Test that moving the camera centers the focal rectangle on
         the screen. Creates a 7x7 surface, blitting red, green, and blue
         squares to it so they overlap, and checks that moving the camera
-        focuses on the right place. 
+        focuses on the right place.
+
         """
 
         # Create a surface and fill it with colored squares so that each
@@ -103,8 +104,8 @@ class TestCameraCenterBehavior(object):
         focal_subsurface = test_surface.subsurface(pygame.Rect(2, 2, 3, 3))
         assert(compare_surfaces(focal_subsurface, camera))
 
-        # Move the focus to the bottom right of the surface and compare the view
-        # again
+        # Move the focus to the bottom right of the surface
+        # and compare the view again.
         camera.scroll_to(pygame.Rect(5, 5, 1, 1))
         focal_subsurface = test_surface.subsurface(pygame.Rect(4, 4, 3, 3))
         assert(compare_surfaces(focal_subsurface, camera))
