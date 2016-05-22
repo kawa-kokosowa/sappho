@@ -198,7 +198,7 @@ class TileMap(object):
         tiles (list[list[Tile]]): List of rows, each containing a list
             of :class:`Tile` objects representing the tiles in this
             TileMap
- 
+
     """
 
     def __init__(self, tilesheet, tiles):

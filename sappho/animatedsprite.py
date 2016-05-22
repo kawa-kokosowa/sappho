@@ -727,6 +727,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         return frames
 
+    # FIXME: Example is somewhat outdated.
     @staticmethod
     def pil_image_to_pygame_surface(pil_image):
         """Convert PIL Image() to RGBA pygame Surface.
@@ -738,13 +739,8 @@ class AnimatedSprite(pygame.sprite.Sprite):
             pygame.Surface: the converted image
 
         Example:
-            >>> import zipfile
-            >>> from io import BytesIO
             >>> from PIL import Image
-            >>> path = 'resources/walkabouts/debug.zip'
-            >>> file_name = 'only.gif'
-            >>> sample = zipfile.ZipFile(path).open(file_name).read()
-            >>> gif = Image.open(BytesIO(sample))
+            >>> gif = Image.open('demo/test.gif')
             >>> AnimatedSprite.pil_image_to_pygame_surface(gif)
             <Surface(10x10x32 SW)>
 
