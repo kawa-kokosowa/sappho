@@ -1,5 +1,2 @@
--r main.txt
-pytest
-pytest-cov
-pytest-pep8
+-r develop.txt
 python-coveralls
