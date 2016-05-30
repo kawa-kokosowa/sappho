@@ -27,6 +27,9 @@ class TestAnimatedSprite(object):
         # Create the AnimatedSprite object from the test GIF file
         animsprite = animatedsprite.AnimatedSprite.from_file(path)
 
+        # Test getting the dimensions of the largest frame
+        assert animsprite.largest_frame_size() == (10, 10)
+
         # Create surfaces to compare against
         frameone = pygame.surface.Surface((10, 10))
         frameone.fill((255, 0, 0))
