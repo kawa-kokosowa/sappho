@@ -15,6 +15,7 @@ this checklist:
   * Follows other conventions in code
   * Adheres to philosophies listed in `README.md`
   * Tests are passing, i.e., `py.test tests`
+  * Run `py.test tests --doctest-modules --pep8 sappho -v --cov-report term-missing --cov=sappho`
 
 ## Git
 

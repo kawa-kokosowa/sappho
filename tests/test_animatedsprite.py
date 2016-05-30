@@ -3,6 +3,7 @@ import os
 import pygame
 
 from ..sappho import animatedsprite
+# this isn't very law of demeter...
 from .common import compare_surfaces
 
 
