@@ -3,6 +3,7 @@ import os
 import pygame
 
 from ..sappho import animatedsprite
+# this isn't very law of demeter...
 from .common import compare_surfaces
 
 
@@ -25,6 +26,9 @@ class TestAnimatedSprite(object):
 
         # Create the AnimatedSprite object from the test GIF file
         animsprite = animatedsprite.AnimatedSprite.from_file(path)
+
+        # Test getting the dimensions of the largest frame
+        assert animsprite.largest_frame_size() == (10, 10)
 
         # Create surfaces to compare against
         frameone = pygame.surface.Surface((10, 10))
@@ -57,6 +61,9 @@ class TestAnimatedSprite(object):
         # Create frames from these surfaces
         frameone = animatedsprite.Frame(frameone_surface, 0, 1000)
         frametwo = animatedsprite.Frame(frametwo_surface, 1000, 2000)
+
+        assert (frameone.__repr__()
+                == "<Frame duration(1000) start_time(0) end_time(1000)>")
 
         # Create a mock Clock object for the AnimatedSprite
         clock = MockClock()
