@@ -62,6 +62,9 @@ class TestAnimatedSprite(object):
         frameone = animatedsprite.Frame(frameone_surface, 0, 1000)
         frametwo = animatedsprite.Frame(frametwo_surface, 1000, 2000)
 
+        assert (frameone.__repr__()
+                == "<Frame duration(1000) start_time(0) end_time(1000)>")
+
         # Create a mock Clock object for the AnimatedSprite
         clock = MockClock()
 
