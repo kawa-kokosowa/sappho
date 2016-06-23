@@ -39,6 +39,12 @@ def compare_surfaces(pygame_surface_a, pygame_surface_b):
 
     """
 
+    # First just assert the dimensions are the same, before
+    # even doing the color comparisons.
+    assert pygame_surface_a.get_size() == pygame_surface_b.get_size()
+
+    # Both surfaces share the same dimensions, now compare
+    # their colors.
     some_2d_color_list_a = _make_2d_color_list(pygame_surface_a)
     some_2d_color_list_b = _make_2d_color_list(pygame_surface_b)
 
