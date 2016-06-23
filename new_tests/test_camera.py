@@ -125,8 +125,9 @@ class TestCamera(object):
 
         # Create the camera and blit colors to it
         camera = Camera((2, 1), (1, 1), (1, 1))
-        camera.blit(red_surface, (0, 0))
-        camera.blit(blue_surface, (1, 0))
+        camera.source_surface.blit(red_surface, (0, 0))
+        camera.source_surface.blit(blue_surface, (1, 0))
+        camera.update()
 
         # We should be at (0, 0) so blitting should get us a red pixel
         output_surface.blit(camera, (0, 0))
@@ -134,7 +135,9 @@ class TestCamera(object):
 
         # Scroll one pixel to the left, and we should get a blue pixel
         # when blitting
-        camera.scroll(1, 0)
+        focal_rect = pygame.Rect((1, 0), (1, 1))
+        camera.scroll_to(focal_rect)  # updates for us
+        camera.update()
         output_surface.blit(camera, (0, 0))
         assert(compare_surfaces(blue_surface, output_surface))
 
