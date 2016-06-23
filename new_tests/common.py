@@ -25,23 +25,6 @@ def _make_2d_color_list(pygame_surface):
     return surface_2d_list_of_colors
 
 
-def _compare_2d_color_list(some_2d_color_list_a, some_2d_color_list_b):
-    """Will raise an assertion error if 2d_color_list_a isn't
-    exactly the same as 2d_color_list_b.
-
-    Raises:
-        AssertionError: If the color lists are different.
-
-    """
-
-    # TODO: check to make sure they're both the same size
-
-    for y, row in enumerate(some_2d_color_list_a):
-
-        for x, color in enumerate(row):
-            assert color == some_2d_color_list_b[y][x]
-
-
 def compare_surfaces(pygame_surface_a, pygame_surface_b):
     """Compare two Pygame surfaces, assuring they are
     exactly the same.
@@ -51,11 +34,20 @@ def compare_surfaces(pygame_surface_a, pygame_surface_b):
         pygame_surface_b (pygame.Surface):
 
     Returns:
-        bool: True if the surfaces are the same, False
+        bool: True if the surfaces are the same, 
             if the surfaces are different.
 
     """
 
-    surface_a_color_list = _make_2d_color_list(pygame_surface_a)
-    surface_b_color_list = _make_2d_color_list(pygame_surface_b)
-    _compare_2d_color_list(surface_a_color_list, surface_b_color_list)
+    some_2d_color_list_a = _make_2d_color_list(pygame_surface_a)
+    some_2d_color_list_b = _make_2d_color_list(pygame_surface_b)
+
+    # TODO: check to make sure they're both the same size
+    for y, row in enumerate(some_2d_color_list_a):
+
+        for x, color in enumerate(row):
+
+            if color != some_2d_color_list_b[y][x]:
+                return False
+
+    return True
