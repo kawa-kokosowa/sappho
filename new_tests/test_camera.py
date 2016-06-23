@@ -31,6 +31,7 @@ class TestCameraBehavior(object):
 
         with pytest.raises(CameraOutOfBounds):
             camera.scroll_to(out_of_bounds_rect)
+            camera.update()
 
     def test_movement(self):
         # Create a test surface with a red square at (0, 0) and a blue
@@ -51,12 +52,14 @@ class TestCameraBehavior(object):
         # view into the test surface in the top left (that is, (0, 0)
         # to (1, 1) should be visible)
         camera.scroll_to(pygame.Rect(0, 0, 1, 1))
+        camera.update()
         focal_subsurface = test_surface.subsurface(pygame.Rect(0, 0, 2, 2))
         assert(compare_surfaces(focal_subsurface, camera))
 
         # Set focus to the pixel in the center of the test surface (1, 1)
         # and check that (1, 1) to (2, 2) is displayed on the camera
         camera.scroll_to(pygame.Rect(1, 1, 1, 1))
+        camera.update()
         focal_subsurface = test_surface.subsurface(pygame.Rect(1, 1, 2, 2))
         assert(compare_surfaces(focal_subsurface, camera))
 
@@ -92,6 +95,7 @@ class TestCameraCenterBehavior(object):
 
         # Scroll to the first focus position (top left)
         camera.scroll_to(pygame.Rect(0, 0, 1, 1))
+        camera.update()
 
         # Take a subsurface of test_surface that should represent the
         # camera's current view and compare the camera to it
@@ -101,12 +105,14 @@ class TestCameraCenterBehavior(object):
         # Move the focus to the center of the surface and compare the view
         # again to the current subsurface
         camera.scroll_to(pygame.Rect(3, 3, 1, 1))
+        camera.update()
         focal_subsurface = test_surface.subsurface(pygame.Rect(2, 2, 3, 3))
         assert(compare_surfaces(focal_subsurface, camera))
 
         # Move the focus to the bottom right of the surface
         # and compare the view again.
         camera.scroll_to(pygame.Rect(5, 5, 1, 1))
+        camera.update()
         focal_subsurface = test_surface.subsurface(pygame.Rect(4, 4, 3, 3))
         assert(compare_surfaces(focal_subsurface, camera))
 
