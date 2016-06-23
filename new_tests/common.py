@@ -34,15 +34,13 @@ def compare_surfaces(pygame_surface_a, pygame_surface_b):
         pygame_surface_b (pygame.Surface):
 
     Returns:
-        bool: True if the surfaces are the same, 
-            if the surfaces are different.
+        bool: True if images are the same, False if not.
 
     """
 
     # First just assert the dimensions are the same, before
     # even doing the color comparisons.
     same_size = pygame_surface_a.get_size() == pygame_surface_b.get_size()
-    assert same_size
 
     if same_size:
         # Both surfaces share the same dimensions, now compare
@@ -57,4 +55,9 @@ def compare_surfaces(pygame_surface_a, pygame_surface_b):
             for x, color in enumerate(row):
 
                 if color != some_2d_color_list_b[y][x]:
-                    assert False, "Surfaces are different."
+                    return False
+
+        return True
+
+    else:
+        return False
