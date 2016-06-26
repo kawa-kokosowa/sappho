@@ -2,6 +2,7 @@
 
 """
 
+from __future__ import division
 import pygame
 
 
@@ -76,19 +77,19 @@ class CameraCenterBehavior(CameraBehavior):
 
         """
 
-        focal_x = (focal_rectangle.x
-                   - (camera.view_rect.width / 2)
-                   - (focal_rectangle.width / 2))
-        focal_y = (focal_rectangle.y
-                   - (camera.view_rect.height / 2)
-                   - (focal_rectangle.height / 2))
+        # Essentially, midpoint of the focal rect, minus half the size of the view rect
+        # Handle the half-sizes together then floor divide so everything stays an int
+        focal_x = focal_rectangle.x + (focal_rectangle.width - camera.view_rect.width) // 2
+        focal_y = focal_rectangle.y + (focal_rectangle.height - camera.view_rect.height) // 2
 
+        # check lower bounds
         if focal_x < 0:
             focal_x = 0
 
         if focal_y < 0:
             focal_y = 0
 
+        # check upper bounds
         if focal_x + camera.view_rect.width > camera.source_resolution[0]:
             focal_x = camera.source_resolution[0] - camera.view_rect.width
 
