@@ -1,7 +1,5 @@
 import itertools
 
-import pygame
-
 
 def _make_2d_list_of_size(width, height):
     a_2d_list = []
