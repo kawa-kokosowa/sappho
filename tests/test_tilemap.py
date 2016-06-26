@@ -39,7 +39,6 @@ class TestTilesheet(object):
                                             "tilesheet.png"))
 
         tilesheet = sappho.tilemap.Tilesheet.from_file(path, 1, 1)
-        pygame.image.save(tilesheet.surface, 'write-tilesheet.png')
 
         # Grab the tile at (0, 0) and blit it's subsurface to another surface,
         # then compare it against a master surface to ensure it's the color we
@@ -47,11 +46,9 @@ class TestTilesheet(object):
 
         target_surface = pygame.surface.Surface((1, 1))
         target_surface.blit(tilesheet.tiles[0].image, (0, 0))
-        pygame.image.save(target_surface, 'write-tilesheet-target.png')
 
         master_surface = pygame.surface.Surface((1, 1))
         master_surface.fill((255, 0, 0))
-        pygame.image.save(master_surface, 'write-tilesheet-master.png')
 
         assert(compare_surfaces(target_surface, master_surface))
 
