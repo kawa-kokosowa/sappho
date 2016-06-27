@@ -1,5 +1,3 @@
-import os
-
 import pygame
 
 from .. import sappho
@@ -81,4 +79,4 @@ class TestSurfaceLayers(object):
         surface_layers.render()
 
         # Compare the two surfaces
-        assert(compare_surfaces(self.target_surface, test_surface))
+        assert compare_surfaces(self.target_surface, test_surface)

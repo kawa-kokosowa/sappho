@@ -98,6 +98,7 @@ class CameraCenterBehavior(CameraBehavior):
         camera.view_rect.topleft = (focal_x, focal_y)
 
 
+# NOTE: caveat: there is a surface method called scroll()
 class Camera(pygame.surface.Surface):
     """Surface that acts as a scrollable view, with optional scaling
     onto another surface.
@@ -172,4 +173,3 @@ class Camera(pygame.surface.Surface):
         """
 
         self.behavior.move(self, focal_rectangle)
-        self.update()
