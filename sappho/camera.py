@@ -79,10 +79,12 @@ class CameraCenterBehavior(CameraBehavior):
 
         # Midpoint of the focal rect, minus half the size of the view rect
         # Handle the half-sizes together then floor divide to be an int
-        focal_x = focal_rectangle.x + (
-            focal_rectangle.width - camera.view_rect.width) // 2
-        focal_y = focal_rectangle.y + (
-            focal_rectangle.height - camera.view_rect.height) // 2
+        focal_x = (focal_rectangle.x
+                   - (focal_rectangle.width // 2)
+                   - (camera.view_rect.width // 2))
+        focal_y = (focal_rectangle.y
+                   - (focal_rectangle.height // 2)
+                   - (camera.view_rect.height // 2))
 
         # check lower bounds
         if focal_x < 0:
