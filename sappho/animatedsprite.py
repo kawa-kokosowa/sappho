@@ -204,11 +204,13 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         return AnimatedSprite(frames)
 
-    # NOTE: maybe this should be from_gif...
     @classmethod
-    def from_file(cls, path_or_readable):
+    def from_gif(cls, path_or_readable):
         """The default is to create from gif bytes, but this can
         also be done from other methods...
+
+        Create a list of surfaces (frames) and a list of their
+        respective frame durations from an animated GIF.
 
         Args:
             path_or_readable (str|file-like-object): Either a string
@@ -223,7 +225,28 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         """
 
-        frames = cls.frames_from_gif(path_or_readable, anchors_config)
+        pil_gif = Image.open(path_or_readable)
+
+        frame_index = 0
+        frames = []
+        time_position = 0
+
+        try:
+
+            while True:
+                duration = pil_gif.info['duration']
+                frame_sprite = cls.pil_image_to_pygame_surface(pil_gif)
+                frame = Frame(surface=frame_sprite,
+                              start_time=time_position,
+                              duration=duration)
+                frames.append(frame)
+                frame_index += 1
+                time_position += duration
+                pil_gif.seek(pil_gif.tell() + 1)
+
+        except EOFError:
+
+            pass  # end of sequence
 
         return AnimatedSprite(frames)
 
@@ -285,46 +308,6 @@ class AnimatedSprite(pygame.sprite.Sprite):
         """
 
         return sum([frame.duration for frame in frames])
-
-    # NOTE: maybe just merge this with from_gif above
-    @classmethod
-    def frames_from_gif(cls, path_or_readable):
-        """Create a list of surfaces (frames) and a list of their
-        respective frame durations from an animated GIF.
-
-        Args:
-            path_or_readable (str|file-like-object): Path to
-                an animated-or-not GIF.
-
-        Returns
-            (List[pygame.Surface], List[int]): --
-
-        """
-
-        pil_gif = Image.open(path_or_readable)
-
-        frame_index = 0
-        frames = []
-        time_position = 0
-
-        try:
-
-            while True:
-                duration = pil_gif.info['duration']
-                frame_sprite = cls.pil_image_to_pygame_surface(pil_gif)
-                frame = Frame(surface=frame_sprite,
-                              start_time=time_position,
-                              duration=duration)
-                frames.append(frame)
-                frame_index += 1
-                time_position += duration
-                pil_gif.seek(pil_gif.tell() + 1)
-
-        except EOFError:
-
-            pass  # end of sequence
-
-        return frames
 
     @staticmethod
     def pil_image_to_pygame_surface(pil_image):
