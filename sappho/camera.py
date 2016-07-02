@@ -2,7 +2,6 @@
 
 """
 
-from __future__ import division
 import pygame
 
 
@@ -77,30 +76,25 @@ class CameraCenterBehavior(CameraBehavior):
 
         """
 
-        # Midpoint of the focal rect, minus half the size of the view rect
-        # Handle the half-sizes together then floor divide to be an int
-        focal_x = (focal_rectangle.x
-                   - (focal_rectangle.width // 2)
-                   - (camera.view_rect.width // 2))
-        focal_y = (focal_rectangle.y
-                   - (focal_rectangle.height // 2)
-                   - (camera.view_rect.height // 2))
+        new_view_rect = camera.view_rect.copy()
+        new_view_rect.center = focal_rectangle.center
 
-        # check lower bounds
-        if focal_x < 0:
-            focal_x = 0
+        # Make sure the camera isn't centered in a way that
+        # exceeds the environment's dimensions (don't go off
+        # the map!)
+        if new_view_rect.left < 0:
+            new_view_rect.left = 0
 
-        if focal_y < 0:
-            focal_y = 0
+        if new_view_rect.top < 0:
+            new_view_rect.top = 0
 
-        # check upper bounds
-        if focal_x + camera.view_rect.width > camera.source_resolution[0]:
-            focal_x = camera.source_resolution[0] - camera.view_rect.width
+        if new_view_rect.bottom > camera.source_resolution[1]:
+            new_view_rect.bottom = camera.source_resolution[1]
 
-        if focal_y + camera.view_rect.height > camera.source_resolution[1]:
-            focal_y = camera.source_resolution[1] - camera.view_rect.height
+        if new_view_rect.right > camera.source_resolution[0]:
+            new_view_rect.right = camera.source_resolution[0]
 
-        camera.view_rect.topleft = (focal_x, focal_y)
+        camera.view_rect = new_view_rect
 
 
 # NOTE: caveat: there is a surface method called scroll()
