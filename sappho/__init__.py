@@ -5,3 +5,4 @@ else:
     from . import tilemap
     from . import layers
     from . import camera
+    from . import anchor
