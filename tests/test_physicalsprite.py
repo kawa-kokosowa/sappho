@@ -1,3 +1,5 @@
+import os
+
 import pygame
 
 from ..sappho import physicalsprite, animatedsprite
