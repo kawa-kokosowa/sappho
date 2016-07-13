@@ -57,7 +57,8 @@ class Frame(object):
         self.end_time = start_time + duration
 
         if mask_threshold > 0:
-            self.mask = pygame.mask.from_surface(surface, threshold=mask_threshold)
+            self.mask = pygame.mask.from_surface(surface,
+                                                 threshold=mask_threshold)
 
     def __repr__(self):
         s = "<Frame duration(%s) start_time(%s) end_time(%s)>"
@@ -79,6 +80,10 @@ class AnimatedSprite(pygame.sprite.Sprite):
         rect (pygame.Rect): Does not reflect position, only
             area. Updated once per tick, to reflect current
             frame's rect, in AnimatedSprite.update_state().
+        mask (pygame.Mask): If the first frame had a mask
+            attribute, then we assume all do, and this
+            (optional) attribute points to the active
+            frame's mask attribute.
         active_frame_index (int): Frame # which is being
             rendered/to be rendered. Also updated once per
             tick, see the AnimatedSprite.update_state() method.
