@@ -101,7 +101,7 @@ class AnchorPoint(collections.namedtuple('Coordinate', ['x', 'y'])):
             >>> coord = (1, 1)
             >>> other_coord = AnchorPoint(4, 4)
             >>> coord - other_coord
-            <AnchorPoint at (3, 3)>
+            <AnchorPoint at (-3, -3)>
 
         """
 
