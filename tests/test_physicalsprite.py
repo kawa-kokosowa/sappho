@@ -1,6 +1,6 @@
 import pygame
 
-from ..sappho import physicalsprite, animsprite
+from ..sappho import physicalsprite, animatedsprite
 
 
 class TestPhysicalSprites(object):
