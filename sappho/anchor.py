@@ -56,25 +56,25 @@ class AnchorPoint(collections.namedtuple('Coordinate', ['x', 'y'])):
             >>> coord = AnchorPoint(9, 9)
             >>> other_coord = (5, 5)
             >>> coord + other_coord
-            AnchorPoint(14, 14)
+            <AnchorPoint at (14, 14)>
             >>> coord = (1, 1)
             >>> other_coord = AnchorPoint(4, 4)
             >>> coord + other_coord
-            AnchorPoint(5, 5)
+            <AnchorPoint at (5, 5)>
 
         """
 
         return AnchorPoint(*numpy.add(coordinates, self))
 
     def __radd__(self, coordinates):
-        """Implements addition when the Anchor is the right-hand operand.
+        """Implements addition when the AnchorPoint is the right-hand operand.
         See Also: `Anchor.__add__()`
 
         Example:
             >>> coordinates = (1, 2)
-            >>> anchor = Anchor(100, 200)
+            >>> anchor = AnchorPoint(100, 200)
             >>> coordinates + anchor
-            <Anchor at (101, 202)>
+            <AnchorPoint at (101, 202)>
 
         """
 
@@ -87,37 +87,37 @@ class AnchorPoint(collections.namedtuple('Coordinate', ['x', 'y'])):
             coordinates (Union[Anchor|Tuple[int, int]]):
                 The X-Y coordinates to subtract from the coordinates
                 of the current Anchor.  The argument may be another
-                Anchor object or tuple of two integers.
+                AnchorPoint object or tuple of two integers.
 
         Returns:
-            Anchor: A new Anchor with the coordinates of
+            Anchor: A new AnchorPoint with the coordinates of
                 the second subtracted from the first.
 
         Examples:
             >>> coord = AnchorPoint(9, 9)
             >>> other_coord = (5, 5)
             >>> coord - other_coord
-            AnchorPoint(4, 4)
+            <AnchorPoint at (4, 4)>
             >>> coord = (1, 1)
             >>> other_coord = AnchorPoint(4, 4)
             >>> coord - other_coord
-            AnchorPoint(3, 3)
+            <AnchorPoint at (3, 3)>
 
         """
 
-        return AnchorPoint(*numpy.subtract(coordinates, self))
+        return AnchorPoint(*numpy.subtract(self, coordinates))
 
     def __rsub__(self, coordinates):
-        """Implements subtraction when the Anchor is the right-hand operand.
+        """Implements subtraction when the AnchorPoint is the right-hand operand.
 
         Example:
             >>> coordinates = (100, 200)
-            >>> anchor = Anchor(1, 1)
+            >>> anchor = AnchorPoint(1, 1)
             >>> coordinates - anchor
-            <Anchor at (99, 199)>
+            <AnchorPoint at (99, 199)>
 
         See Also: `Anchor.__sub__()`
 
         """
 
-        return self.__sub__(coordinates)
+        return AnchorPoint(*numpy.subtract(coordinates, self))
