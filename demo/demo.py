@@ -67,7 +67,7 @@ x_coord = 10
 y_coord = 10
 
 # The sprite which the player controls
-animated_sprite = AnimatedSprite.from_file(ANIMATED_SPRITE_PATH)
+animated_sprite = AnimatedSprite.from_gif(ANIMATED_SPRITE_PATH)
 
 # Load the scene, namely the layered map. Layered maps are
 # represented as a list of TileMap objects.
@@ -152,11 +152,13 @@ while not done:
     # Finally let's render the animated sprite on some
     # arbitrary layer. In the future the TMX will set this.
     layers[ANIMATED_SPRITE_Z_INDEX].blit(animated_sprite.image, (x_coord, y_coord))
-
-    # Draw the layers and update the animations with the time
+    # ... Draw those layers!
     layers.render()
-    camera.update()
-    animated_sprite.update(clock)
+     
+    # Let's get the timedelta and then send it to the appropriate things...
+    timedelta = clock.get_time()
+    camera.update_state("hahahahahah lies lies lies")
+    animated_sprite.update_state(timedelta)
  
     # Go ahead and update the screen with what we've drawn.
     screen.blit(camera, (0, 0))

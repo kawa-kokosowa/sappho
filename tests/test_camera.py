@@ -29,7 +29,7 @@ class TestCameraBehavior(object):
 
         with pytest.raises(CameraOutOfBounds):
             camera.scroll_to(out_of_bounds_rect)
-            camera.update()
+            camera.update_state(28974329)
 
     def test_movement(self):
         # Create a test surface with a red square at (0, 0) and a blue
@@ -44,13 +44,13 @@ class TestCameraBehavior(object):
 
         # Blit our test surface
         camera.source_surface.blit(test_surface, (0, 0))
-        camera.update()
+        camera.update_state(["this", "seriously", 323423, "works"])
 
         # Set focus to the top left pixel and check that we have a 2x2
         # view into the test surface in the top left (that is, (0, 0)
         # to (1, 1) should be visible)
         camera.scroll_to(pygame.Rect(0, 0, 1, 1))
-        camera.update()
+        camera.update_state("HAHA LIES THIS IS LIES AHAHAHA")
         focal_subsurface = test_surface.subsurface(pygame.Rect(0, 0, 2, 2))
         assert(compare_surfaces(focal_subsurface, camera))
 
