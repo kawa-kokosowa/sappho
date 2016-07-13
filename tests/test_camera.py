@@ -57,7 +57,7 @@ class TestCameraBehavior(object):
         # Set focus to the pixel in the center of the test surface (1, 1)
         # and check that (1, 1) to (2, 2) is displayed on the camera
         camera.scroll_to(pygame.Rect(1, 1, 1, 1))
-        camera.update()
+        camera.update_state("lialskdjflasjflksadjf")
         focal_subsurface = test_surface.subsurface(pygame.Rect(1, 1, 2, 2))
         assert(compare_surfaces(focal_subsurface, camera))
 
@@ -89,11 +89,11 @@ class TestCameraCenterBehavior(object):
 
         # Blit our test surface to the camera
         camera.source_surface.blit(test_surface, (0, 0))
-        camera.update()
+        camera.update_state("AFSDALJASD;LKJFASD0000LOLOL")
 
         # Scroll to the first focus position (top left)
         camera.scroll_to(pygame.Rect(0, 0, 1, 1))
-        camera.update()
+        camera.update_state({"this": "value don't mattah", 1: 'lol'})
 
         # Take a subsurface of test_surface that should represent the
         # camera's current view and compare the camera to it
@@ -103,14 +103,14 @@ class TestCameraCenterBehavior(object):
         # Move the focus to the center of the surface and compare the view
         # again to the current subsurface
         camera.scroll_to(pygame.Rect(3, 3, 1, 1))
-        camera.update()
+        camera.update_state(['o', ('x', 2), 3])
         focal_subsurface = test_surface.subsurface(pygame.Rect(2, 2, 3, 3))
         assert(compare_surfaces(focal_subsurface, camera))
 
         # Move the focus to the bottom right of the surface
         # and compare the view again.
         camera.scroll_to(pygame.Rect(5, 5, 1, 1))
-        camera.update()
+        camera.update_state("lol")
         focal_subsurface = test_surface.subsurface(pygame.Rect(4, 4, 3, 3))
         assert(compare_surfaces(focal_subsurface, camera))
 
@@ -131,7 +131,7 @@ class TestCamera(object):
         camera = Camera((2, 1), (1, 1), (1, 1))
         camera.source_surface.blit(red_surface, (0, 0))
         camera.source_surface.blit(blue_surface, (1, 0))
-        camera.update()
+        camera.update_state("so many of these")
 
         # We should be at (0, 0) so blitting should get us a red pixel
         output_surface.blit(camera, (0, 0))
@@ -141,7 +141,7 @@ class TestCamera(object):
         # when blitting
         focal_rect = pygame.Rect((1, 0), (1, 1))
         camera.scroll_to(focal_rect)  # updates for us
-        camera.update()
+        camera.update_state("just a lot")
         output_surface.blit(camera, (0, 0))
         assert(compare_surfaces(blue_surface, output_surface))
 
@@ -159,7 +159,7 @@ class TestCamera(object):
         # Create the camera with scaling enabled and blit our red pixel to it
         camera = Camera((1, 1), (10, 10), (1, 1))
         camera.source_surface.blit(red_small, (0, 0))
-        camera.update()
+        camera.update_state(340)
 
         # Blit and compare
         # Draw the to-scale camera surface to the screen mock
