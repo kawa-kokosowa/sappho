@@ -15,7 +15,8 @@ class TestPhysicalSprites(object):
                                             "..",
                                             "resources",
                                             "animatedsprite.gif"))
-        animsprite = animatedsprite.AnimatedSprite.from_gif(path, mask_threshold=254)
+        animsprite = animatedsprite.AnimatedSprite.from_gif(path,
+                                                            mask_threshold=254)
         physical_sprite = physicalsprite.PhysicalSprite(animsprite)
 
         assert physical_sprite.rect.size == (10, 10)
