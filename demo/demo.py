@@ -11,11 +11,16 @@ Needs to use sprite groups.
 """
  
 import pygame
+import time
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+print(sys.path)
 
 from sappho.animatedsprite import AnimatedSprite
 from sappho.tilemap import TileMap, Tilesheet, tmx_file_to_tilemaps
 from sappho.layers import SurfaceLayers
 from sappho.camera import Camera, CameraCenterBehavior
+from sappho import particle
 
 # Constants/game config
 
@@ -89,9 +94,35 @@ camera = Camera(surface_size, RESOLUTION, (80, 80),
 
 # The render layers which we draw to
 layers = SurfaceLayers(camera.source_surface, len(tilemap_surfaces))
- 
+
+# Constructing particle system...
+fountain = particle.ParticleSystem(
+    particle.Particle(40, 10, life=7),
+    emitter=particle.EmitterConstantRate(30),
+    launcher=particle.PhysicsComposite(
+        particle.PhysicsKick(dx=2, dy=-10),
+        particle.PhysicsJitter(5, 5, 5, 5, 3),
+    ),
+    physics=particle.PhysicsComposite(
+        particle.PhysicsInertia(),
+        particle.PhysicsAcceleration(0, 10),
+    ),
+    drawer=particle.DrawerSimple(
+        pygame.transform.scale(
+            pygame.image.load("fuzzball.png"),
+            (5, 5),
+        ),
+        pygame.BLEND_RGB_ADD,
+    )
+)
+
+
+last_time = time.time()
 # Main program loop
 while not done:
+    new_time = time.time()
+    elapsed = new_time - last_time
+    last_time = new_time
 
     # Process events
     for event in pygame.event.get():
@@ -142,6 +173,8 @@ while not done:
         x_coord = potential_x_coord
         camera.scroll_to(potential_rect)
         #camera.scroll_absolute(x_coord - 10, y_coord - 10)
+
+    fountain.update_state(elapsed)
  
     # DRAWING/RENDER CODE
 
@@ -152,6 +185,8 @@ while not done:
     # Finally let's render the animated sprite on some
     # arbitrary layer. In the future the TMX will set this.
     layers[ANIMATED_SPRITE_Z_INDEX].blit(animated_sprite.image, (x_coord, y_coord))
+
+    fountain.draw_on(layers[ANIMATED_SPRITE_Z_INDEX])
 
     # Draw the layers and update the animations with the time
     layers.render()
