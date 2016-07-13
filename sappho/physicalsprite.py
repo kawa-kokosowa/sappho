@@ -4,6 +4,10 @@ import pygame
 class PhysicalSprite(pygame.sprite.Sprite):
     """A sprite with a position and collision data.
 
+    Especially useful for sprites whose state changes
+    a lot, notably through its update_state() method,
+    affecting its mask, rect.
+
     Attributes:
         sprite (pygame.Sprite): The sprite which represents
             this actor, and from which the actor's mask and

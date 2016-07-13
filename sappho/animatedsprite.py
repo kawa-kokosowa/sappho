@@ -8,7 +8,6 @@ import pygame
 from PIL import Image
 
 
-# TODO: add mask, which then animatedsprite points to
 class Frame(object):
     """A frame of an AnimatedSprite animation.
 
@@ -136,6 +135,11 @@ class AnimatedSprite(pygame.sprite.Sprite):
         # represents the animated sprite's position
         # on screen.
         self.rect = self.image.get_rect()
+
+        # making the bold assumption that if the
+        # first frame has a mask, as do the rest.
+        if hasattr(self.frames[0], 'mask'):
+            self.mask = self.frames[0].mask
 
     def __getitem__(self, frame_index):
         """Return the frame corresponding to
@@ -268,11 +272,14 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.image = self.frames[self.active_frame_index - 1].surface
 
         image_size = self.image.get_size()
-
-        # we're only using self.rect for size for now...
         self.rect = pygame.rect.Rect((0, 0), image_size)
-
         self.active_frame = self.frames[self.active_frame_index]
+
+        # if we have a mask, let's update our pointer!
+        # again, we make the bold assumption that if
+        # our first frame had a mask, then the rest do.
+        if hasattr(self, 'mask'):
+            self.mask = self.active_frame.mask
 
     @staticmethod
     def get_total_duration(frames):
