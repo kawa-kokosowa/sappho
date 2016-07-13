@@ -58,7 +58,7 @@ class CameraCenterBehavior(CameraBehavior):
     """A camera behavior that centers the
     focal rectangle on the screen.
 
-    Will not cause Camera.update() to raise
+    Will not cause Camera.update_state() to raise
     CameraOutOfBounds, because the move logic
     prevents such from occuring!
 
@@ -97,7 +97,6 @@ class CameraCenterBehavior(CameraBehavior):
         camera.view_rect = new_view_rect
 
 
-# NOTE: caveat: there is a surface method called scroll()
 class Camera(pygame.surface.Surface):
     """Surface that acts as a scrollable view, with optional scaling
     onto another surface.
@@ -139,7 +138,7 @@ class Camera(pygame.surface.Surface):
         self.view_rect = pygame.Rect((0, 0), view_resolution)
         self.behavior = behavior or CameraBehavior()
 
-    def update(self):
+    def update_state(self, timedelta):
         """Update the Camera to point to the
         current scroll position.
 
@@ -148,6 +147,10 @@ class Camera(pygame.surface.Surface):
         a subsurface of the "source subsurface," scaled to
         the target_resolution. The new subsurface is then
         blit to the camera (which is a surface, itself!).
+
+        Arguments:
+            timedelta (None): This isn't used at all, but it
+                is included as an argument for consistency.
 
         """
 

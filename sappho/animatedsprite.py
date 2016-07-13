@@ -1,10 +1,6 @@
 """AnimatedSprite is a pygame sprite, which is
-animated! The image is changed by sending update()
-the game clock.
-
-Warning: this module is pretty technical, the only
-thing you should really be concerned about is
-AnimatedSprite.
+animated! The image is changed by sending
+update_state() a timedelta.
 
 """
 
@@ -69,21 +65,21 @@ class AnimatedSprite(pygame.sprite.Sprite):
             animation in milliseconds.
         image (pygame.Surface): Current surface belonging to
             the active frame. Set once per tick through
-            the AnimatedSprite.update() method.
+            the AnimatedSprite.update_state() method.
         rect (pygame.Rect): Does not reflect position, only
             area. Updated once per tick, to reflect current
-            frame's rect, in AnimatedSprite.update().
+            frame's rect, in AnimatedSprite.update_state().
         active_frame_index (int): Frame # which is being
             rendered/to be rendered. Also updated once per
-            tick, see the AnimatedSprite.update() method.
+            tick, see the AnimatedSprite.update_state() method.
         active_frame: The current surface representing this
             animation at its current animation position. Set
-            once per tick through the update() method.
+            once per tick through the update_state() method.
         animation_position (int): Animation position in
             milliseconds; milleseconds elapsed in this
             animation. This is used for determining
             which frame to select. Set once per tick through
-            the AnimatedSprite.update() method.
+            the AnimatedSprite.update_state() method.
 
     See Also:
         * :class:`pygame.sprite.Sprite`
@@ -250,12 +246,12 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         return AnimatedSprite(frames)
 
-    def update(self, clock):
+    def update_state(self, timedelta):
         """Manipulate the state of this AnimatedSprite, namely
         the on-screen/viewport position (not absolute) and
-        using the clock to do animation manipulations.
+        using the timedelta to do animation manipulations.
 
-        Using the game's clock we decipher the animation position,
+        Using the game's timedelta we decipher the animation position,
         which in turn allows us to locate the correct frame.
 
         Sets the image attribute to the current frame's image. Updates
@@ -267,12 +263,13 @@ class AnimatedSprite(pygame.sprite.Sprite):
             remedying this in the future.
 
         Args:
-            clock (pygame.time.Clock): THE game clock, typically
-                found as the attribute Game.screen.clock.
+            timedelta (int|float): Typically from the game
+                clock (pygame.time.Clock) via clock.get_time().
+                Used to update the animation position.
 
         """
 
-        self.animation_position += clock.get_time()
+        self.animation_position += timedelta
 
         if self.animation_position >= self.total_duration:
             self.animation_position = (self.animation_position %
