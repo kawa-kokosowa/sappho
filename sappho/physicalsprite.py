@@ -28,18 +28,27 @@ class PhysicalSprite(pygame.sprite.Sprite):
 
         Arguments:
             sprite (pygame.Sprite): A Pygame sprite with the
-                special attributes of mask and update_state().
-                QUACK!
+                special attribute of mask and special method
+                of update_state(). QUACK!
 
         """
 
-        super(AnimatedSprite, self).__init__()
+        super(PhysicalSprite, self).__init__()
 
         self.sprite = sprite
         self.rect = self.sprite.rect
         self.mask = self.sprite.mask
 
     def update_state(self, timedelta):
+        """Set the rect and mask attributes after updating
+        the sprite's state.
+
+        Arguments:
+            timedelta (int): Typically the clock timedelta
+                resulting from the game's clock.get_time().
+
+        """
+
         self.sprite.update_state(timedelta)
         self.rect.size = self.sprite.size
         self.mask = self.sprite.mask
