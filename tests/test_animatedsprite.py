@@ -25,7 +25,7 @@ class TestAnimatedSprite(object):
         clock = MockClock()
 
         # Create the AnimatedSprite object from the test GIF file
-        animsprite = animatedsprite.AnimatedSprite.from_file(path)
+        animsprite = animatedsprite.AnimatedSprite.from_gif(path)
 
         # Test getting the dimensions of the largest frame
         assert animsprite.largest_frame_size() == (10, 10)
