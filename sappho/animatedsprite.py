@@ -57,8 +57,7 @@ class Frame(object):
         self.end_time = start_time + duration
 
         if mask_threshold > 0:
-            self.mask = pygame.mask.from_surface(surface,
-                                                 threshold=mask_threshold)
+            self.mask = pygame.mask.from_surface(surface, mask_threshold)
 
     def __repr__(self):
         s = "<Frame duration(%s) start_time(%s) end_time(%s)>"
