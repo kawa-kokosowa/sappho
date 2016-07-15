@@ -96,23 +96,30 @@ camera = Camera(surface_size, RESOLUTION, (80, 80),
 layers = SurfaceLayers(camera.source_surface, len(tilemap_surfaces))
 
 # Constructing particle system...
+source = particle.Particle(40, 40, life=4)
 fountain = particle.ParticleSystem(
-    particle.Particle(40, 10, life=7),
-    emitter=particle.EmitterConstantRate(30),
+    source,
+    emitter=particle.EmitterConstantRate(100),
     launcher=particle.PhysicsComposite(
-        particle.PhysicsKick(dx=2, dy=-10),
-        particle.PhysicsJitter(5, 5, 5, 5, 3),
+        particle.PhysicsKick(dx=4, dy=-40),
+        particle.PhysicsJitter(10, 0, 20, 5, 3),
     ),
     physics=particle.PhysicsComposite(
         particle.PhysicsInertia(),
-        particle.PhysicsAcceleration(0, 10),
+        particle.PhysicsAcceleration(0, 50),
+        #particle.PhysicsBounce(y=-1, value=-40, bounce=1)
     ),
-    drawer=particle.DrawerSimple(
+    drawer=particle.DrawerFadeOverlay(
         pygame.transform.scale(
-            pygame.image.load("fuzzball.png"),
-            (5, 5),
+            pygame.image.load("fuzzball-2.png"),
+            (4, 4),
         ),
-        pygame.BLEND_RGB_ADD,
+        [
+            (193, 193, 255, 255),
+            (63, 63, 255, 255),
+            (64, 63, 127, 0)
+        ],
+        #pygame.BLEND_RGB_MAX,
     )
 )
 
@@ -174,6 +181,8 @@ while not done:
         camera.scroll_to(potential_rect)
         #camera.scroll_absolute(x_coord - 10, y_coord - 10)
 
+    source.x = x_coord + animated_sprite.image.get_size()[0] / 2
+    source.y = y_coord #+ animated_sprite.image.get_size()[1] / 2
     fountain.update_state(elapsed)
  
     # DRAWING/RENDER CODE
