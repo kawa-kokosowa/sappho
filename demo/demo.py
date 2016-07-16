@@ -42,6 +42,9 @@ TMX_PATH = "test_scene/test.tmx"
 # The layer that the player's sprite will be rendered on 
 ANIMATED_SPRITE_Z_INDEX = 0
 
+# Number of frames per second
+FRAMES_PER_SECOND = 60
+
 
 # Runtime/Main
 
@@ -109,7 +112,7 @@ fountain = particle.ParticleSystem(
         particle.PhysicsAcceleration(0, 50),
         #particle.PhysicsBounce(y=-1, value=-40, bounce=1)
     ),
-    drawer=particle.DrawerFadeOverlay(
+    artist=particle.ArtistFadeOverlay(
         pygame.transform.scale(
             pygame.image.load("fuzzball-2.png"),
             (4, 4),
@@ -122,6 +125,8 @@ fountain = particle.ParticleSystem(
         #pygame.BLEND_RGB_MAX,
     )
 )
+
+
 
 
 last_time = time.time()
@@ -175,6 +180,7 @@ while not done:
 
     if potential_rect.collidelist(solid_blocks_on_players_index) != -1:
         print("colliding!")
+        x_speed = y_speed = 0
     else:
         y_coord = potential_y_coord
         x_coord = potential_x_coord
@@ -182,7 +188,7 @@ while not done:
         #camera.scroll_absolute(x_coord - 10, y_coord - 10)
 
     source.x = x_coord + animated_sprite.image.get_size()[0] / 2
-    source.y = y_coord #+ animated_sprite.image.get_size()[1] / 2
+    source.y = y_coord
     fountain.update_state(elapsed)
  
     # DRAWING/RENDER CODE
@@ -207,7 +213,7 @@ while not done:
     pygame.display.flip()
  
     # Limit frames per second
-    clock.tick(60)
+    clock.tick(FRAMES_PER_SECOND)
  
 # Close the window and quit.
 pygame.quit()
