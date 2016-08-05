@@ -1,7 +1,12 @@
+"""Honestly most useful for animatedsprite,
+contextsprite, etc.
+
+"""
+
 import pygame
 
 
-class PhysicalSprite(pygame.sprite.Sprite):
+class CollisionSprite(pygame.sprite.Sprite):
     """A sprite with a position and collision data.
 
     Especially useful for sprites whose state changes
@@ -23,7 +28,7 @@ class PhysicalSprite(pygame.sprite.Sprite):
     """
 
     def __init__(self, sprite):
-        """Create a PhysicalSprite, using data from the
+        """Create a CollisionSprite, using data from the
         supplied sprite.
 
         Arguments:
@@ -33,7 +38,7 @@ class PhysicalSprite(pygame.sprite.Sprite):
 
         """
 
-        super(PhysicalSprite, self).__init__()
+        super(CollisionSprite, self).__init__()
 
         self.sprite = sprite
         self.rect = self.sprite.rect

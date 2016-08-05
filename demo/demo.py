@@ -12,6 +12,7 @@ Needs to use sprite groups.
  
 import pygame
 
+from sappho.collisionsprite import CollisionSprite
 from sappho.animatedsprite import AnimatedSprite
 from sappho.tilemap import TileMap, Tilesheet, tmx_file_to_tilemaps
 from sappho.layers import SurfaceLayers
@@ -67,7 +68,8 @@ x_coord = 10
 y_coord = 10
 
 # The sprite which the player controls
-animated_sprite = AnimatedSprite.from_gif(ANIMATED_SPRITE_PATH)
+animated_sprite = AnimatedSprite.from_gif(ANIMATED_SPRITE_PATH, mask_threshold=127)
+animated_collisionsprite = CollisionSprite(animated_sprite)
 
 # Load the scene, namely the layered map. Layered maps are
 # represented as a list of TileMap objects.
@@ -89,7 +91,15 @@ camera = Camera(surface_size, RESOLUTION, (80, 80),
 
 # The render layers which we draw to
 layers = SurfaceLayers(camera.source_surface, len(tilemap_surfaces))
- 
+
+# Build a list of collidable tiles by layer index.
+collidable_tiles_by_layer = {}
+
+for layer_index, layer_tilemap in enumerate(layer_tilemaps):
+    solid_tiles = layer_tilemap.set_solid_toplefts()
+    solid_tiles_group = pygame.sprite.Group(*solid_tiles)
+    collidable_tiles_by_layer[layer_index] = solid_tiles_group
+
 # Main program loop
 while not done:
 
@@ -130,18 +140,33 @@ while not done:
     potential_y_coord = y_coord + y_speed
 
     potential_rect = pygame.rect.Rect((potential_x_coord, potential_y_coord),
-                            animated_sprite.image.get_size())
+                                      animated_collisionsprite.rect.size)
 
-    tilemap_on_players_index = layer_tilemaps[ANIMATED_SPRITE_Z_INDEX]
-    solid_blocks_on_players_index = tilemap_on_players_index.get_solid_blocks()
+    solid_tiles_on_players_index = collidable_tiles_by_layer[ANIMATED_SPRITE_Z_INDEX]
+    print([t.rect.topleft for t in solid_tiles_on_players_index])
 
-    if potential_rect.collidelist(solid_blocks_on_players_index) != -1:
+    # NOTE: portion of this could be a collisionsprite method probably...
+    # Only move the player if its rect and mask do not
+    # collide with tiles.
+    colliding = False
+    colliding_based_on_rect = pygame.sprite.spritecollide(animated_collisionsprite,
+                                                          solid_tiles_on_players_index,
+                                                          False,
+                                                          collided=pygame.sprite.collide_rect)
+
+    for tile_which_may_be_colliding in colliding_based_on_rect:
+
+        if pygame.sprite.collide_mask(tile_which_may_be_colliding, animated_collisionsprite) is not None:
+            colliding = True
+            break
+
+    if colliding:
         print("colliding!")
     else:
         y_coord = potential_y_coord
         x_coord = potential_x_coord
         camera.scroll_to(potential_rect)
-        #camera.scroll_absolute(x_coord - 10, y_coord - 10)
+        animated_collisionsprite.rect.topleft = (x_coord, y_coord)
  
     # DRAWING/RENDER CODE
 
