@@ -9,14 +9,19 @@ import pygame
 
 import xml.etree.ElementTree as ET
 
-
 PY3 = sys.version_info[0] == 3
 range = range if PY3 else xrange
 
+# TODO: this should be configurable in the
+# tilesheet rules.
+DEFAULT_AUTOMASK_THRESHOLD = 125
+"""int: The alpha threshold (0-255) which
+a pixel will be marked as NOT SET.
+"""
+
 
 class Flags(object):
-    SOLID_BLOCK = "solid_block"
-    AUTO_MASK = "auto_mask"
+    SOLID = "solid"
 
 
 class Tile(pygame.sprite.Sprite):
@@ -31,6 +36,8 @@ class Tile(pygame.sprite.Sprite):
             represent a boolean state of something
             about this tile, e.g., "solid_block"
             or "auto_mask".
+        rect (pygame.Rect): Only exists if "solid"
+            flag was specified.
 
     """
 
@@ -39,6 +46,20 @@ class Tile(pygame.sprite.Sprite):
         self.id_ = id_
         self.image = image
         self.flags = flags or set([])
+
+        if Flags.SOLID in self.flags:
+            self.rect = self.image.get_rect()
+            self.mask = pygame.mask.from_surface(image,
+                                                 DEFAULT_AUTOMASK_THRESHOLD)
+
+    def copy(self):
+        tile = Tile(self.id_, self.image, self.flags)
+
+        if hasattr(self, 'rect') and hasattr(self, 'mask'):
+            tile.rect = self.rect.copy()
+            tile.mask = self.mask
+
+        return tile
 
 
 class Tilesheet(object):
@@ -66,8 +87,8 @@ class Tilesheet(object):
 
         A rule file looks something like this:
 
-            83,99,44-77=BLOCK,SOMEFLAG
-            40,110=BLOCK
+            83,99,44-77=SOLID,SOMEFLAG
+            40,110=SOLID
             10=SOMEFLAG
 
         So as you can see, you can set multiple tile's properties
@@ -81,8 +102,8 @@ class Tilesheet(object):
                 rules (value, set). It should look something like
                 this:
 
-                >>> {0: set(['auto_mask']),
-                ...  1: set(['solid_block', 'auto_mask'])}  # doctest: +SKIP
+                >>> {0: set(['solid']),
+                ...  1: set(['solid', 'foo'])}  # doctest: +SKIP
 
         """
 
@@ -195,9 +216,10 @@ class TileMap(object):
 
     Arguments:
         tilesheet (Tilesheet): Tilesheet to use for this map
-        tiles (list[list[Tile]]): List of rows, each containing a list
-            of :class:`Tile` objects representing the tiles in this
-            TileMap
+        tiles (list[list[Tile]]): List of rows (a row itself is a list),
+            where each row contains the appropriate amount of
+            :class:`Tile` objects representing the tiles of
+            this TileMap.
 
     """
 
@@ -205,32 +227,37 @@ class TileMap(object):
         self.tilesheet = tilesheet
         self.tiles = tiles
 
-    def get_solid_blocks(self):
-        """Return the Pygame rect of all
-        the tiles which have the solid_block
-        attribute.
+    def set_solid_toplefts(self):
+        """The rectangles from tiles do not contain positional
+        data (all of their toplefts are [0, 0]). This method
+        sets the appropriate topleft per rectangle, considering
+        the position of the tile in the tilemap.
+
+        Warning:
+            Only tiles with the `solid` flag will have their
+            topleft set.
 
         Returns:
-            list[pygame.Rect]:
-                List of :class:`pygame.Rect` objects that represent
-                the solid tiles in this TileMap
+            list[Tile]: List of Tile objects whose topleft
+                was set.
 
         """
 
-        solid_blocks = []
+        solid_tiles_topleft_updated = []
 
         for y, row_of_tiles in enumerate(self.tiles):
 
             for x, tile in enumerate(row_of_tiles):
 
-                if Flags.SOLID_BLOCK in tile.flags:
+                # If this flag is present we know the
+                # tile will have the rect and mask attribs
+                if Flags.SOLID in tile.flags:
                     left_top = (x * self.tilesheet.tile_size[0],
                                 y * self.tilesheet.tile_size[1])
-                    block = pygame.rect.Rect(left_top,
-                                             self.tilesheet.tile_size)
-                    solid_blocks.append(block)
+                    tile.rect.topleft = left_top
+                    solid_tiles_topleft_updated.append(tile)
 
-        return solid_blocks
+        return solid_tiles_topleft_updated
 
     def to_surface(self):
         """Blit the TileMap to a surface
@@ -284,8 +311,13 @@ class TileMap(object):
 
                     continue
 
+                # This tile needs to be COPIED to be counted
+                # as a separate sprite, otherwise if you change
+                # the same tile type from tilesheet at one location,
+                # it'll change all the other locations of that same
+                # tile type.
                 tile_id = int(tile_id_string) - firstgid
-                tile = tilesheet.tiles[tile_id]
+                tile = tilesheet.tiles[tile_id].copy()
                 row.append(tile)
 
             sheet.append(row)

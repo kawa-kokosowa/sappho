@@ -14,6 +14,9 @@ class Frame(object):
     Attributes:
         surface (pygame.Surface): The pygame image which is used
             for a frame of an animation.
+        mask (pygame.Mask): Mask automatically generated from the
+            supplied surface (see above). Only exists if mask_threshold
+            was >0 on init.
         duration (integer): Milliseconds this frame lasts. How
             long this frame is displayed in corresponding animation.
         start_time (integer): The animation position in milleseconds,
@@ -27,7 +30,7 @@ class Frame(object):
 
     """
 
-    def __init__(self, surface, start_time, duration):
+    def __init__(self, surface, start_time, duration, mask_threshold=0):
         """Create a frame using a pygame surface, the start time,
         and the duration time.
 
@@ -41,6 +44,10 @@ class Frame(object):
                 while duration signifies when it ends.
             duration (integer): Milleseconds this frame lasts. See:
                 start_time argument description.
+            mask_threshold (int): Valid values 0-254. Alpha values
+                ABOVE this provided number are marked as "solid"/
+                collidable/set. If this is not greater than zero,
+                the mask is not generated.
 
         """
 
@@ -48,6 +55,9 @@ class Frame(object):
         self.duration = duration
         self.start_time = start_time
         self.end_time = start_time + duration
+
+        if mask_threshold > 0:
+            self.mask = pygame.mask.from_surface(surface, mask_threshold)
 
     def __repr__(self):
         s = "<Frame duration(%s) start_time(%s) end_time(%s)>"
@@ -69,6 +79,10 @@ class AnimatedSprite(pygame.sprite.Sprite):
         rect (pygame.Rect): Does not reflect position, only
             area. Updated once per tick, to reflect current
             frame's rect, in AnimatedSprite.update_state().
+        mask (pygame.Mask): If the first frame had a mask
+            attribute, then we assume all do, and this
+            (optional) attribute points to the active
+            frame's mask attribute.
         active_frame_index (int): Frame # which is being
             rendered/to be rendered. Also updated once per
             tick, see the AnimatedSprite.update_state() method.
@@ -126,6 +140,11 @@ class AnimatedSprite(pygame.sprite.Sprite):
         # on screen.
         self.rect = self.image.get_rect()
 
+        # making the bold assumption that if the
+        # first frame has a mask, as do the rest.
+        if hasattr(self.frames[0], 'mask'):
+            self.mask = self.frames[0].mask
+
     def __getitem__(self, frame_index):
         """Return the frame corresponding to
         the supplied frame_index.
@@ -168,40 +187,8 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         return largest_frame_size
 
-    @staticmethod
-    def from_surface_duration_list(surface_duration_list):
-        """Support PygAnimation-style frames.
-
-        A list like [(surface, int duration in ms)]
-
-        Args:
-            surface_duration_list (list[tuple]): A list
-                of tuples, first element is a surface,
-                second element being how long said surface
-                is displayed for. For example:
-
-                >>> a_surface = pygame.Surface((10, 10))
-                >>> duration = 100  # 100 MS
-                >>> surface_duration_list = [(a_surface, duration)]
-
-        Returns:
-            AnimatedSprite: The animated sprite constructed
-                from the provided surface_duration_list.
-
-        """
-
-        running_time = 0
-        frames = []
-
-        for surface, duration in surface_duration_list:
-            frame = Frame(surface, running_time, duration)
-            frames.append(frame)
-            running_time += duration
-
-        return AnimatedSprite(frames)
-
     @classmethod
-    def from_gif(cls, path_or_readable):
+    def from_gif(cls, path_or_readable, mask_threshold=0):
         """The default is to create from gif bytes, but this can
         also be done from other methods...
 
@@ -213,8 +200,11 @@ class AnimatedSprite(pygame.sprite.Sprite):
                 or an object with a read() method. So, either a path
                 to an animated GIF, or a file-like-object/buffer of
                 an animated GIF.
-            anchors_config (configparser): INI/config file associated
-                with providing anchors for this animation.
+            mask_threshold (int): An optional keyword argument which
+                must be >0 to generate masks automatically per frame.
+                This value is used to note which parts are opaque and
+                thus collidable, and which values are not. Think of
+                RGBA, valid values are 0-254. See also: Frame().
 
         Returns:
             AnimatedSprite: --
@@ -234,7 +224,8 @@ class AnimatedSprite(pygame.sprite.Sprite):
                 frame_sprite = cls.pil_image_to_pygame_surface(pil_gif)
                 frame = Frame(surface=frame_sprite,
                               start_time=time_position,
-                              duration=duration)
+                              duration=duration,
+                              mask_threshold=mask_threshold)
                 frames.append(frame)
                 frame_index += 1
                 time_position += duration
@@ -285,11 +276,14 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.image = self.frames[self.active_frame_index - 1].surface
 
         image_size = self.image.get_size()
-
-        # we're only using self.rect for size for now...
         self.rect = pygame.rect.Rect((0, 0), image_size)
-
         self.active_frame = self.frames[self.active_frame_index]
+
+        # if we have a mask, let's update our pointer!
+        # again, we make the bold assumption that if
+        # our first frame had a mask, then the rest do.
+        if hasattr(self, 'mask'):
+            self.mask = self.active_frame.mask
 
     @staticmethod
     def get_total_duration(frames):

@@ -10,44 +10,24 @@ Needs to use sprite groups.
 
 """
  
+import config
 import pygame
 
+from sappho.collisionsprite import CollisionSprite
 from sappho.animatedsprite import AnimatedSprite
 from sappho.tilemap import TileMap, Tilesheet, tmx_file_to_tilemaps
 from sappho.layers import SurfaceLayers
 from sappho.camera import Camera, CameraCenterBehavior
 
-# Constants/game config
-
-# Window resolution in pixels (Width, Height)
-RESOLUTION = [700, 500]
-
-# The title that will appear in the window's title bar 
-WINDOW_TITLE = "Sappho Engine Test"
-
-# The path to the file that's being used to represent the player
-ANIMATED_SPRITE_PATH = "test.gif"
-
-# The path to the file being used as the tilesheet
-TILESHEET_PATH = "test_scene/tilesheet.png"
-
-# The Tiled Map Editor file which the player explores
-TMX_PATH = "test_scene/test.tmx"
-
-# The layer that the player's sprite will be rendered on 
-ANIMATED_SPRITE_Z_INDEX = 0
-
-
-# Runtime/Main
 
 # Setup
 pygame.init()
  
 # Set the width and height of the screen [width,height]
-screen = pygame.display.set_mode(RESOLUTION)
+screen = pygame.display.set_mode(config.RESOLUTION)
  
 # Set the caption in the title bar
-pygame.display.set_caption(WINDOW_TITLE)
+pygame.display.set_caption(config.WINDOW_TITLE)
  
 # Loop until the user clicks the close button.
 done = False
@@ -58,21 +38,21 @@ clock = pygame.time.Clock()
 # Hide the mouse cursor
 pygame.mouse.set_visible(0)
  
-# Speed in pixels per frame
+# TODO: make this work as frame-independent
+# speed for movement. Right now this starts
+# at 0 and is set to higher when keypress...
 x_speed = 0
 y_speed = 0
- 
-# Current position
-x_coord = 10
-y_coord = 10
 
 # The sprite which the player controls
-animated_sprite = AnimatedSprite.from_gif(ANIMATED_SPRITE_PATH)
+animated_sprite = AnimatedSprite.from_gif(config.ANIMATED_SPRITE_PATH, mask_threshold=127)
+animated_collisionsprite = CollisionSprite(animated_sprite)
+animated_collisionsprite.topleft = config.START_POSITION
 
 # Load the scene, namely the layered map. Layered maps are
 # represented as a list of TileMap objects.
-tilesheet = Tilesheet.from_file(TILESHEET_PATH, 10, 10)
-layer_tilemaps = tmx_file_to_tilemaps(TMX_PATH, tilesheet)
+tilesheet = Tilesheet.from_file(config.TILESHEET_PATH, *config.START_POSITION)
+layer_tilemaps = tmx_file_to_tilemaps(config.TMX_PATH, tilesheet)
 
 # ... Make a list of surfaces from the tilemaps.
 tilemap_surfaces = []
@@ -83,13 +63,20 @@ for layer_tilemap in layer_tilemaps:
 # Set up the camera
 surface_size = (tilemap_surfaces[0].get_width(),
                 tilemap_surfaces[0].get_height())
-
-camera = Camera(surface_size, RESOLUTION, (80, 80),
+camera = Camera(surface_size, config.RESOLUTION, (80, 80),
                 behavior=CameraCenterBehavior())
 
 # The render layers which we draw to
 layers = SurfaceLayers(camera.source_surface, len(tilemap_surfaces))
- 
+
+# Build a list of collidable tiles by layer index.
+collidable_tiles_by_layer = {}
+
+for layer_index, layer_tilemap in enumerate(layer_tilemaps):
+    solid_tiles = layer_tilemap.set_solid_toplefts()
+    solid_tiles_group = pygame.sprite.Group(*solid_tiles)
+    collidable_tiles_by_layer[layer_index] = solid_tiles_group
+
 # Main program loop
 while not done:
 
@@ -126,22 +113,20 @@ while not done:
     # and if not, move the player
 
     # Move the object according to the speed vector.
-    potential_x_coord = x_coord + x_speed
-    potential_y_coord = y_coord + y_speed
+    #
+    # We will be resetting animated_collisionsprite.rect.topleft
+    # to old_topleft if there is a collision.
+    old_topleft = animated_collisionsprite.rect.topleft
+    potential_x_coord = old_topleft[0] + x_speed
+    potential_y_coord = old_topleft[1] + y_speed
+    animated_collisionsprite.rect.topleft = (potential_x_coord,
+                                             potential_y_coord)
+    solid_tiles_on_players_index = collidable_tiles_by_layer[config.ANIMATED_SPRITE_Z_INDEX]
 
-    potential_rect = pygame.rect.Rect((potential_x_coord, potential_y_coord),
-                            animated_sprite.image.get_size())
-
-    tilemap_on_players_index = layer_tilemaps[ANIMATED_SPRITE_Z_INDEX]
-    solid_blocks_on_players_index = tilemap_on_players_index.get_solid_blocks()
-
-    if potential_rect.collidelist(solid_blocks_on_players_index) != -1:
-        print("colliding!")
+    if animated_collisionsprite.collides_with_any_in_group(solid_tiles_on_players_index):
+        animated_collisionsprite.rect.topleft = old_topleft
     else:
-        y_coord = potential_y_coord
-        x_coord = potential_x_coord
-        camera.scroll_to(potential_rect)
-        #camera.scroll_absolute(x_coord - 10, y_coord - 10)
+        camera.scroll_to(animated_collisionsprite.rect)
  
     # DRAWING/RENDER CODE
 
@@ -151,7 +136,9 @@ while not done:
 
     # Finally let's render the animated sprite on some
     # arbitrary layer. In the future the TMX will set this.
-    layers[ANIMATED_SPRITE_Z_INDEX].blit(animated_sprite.image, (x_coord, y_coord))
+    layers[config.ANIMATED_SPRITE_Z_INDEX].blit(animated_sprite.image,
+                                                animated_collisionsprite.rect.topleft)
+
     # ... Draw those layers!
     layers.render()
      
