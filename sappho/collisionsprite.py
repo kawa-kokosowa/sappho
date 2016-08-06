@@ -57,3 +57,29 @@ class CollisionSprite(pygame.sprite.Sprite):
         self.sprite.update_state(timedelta)
         self.rect.size = self.sprite.size
         self.mask = self.sprite.mask
+
+    def collides_with_any_in_group(self, pygame_sprite_group):
+        """Return True if this CollisionSprite collides with
+        any of the sprites in the provided sprite group.
+
+        Collisions are checked by first getting all the sprites
+        from the pygame_sprite_group which collide with this
+        CollisionSprite based on rectangles. Using those sprites
+        gotten, see if any collide based on mask.
+
+        Returns:
+            bool: True if colliding based on mask.
+
+        """
+
+        colliding_based_on_rect = pygame.sprite.spritecollide(self,
+                                                              pygame_sprite_group,
+                                                              False,
+                                                              collided=pygame.sprite.collide_rect)
+
+        for tile_which_may_be_colliding in colliding_based_on_rect:
+
+            if pygame.sprite.collide_mask(tile_which_may_be_colliding, self) is not None:
+                return True
+
+        return False

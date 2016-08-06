@@ -63,13 +63,14 @@ pygame.mouse.set_visible(0)
 x_speed = 0
 y_speed = 0
  
-# Current position
+# Start position
 x_coord = 10
 y_coord = 10
 
 # The sprite which the player controls
 animated_sprite = AnimatedSprite.from_gif(ANIMATED_SPRITE_PATH, mask_threshold=127)
 animated_collisionsprite = CollisionSprite(animated_sprite)
+animated_collisionsprite.topleft = (x_coord, y_coord)
 
 # Load the scene, namely the layered map. Layered maps are
 # represented as a list of TileMap objects.
@@ -136,37 +137,22 @@ while not done:
     # and if not, move the player
 
     # Move the object according to the speed vector.
-    potential_x_coord = x_coord + x_speed
-    potential_y_coord = y_coord + y_speed
-
-    potential_rect = pygame.rect.Rect((potential_x_coord, potential_y_coord),
-                                      animated_collisionsprite.rect.size)
-
+    #
+    # We will be resetting animated_collisionsprite.rect.topleft
+    # to old_topleft if there is a collision.
+    old_topleft = animated_collisionsprite.rect.topleft
+    potential_x_coord = old_topleft[0] + x_speed
+    potential_y_coord = old_topleft[1] + y_speed
+    animated_collisionsprite.rect.topleft = (potential_x_coord,
+                                             potential_y_coord)
     solid_tiles_on_players_index = collidable_tiles_by_layer[ANIMATED_SPRITE_Z_INDEX]
-    print([t.rect.topleft for t in solid_tiles_on_players_index])
 
-    # NOTE: portion of this could be a collisionsprite method probably...
-    # Only move the player if its rect and mask do not
-    # collide with tiles.
-    colliding = False
-    colliding_based_on_rect = pygame.sprite.spritecollide(animated_collisionsprite,
-                                                          solid_tiles_on_players_index,
-                                                          False,
-                                                          collided=pygame.sprite.collide_rect)
-
-    for tile_which_may_be_colliding in colliding_based_on_rect:
-
-        if pygame.sprite.collide_mask(tile_which_may_be_colliding, animated_collisionsprite) is not None:
-            colliding = True
-            break
-
-    if colliding:
-        print("colliding!")
+    if animated_collisionsprite.collides_with_any_in_group(solid_tiles_on_players_index):
+        print("cannot move; collid")
+        animated_collisionsprite.rect.topleft = old_topleft
     else:
-        y_coord = potential_y_coord
-        x_coord = potential_x_coord
-        camera.scroll_to(potential_rect)
-        animated_collisionsprite.rect.topleft = (x_coord, y_coord)
+        print("dogs")
+        #camera.scroll_to(animated_collisionsprite.rect)
  
     # DRAWING/RENDER CODE
 
@@ -176,7 +162,9 @@ while not done:
 
     # Finally let's render the animated sprite on some
     # arbitrary layer. In the future the TMX will set this.
-    layers[ANIMATED_SPRITE_Z_INDEX].blit(animated_sprite.image, (x_coord, y_coord))
+    layers[ANIMATED_SPRITE_Z_INDEX].blit(animated_sprite.image,
+                                         animated_collisionsprite.rect.topleft)
+
     # ... Draw those layers!
     layers.render()
      
