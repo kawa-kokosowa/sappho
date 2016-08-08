@@ -39,4 +39,7 @@ this checklist:
 
   * When you make a new branch, branch from master, e.g.,
     `checkout -b some-new-branch-name master`
-  * Make a pull request comparing against `master`
+  * Make a pull request comparing against `master` (if
+    approved it'll be merged to `nextrelease`
+  * The only time you branch from `nextrelease` is when
+    you're working on docs or tests.
