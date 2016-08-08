@@ -6,7 +6,7 @@
 [![Travis](https://img.shields.io/travis/lily-seabreeze/sappho.svg?style=flat-square)](https://travis-ci.org/lily-seabreeze/sappho)
 [![Coverage Status](https://coveralls.io/repos/github/lily-seabreeze/sappho/badge.svg?branch=master)](https://coveralls.io/github/lily-seabreeze/sappho?branch=master)
 
-Sappho is a 2D game engine written with Python and pygame.
+Sappho is a 2D game engine written with Python (2 *and* 3) and pygame.
 
 ![sappho in action](https://github.com/lily-seabreeze/sappho/blob/master/game-demo.gif)
 
