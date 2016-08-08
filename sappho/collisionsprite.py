@@ -72,14 +72,23 @@ class CollisionSprite(pygame.sprite.Sprite):
 
         """
 
-        colliding_based_on_rect = pygame.sprite.spritecollide(self,
-                                                              pygame_sprite_group,
-                                                              False,
-                                                              collided=pygame.sprite.collide_rect)
+        # shorthand
+        spritecollide = pygame.sprite.spritecollide
+        collide_mask = pygame.sprite.collide_mask
 
-        for tile_which_may_be_colliding in colliding_based_on_rect:
+        # get the tiles (sprites) colliding with this
+        # collision sprite based on rect property.
+        tiles_colliding_by_rect = (spritecollide(self,
+                                                 pygame_sprite_group,
+                                                 False,
+                                                 collided=(pygame.sprite
+                                                           .collide_rect)))
 
-            if pygame.sprite.collide_mask(tile_which_may_be_colliding, self) is not None:
+        # of the tiles which intersected based on rect, see if any tiles
+        # collide with this CollisionSprite based on mask
+        for tile_whose_rect_collides in tiles_colliding_by_rect:
+
+            if collide_mask(tile_whose_rect_collides, self) is not None:
                 return True
 
         return False
