@@ -9,13 +9,15 @@ overload you with constraints.
   * Your code should be very transparent to the fact that we're using pygame,
     that means inherit native pygame objects where possible (like surfaces
     and sprites) and return pygame or builtin Python objects. This is "loose
-    coupling."
+    coupling." Don't interfere with the way people build their pygame games.
   * Other developers should not have to read about your module, as possible. To
     be truly transparent, using Sappho should be completely intuitive to a
     pygame developer.
   * Simplicity and readability first
   * Consistency
   * Fully documented (docstrings at least)
+  * Create code that is easy to test. 100% test coverage.
+  * Don't automate "game logic"
 
 ## Quality Checklist
 
