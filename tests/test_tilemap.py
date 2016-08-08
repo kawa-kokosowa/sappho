@@ -28,7 +28,7 @@ class TestTilesheet(object):
         tilesheet = sappho.tilemap.Tilesheet.from_file(path, 1, 1)
 
         # Test that tile rules are loaded correctly
-        assert(sappho.tilemap.Flags.SOLID_BLOCK in
+        assert(sappho.tilemap.Flags.SOLID in
                tilesheet.tiles[0].flags)
 
     def test_subsurface(self):
@@ -61,11 +61,11 @@ class TestTilesheet(object):
 
         rules = sappho.tilemap.Tilesheet.parse_rules(path)
 
-        assert(rules[0] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
-        assert(rules[1] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
-        assert(rules[2] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
-        assert(rules[3] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
-        assert(rules[4] == set([sappho.tilemap.Flags.SOLID_BLOCK]))
+        assert(rules[0] == set([sappho.tilemap.Flags.SOLID]))
+        assert(rules[1] == set([sappho.tilemap.Flags.SOLID]))
+        assert(rules[2] == set([sappho.tilemap.Flags.SOLID]))
+        assert(rules[3] == set([sappho.tilemap.Flags.SOLID]))
+        assert(rules[4] == set([sappho.tilemap.Flags.SOLID]))
 
 
 class TestTilemap(object):
@@ -93,10 +93,10 @@ class TestTilemap(object):
         # The tile ID 0 is set as a solid block, and this is at (0, 0)
         # to (1, 1) in the tilemap. Here, we check that a solid block
         # has been correctly entered into the tilemap.
-        solid_blocks = tilemap.get_solid_blocks()
-        assert(len(solid_blocks) == 5)
-        assert(solid_blocks[0].topleft == (0, 0))
-        assert(solid_blocks[0].bottomright == (1, 1))
+        solid_tiles = tilemap.set_solid_toplefts()
+        assert(len(solid_tiles) == 5)
+        assert(solid_tiles[0].rect.topleft == (0, 0))
+        assert(solid_tiles[0].rect.bottomright == (1, 1))
 
     def test_from_tmx(self):
         testpath = os.path.realpath(__file__)
@@ -109,10 +109,10 @@ class TestTilemap(object):
         tilemap = tilemaps[0]
 
         # Same as the above test, check for the solid block
-        solid_blocks = tilemap.get_solid_blocks()
-        assert(len(solid_blocks) == 5)
-        assert(solid_blocks[0].topleft == (0, 0))
-        assert(solid_blocks[0].bottomright == (1, 1))
+        solid_tiles = tilemap.set_solid_toplefts()
+        assert(len(solid_tiles) == 5)
+        assert(solid_tiles[0].rect.topleft == (0, 0))
+        assert(solid_tiles[0].rect.bottomright == (1, 1))
 
     def test_render(self):
         csv = textwrap.dedent(self.TILEMAP_CSV).strip()

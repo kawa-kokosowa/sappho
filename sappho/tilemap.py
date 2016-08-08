@@ -1,3 +1,4 @@
+# TODO: rename to tiles
 """Tile engine; tile map, tilesheet system.
 
 Has impassability support.
@@ -227,6 +228,7 @@ class TileMap(object):
         self.tilesheet = tilesheet
         self.tiles = tiles
 
+    # TODO: rename to set_toplefts_of_solid_tiles()
     def set_solid_toplefts(self):
         """The rectangles from tiles do not contain positional
         data (all of their toplefts are [0, 0]). This method
