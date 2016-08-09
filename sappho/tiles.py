@@ -1,4 +1,4 @@
-# TODO: rename to tiles
+# TODO: module level docstring
 """Tile engine; tile map, tilesheet system.
 
 Has impassability support.

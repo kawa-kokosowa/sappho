@@ -1,6 +1,9 @@
-# TODO: rename module to "collision"
-"""Honestly most useful for animatedsprite,
-contextsprite, etc.
+"""Handle generic pygame collision.
+
+The CollisionSprite lets you have a positional
+sprite, with a mask and rect, which can be
+efficiently and easily tested against sprite
+groups with similar data.
 
 """
 

@@ -1,5 +1,14 @@
 """Camera control on a surface.
 
+Camera is just a pygame surface, so treat it as such!
+
+A camera allows you to have a viewport which is smaller than the size
+of the surface you're hoping to pan that viewport around on. Think
+about looking at a big painting through a paper towel tube.
+
+Cameras have an output resolution it scales its viewport to, plus a
+behavior which governs how a Camera pans on its associated surface.
+
 """
 
 import pygame
