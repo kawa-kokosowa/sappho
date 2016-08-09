@@ -52,13 +52,13 @@ animated_collisionsprite.topleft = config.START_POSITION
 # Load the scene, namely the layered map. Layered maps are
 # represented as a list of TileMap objects.
 tilesheet = Tilesheet.from_file(config.TILESHEET_PATH, *config.START_POSITION)
-layer_tilemaps = tmx_file_to_tilemaps(config.TMX_PATH, tilesheet)
+tilemaps_by_layer = tmx_file_to_tilemaps(config.TMX_PATH, tilesheet)
 
 # ... Make a list of surfaces from the tilemaps.
 tilemap_surfaces = []
 
-for layer_tilemap in layer_tilemaps:
-    tilemap_surfaces.append(layer_tilemap.to_surface())
+for tilemap_representing_layer in tilemaps_by_layer:
+    tilemap_surfaces.append(tilemap_representing_layer.to_surface())
 
 # Set up the camera
 surface_size = (tilemap_surfaces[0].get_width(),
@@ -68,14 +68,6 @@ camera = Camera(surface_size, config.RESOLUTION, (80, 80),
 
 # The render layers which we draw to
 layers = SurfaceLayers(camera.source_surface, len(tilemap_surfaces))
-
-# Build a list of collidable tiles by layer index.
-collidable_tiles_by_layer = {}
-
-for layer_index, layer_tilemap in enumerate(layer_tilemaps):
-    solid_tiles = layer_tilemap.set_solid_toplefts()
-    solid_tiles_group = pygame.sprite.Group(*solid_tiles)
-    collidable_tiles_by_layer[layer_index] = solid_tiles_group
 
 # Main program loop
 while not done:
@@ -121,9 +113,9 @@ while not done:
     potential_y_coord = old_topleft[1] + y_speed
     animated_collisionsprite.rect.topleft = (potential_x_coord,
                                              potential_y_coord)
-    solid_tiles_on_players_index = collidable_tiles_by_layer[config.ANIMATED_SPRITE_Z_INDEX]
+    tilemap_on_players_index = tilemaps_by_layer[config.ANIMATED_SPRITE_Z_INDEX]
 
-    if animated_collisionsprite.collides_with_any_in_group(solid_tiles_on_players_index):
+    if animated_collisionsprite.collides_with_any_in_group(tilemap_on_players_index.collision_group):
         animated_collisionsprite.rect.topleft = old_topleft
     else:
         camera.scroll_to(animated_collisionsprite.rect)

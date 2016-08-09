@@ -227,9 +227,9 @@ class TileMap(object):
     def __init__(self, tilesheet, tiles):
         self.tilesheet = tilesheet
         self.tiles = tiles
+        self.collision_group = self.set_solid_tiles_topleft(self.tiles)
 
-    # TODO: rename to set_toplefts_of_solid_tiles()
-    def set_solid_toplefts(self):
+    def set_solid_tiles_topleft(self, tiles):
         """The rectangles from tiles do not contain positional
         data (all of their toplefts are [0, 0]). This method
         sets the appropriate topleft per rectangle, considering
@@ -237,15 +237,16 @@ class TileMap(object):
 
         Warning:
             Only tiles with the `solid` flag will have their
-            topleft set.
+            topleft set. Keep in mind immutability; the tile
+            instances are being modified.
 
         Returns:
-            list[Tile]: List of Tile objects whose topleft
-                was set.
+            pygame.sprite.Group: All the collidable tiles which
+                actually have rect and mask attributes.
 
         """
 
-        solid_tiles_topleft_updated = []
+        collidable_tiles_for_sprite_group = []
 
         for y, row_of_tiles in enumerate(self.tiles):
 
@@ -257,9 +258,9 @@ class TileMap(object):
                     left_top = (x * self.tilesheet.tile_size[0],
                                 y * self.tilesheet.tile_size[1])
                     tile.rect.topleft = left_top
-                    solid_tiles_topleft_updated.append(tile)
+                    collidable_tiles_for_sprite_group.append(tile)
 
-        return solid_tiles_topleft_updated
+        return pygame.sprite.Group(*collidable_tiles_for_sprite_group)
 
     def to_surface(self):
         """Blit the TileMap to a surface

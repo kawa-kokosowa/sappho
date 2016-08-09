@@ -93,10 +93,7 @@ class TestTilemap(object):
         # The tile ID 0 is set as a solid block, and this is at (0, 0)
         # to (1, 1) in the tilemap. Here, we check that a solid block
         # has been correctly entered into the tilemap.
-        solid_tiles = tilemap.set_solid_toplefts()
-        assert(len(solid_tiles) == 5)
-        assert(solid_tiles[0].rect.topleft == (0, 0))
-        assert(solid_tiles[0].rect.bottomright == (1, 1))
+        assert(len(tilemap.collision_group) == 5)
 
     def test_from_tmx(self):
         testpath = os.path.realpath(__file__)
@@ -109,10 +106,7 @@ class TestTilemap(object):
         tilemap = tilemaps[0]
 
         # Same as the above test, check for the solid block
-        solid_tiles = tilemap.set_solid_toplefts()
-        assert(len(solid_tiles) == 5)
-        assert(solid_tiles[0].rect.topleft == (0, 0))
-        assert(solid_tiles[0].rect.bottomright == (1, 1))
+        assert(len(tilemap.collision_group) == 5)
 
     def test_render(self):
         csv = textwrap.dedent(self.TILEMAP_CSV).strip()

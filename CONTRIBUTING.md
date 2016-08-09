@@ -18,6 +18,7 @@ overload you with constraints.
   * Fully documented (docstrings at least)
   * Create code that is easy to test. 100% test coverage.
   * Don't automate "game logic"
+  * Avoid modifying foreign objects inside of a different object
 
 ## Quality Checklist
 
