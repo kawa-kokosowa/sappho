@@ -34,14 +34,20 @@ is used on these.
 """
 from __future__ import division
 import copy
+import itertools
 import math
 import random
 
-import pygame
+
+#import pygame
+class pygame:
+    BLEND_RGBA_MULT = 8
 
 
 # The biggest number less than infinity-plus-one
 INFINITY = float('inf')
+
+OUT_OF_PARTICLES = -1
 
 
 class Particle(object):
@@ -90,7 +96,10 @@ class ParticleSystem(object):
     if the particle system has run out of particles and can safely be deleted.
     """
     def __init__(
-            self, origin_particle, emitter, launcher,
+            self,
+            origin_particle,
+            emitter,
+            launcher=None,
             physics=None,
             artist=None,
             particle_limit=512,
@@ -122,7 +131,7 @@ class ParticleSystem(object):
         """
         self.origin = origin_particle
         self.emitter = emitter
-        self.launcher = launcher
+        self.launcher = launcher or (lambda *x: None)
         self.launcher_dt = launcher_dt
         self.physics = physics or PhysicsInertia()
         self.is_emitting = True
@@ -144,12 +153,12 @@ class ParticleSystem(object):
         Arguments:
             dt (float): Number of elapsed seconds since last update.
         """
-        for particle in self.particles:
-            self.physics(dt, particle)
-        self._discard_dead_particles()
         new_particle_count = self._get_new_particle_count(dt)
         for _ in range(new_particle_count):
             self._launch()
+        for particle in self.particles:
+            self.physics(dt, particle)
+        self._discard_dead_particles()
 
     def draw_on(self, surface):
         """Draw all particles on the given surface."""
@@ -165,7 +174,9 @@ class ParticleSystem(object):
         effect.
         """
         desired_particle_count = self.emitter(dt)
-        self.is_emitting = desired_particle_count is not None
+        self.is_emitting = desired_particle_count is not None and \
+            desired_particle_count != OUT_OF_PARTICLES and \
+            desired_particle_count >= 0
         particle_slots_available = self.particle_limit - len(self.particles)
         return min(desired_particle_count or 0, particle_slots_available)
 
@@ -207,13 +218,13 @@ class EmitterConstantRate(object):
             dt: Elapsed time in seconds.
         """
         if self._has_limit and not self.particles_left:
-            return None
+            return OUT_OF_PARTICLES
 
         exact = self.remainder + dt * self.rate
         count = int(exact)
         self.remainder = exact - count
         if self._has_limit:
-            count = max((count, self.particles_left))
+            count = min((count, self.particles_left))
             self.particles_left -= count
 
         return count
@@ -248,6 +259,22 @@ class EmitterBurst(object):
         """
         return cls([(count, delay)])
 
+    @classmethod
+    def repeat(cls, count, period, delay=0):
+        """Perform regular, repeated bursts.
+
+        Arguments:
+            count: Number of particles to emit.
+            period: Time to wait between bursts.
+            delay: Time to wait before first burst.
+        """
+        return cls(
+            itertools.chain(
+                ((count, delay),),
+                itertools.repeat((count, period)),
+            )
+        )
+
     @property
     def is_alive(self):
         """Whether it's still creating bursts in the future."""
@@ -264,12 +291,14 @@ class EmitterBurst(object):
             count += self.count
             dt -= self.delay
             self.count, self.delay = next(
-                self.iter_counts_and_delays, (INFINITY, 0))
+                self.iter_counts_and_delays,
+                (0, INFINITY)
+            )
         self.delay -= dt
         if count or self.is_alive:
             return count
         else:
-            return None
+            return OUT_OF_PARTICLES
 
 
 class PhysicsComposite(object):
@@ -291,6 +320,7 @@ class PhysicsComposite(object):
                 which will be applied to particles each frame.
         """
         self.physics.extend(physics)
+        return self
 
     def __call__(self, dt, particle):
         """Do all physics updates for `dt` seconds on given particle.
@@ -478,7 +508,7 @@ class ArtistSimple(object):
 
 
 class ArtistFadeOverlay(object):
-    """Arist that draws an image, fading between different tints based on
+    """Artist that draws an image, fading between different tints based on
     the particle's lifetime."""
     def __init__(self, image, tints,
                  blit_flags=0, tint_flags=pygame.BLEND_RGBA_MULT):
