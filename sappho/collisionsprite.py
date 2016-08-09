@@ -1,9 +1,16 @@
+# TODO: rename module to "collision"
 """Honestly most useful for animatedsprite,
 contextsprite, etc.
 
 """
 
 import pygame
+
+
+class Collision(Exception):
+
+    def __init__(self, collision_details):
+        self.collision_details = collision_details
 
 
 class CollisionSprite(pygame.sprite.Sprite):
@@ -67,6 +74,9 @@ class CollisionSprite(pygame.sprite.Sprite):
         CollisionSprite based on rectangles. Using those sprites
         gotten, see if any collide based on mask.
 
+        Arguments:
+            pygame_sprite_group (pygame.sprite.Group): ...
+
         Returns:
             bool: True if colliding based on mask.
 
@@ -92,3 +102,30 @@ class CollisionSprite(pygame.sprite.Sprite):
                 return True
 
         return False
+
+    def try_to_move(self, x_speed, y_speed, sprite_group):
+        """Try to move to a position and either succeed
+        or raise a Collision exception.
+
+        Will not change position if Collision raised.
+
+        Arguments:
+            x_speed (int): this number will be added to the
+                rectangle's topleft x!
+            y_speed (int): this number will be added to the
+                rectangle's topleft y!
+            sprite_group (pygame.sprite.Group): ...
+
+        Raises:
+            Collision: ...
+
+        """
+
+        old_topleft = self.rect.topleft
+        potential_x_coord = old_topleft[0] + x_speed
+        potential_y_coord = old_topleft[1] + y_speed
+        self.rect.topleft = (potential_x_coord, potential_y_coord)
+
+        if self.collides_with_any_in_group(sprite_group):
+            self.rect.topleft = old_topleft
+            raise Collision("some side...")

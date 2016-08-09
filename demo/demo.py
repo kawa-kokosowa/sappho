@@ -13,7 +13,7 @@ Needs to use sprite groups.
 import config
 import pygame
 
-from sappho.collisionsprite import CollisionSprite
+from sappho.collisionsprite import CollisionSprite, Collision
 from sappho.animatedsprite import AnimatedSprite
 from sappho.tilemap import TileMap, Tilesheet, tmx_file_to_tilemaps
 from sappho.layers import SurfaceLayers
@@ -61,8 +61,7 @@ for tilemap_representing_layer in tilemaps_by_layer:
     tilemap_surfaces.append(tilemap_representing_layer.to_surface())
 
 # Set up the camera
-surface_size = (tilemap_surfaces[0].get_width(),
-                tilemap_surfaces[0].get_height())
+surface_size = tilemap_surfaces[0].get_size()
 camera = Camera(surface_size, config.RESOLUTION, (80, 80),
                 behavior=CameraCenterBehavior())
 
@@ -108,15 +107,13 @@ while not done:
     #
     # We will be resetting animated_collisionsprite.rect.topleft
     # to old_topleft if there is a collision.
-    old_topleft = animated_collisionsprite.rect.topleft
-    potential_x_coord = old_topleft[0] + x_speed
-    potential_y_coord = old_topleft[1] + y_speed
-    animated_collisionsprite.rect.topleft = (potential_x_coord,
-                                             potential_y_coord)
     tilemap_on_players_index = tilemaps_by_layer[config.ANIMATED_SPRITE_Z_INDEX]
+    collision_group_on_player_index = tilemap_on_players_index.collision_group
 
-    if animated_collisionsprite.collides_with_any_in_group(tilemap_on_players_index.collision_group):
-        animated_collisionsprite.rect.topleft = old_topleft
+    try:
+        animated_collisionsprite.try_to_move(x_speed, y_speed, collision_group_on_player_index)
+    except Collision:
+        pass
     else:
         camera.scroll_to(animated_collisionsprite.rect)
  
