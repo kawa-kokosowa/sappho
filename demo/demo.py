@@ -13,9 +13,9 @@ Needs to use sprite groups.
 import config
 import pygame
 
-from sappho.collisionsprite import CollisionSprite, Collision
-from sappho.animatedsprite import AnimatedSprite
-from sappho.tilemap import TileMap, Tilesheet, tmx_file_to_tilemaps
+from sappho.collide import CollisionSprite, Collision
+from sappho.animate import AnimatedSprite
+from sappho.tiles import TileMap, Tilesheet, tmx_file_to_tilemaps
 from sappho.layers import SurfaceLayers
 from sappho.camera import Camera, CameraCenterBehavior
 

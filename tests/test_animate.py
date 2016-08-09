@@ -2,7 +2,7 @@ import os
 
 import pygame
 
-from ..sappho import animatedsprite
+from ..sappho import animate
 # this isn't very law of demeter...
 from .common import compare_surfaces
 
@@ -25,7 +25,7 @@ class TestAnimatedSprite(object):
         clock = MockClock()
 
         # Create the AnimatedSprite object from the test GIF file
-        animsprite = animatedsprite.AnimatedSprite.from_gif(path)
+        animsprite = animate.AnimatedSprite.from_gif(path)
 
         # Test getting the dimensions of the largest frame
         assert animsprite.largest_frame_size() == (10, 10)
@@ -59,8 +59,8 @@ class TestAnimatedSprite(object):
         frametwo_surface.fill((0, 255, 0))
 
         # Create frames from these surfaces
-        frameone = animatedsprite.Frame(frameone_surface, 0, 1000)
-        frametwo = animatedsprite.Frame(frametwo_surface, 1000, 2000)
+        frameone = animate.Frame(frameone_surface, 0, 1000)
+        frametwo = animate.Frame(frametwo_surface, 1000, 2000)
 
         assert (frameone.__repr__()
                 == "<Frame duration(1000) start_time(0) end_time(1000)>")
@@ -69,7 +69,7 @@ class TestAnimatedSprite(object):
         clock = MockClock()
 
         # Create the AnimatedSprite with our frames
-        animsprite = animatedsprite.AnimatedSprite([frameone, frametwo])
+        animsprite = animate.AnimatedSprite([frameone, frametwo])
 
         # Blit the AnimatedSprite (which should give us our first frame)
         outputsurface = pygame.surface.Surface((10, 10))

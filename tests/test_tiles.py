@@ -10,7 +10,7 @@ from .common import compare_surfaces
 class TestTile(object):
     def test_tile_instantiation(self):
         surface = pygame.surface.Surface((1, 1))
-        tile = sappho.tilemap.Tile(0, surface)
+        tile = sappho.tiles.Tile(0, surface)
 
         assert(tile.id_ == 0)
         assert(len(tile.flags) == 0)
@@ -25,10 +25,10 @@ class TestTilesheet(object):
                                             "resources",
                                             "tilesheet.png"))
 
-        tilesheet = sappho.tilemap.Tilesheet.from_file(path, 1, 1)
+        tilesheet = sappho.tiles.Tilesheet.from_file(path, 1, 1)
 
         # Test that tile rules are loaded correctly
-        assert(sappho.tilemap.Flags.SOLID in
+        assert(sappho.tiles.Flags.SOLID in
                tilesheet.tiles[0].flags)
 
     def test_subsurface(self):
@@ -38,7 +38,7 @@ class TestTilesheet(object):
                                             "resources",
                                             "tilesheet.png"))
 
-        tilesheet = sappho.tilemap.Tilesheet.from_file(path, 1, 1)
+        tilesheet = sappho.tiles.Tilesheet.from_file(path, 1, 1)
 
         # Grab the tile at (0, 0) and blit it's subsurface to another surface,
         # then compare it against a master surface to ensure it's the color we
@@ -59,13 +59,13 @@ class TestTilesheet(object):
                                             "resources",
                                             "tilesheet.png.rules"))
 
-        rules = sappho.tilemap.Tilesheet.parse_rules(path)
+        rules = sappho.tiles.Tilesheet.parse_rules(path)
 
-        assert(rules[0] == set([sappho.tilemap.Flags.SOLID]))
-        assert(rules[1] == set([sappho.tilemap.Flags.SOLID]))
-        assert(rules[2] == set([sappho.tilemap.Flags.SOLID]))
-        assert(rules[3] == set([sappho.tilemap.Flags.SOLID]))
-        assert(rules[4] == set([sappho.tilemap.Flags.SOLID]))
+        assert(rules[0] == set([sappho.tiles.Flags.SOLID]))
+        assert(rules[1] == set([sappho.tiles.Flags.SOLID]))
+        assert(rules[2] == set([sappho.tiles.Flags.SOLID]))
+        assert(rules[3] == set([sappho.tiles.Flags.SOLID]))
+        assert(rules[4] == set([sappho.tiles.Flags.SOLID]))
 
 
 class TestTilemap(object):
@@ -83,11 +83,11 @@ class TestTilemap(object):
                                             "resources",
                                             "tilesheet.png"))
 
-        self.tilesheet = sappho.tilemap.Tilesheet.from_file(path, 1, 1)
+        self.tilesheet = sappho.tiles.Tilesheet.from_file(path, 1, 1)
 
     def test_from_csv(self):
         csv = textwrap.dedent(self.TILEMAP_CSV).strip()
-        tilemap = (sappho.tilemap.TileMap.
+        tilemap = (sappho.tiles.TileMap.
                    from_csv_string_and_tilesheet(csv, self.tilesheet))
 
         # The tile ID 0 is set as a solid block, and this is at (0, 0)
@@ -102,7 +102,7 @@ class TestTilemap(object):
                                             "resources",
                                             "tilemap.tmx"))
 
-        tilemaps = sappho.tilemap.tmx_file_to_tilemaps(path, self.tilesheet)
+        tilemaps = sappho.tiles.tmx_file_to_tilemaps(path, self.tilesheet)
         tilemap = tilemaps[0]
 
         # Same as the above test, check for the solid block
@@ -110,7 +110,7 @@ class TestTilemap(object):
 
     def test_render(self):
         csv = textwrap.dedent(self.TILEMAP_CSV).strip()
-        tilemap = (sappho.tilemap.TileMap.
+        tilemap = (sappho.tiles.TileMap.
                    from_csv_string_and_tilesheet(csv, self.tilesheet))
 
         # Create a surface that has 1x2 strips of red, green, and
