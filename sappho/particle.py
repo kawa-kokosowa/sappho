@@ -174,9 +174,7 @@ class ParticleSystem(object):
         effect.
         """
         desired_particle_count = self.emitter(dt)
-        self.is_emitting = desired_particle_count is not None and \
-            desired_particle_count != OUT_OF_PARTICLES and \
-            desired_particle_count >= 0
+        self.is_emitting = not _indicates_dead_emitter(desired_particle_count)
         particle_slots_available = self.particle_limit - len(self.particles)
         return min(desired_particle_count or 0, particle_slots_available)
 
@@ -196,6 +194,56 @@ class ParticleSystem(object):
                 if read_index > write_index:
                     self.particles[write_index] = particle
         del self.particles[write_index:]
+
+
+class EmitterComposite(object):
+    """Combine several emitters into one."""
+    def __init__(self, *emitters):
+        """Create composite of multiple emitters.
+
+        Arguments:
+            emitters (list of emitter callables): Emitter callables, each of
+                which indicates number of particles to emit in `dt` seconds
+        """
+        self.emitters = list(emitters)
+        self._alive_count = len(self.emitters)
+
+    def add(self, *emitters):
+        """Add multiple emitters.
+
+        Arguments:
+            emitters (list of emitter callables): Emitter callables, each of
+                which indicates number of particles to emit in `dt` seconds
+        """
+        self.emitters.extend(emitters)
+        self._alive_count = len(self.emitters)
+        return self
+
+    def __call__(self, dt):
+        """How many particles to emit in `dt` seconds.
+
+        Arguments:
+            dt: Elapsed time in seconds.
+        """
+        if self.is_alive():
+            count = 0
+            alive_count = 0
+            for emitter in self.emitters:
+                new_count = emitter(dt)
+                if not _indicates_dead_emitter(new_count):
+                    count += new_count
+                    alive_count += 1
+            self._alive_count = alive_count
+            if count or self.is_alive():
+                return count
+            else:
+                return OUT_OF_PARTICLES
+        else:
+            return OUT_OF_PARTICLES
+
+    def is_alive(self):
+        """Is this still expected to produce particles in the future?"""
+        return self._alive_count > 0
 
 
 class EmitterConstantRate(object):
@@ -357,6 +405,9 @@ class PhysicsJitter(object):
     Randomness can be applied to particle coordinates, velocity, or life,
     which is cool.
     """
+
+    ATTRS = 'x y dx dy life'.split()
+
     def __init__(self, x=0, y=0, dx=0, dy=0, life=0, jitter=None):
         """Define randomness to add.
 
@@ -374,12 +425,11 @@ class PhysicsJitter(object):
         self.dx = dx
         self.dy = dy
         self.life = life
-        if jitter:
-            self.jitter = jitter
+        self.jitter = jitter or self.brownian
 
-    def jitter(self, dt):
-        """Default jitter function: just randomness centered at 0"""
-        return dt * (random.random() - 0.5)
+    @classmethod
+    def brownian(cls, dt):
+        return random.gauss(0, math.sqrt(dt))
 
     def __call__(self, dt, particle):
         """Perform jitter for `dt` seconds on given particle.
@@ -388,11 +438,14 @@ class PhysicsJitter(object):
             dt (float): Elapsed seconds
             particle (Particle): Particle to update.
         """
-        particle.x += dt * self.x * self.jitter(dt)
-        particle.y += dt * self.y * self.jitter(dt)
-        particle.dx += dt * self.dx * self.jitter(dt)
-        particle.dy += dt * self.dy * self.jitter(dt)
-        particle.life += dt * self.life * self.jitter(dt)
+        # Jitter might be expensive so we only use it where necessary
+        for attr in self.ATTRS:
+            value = getattr(self, attr)
+            if value:
+                jitter = self.jitter(dt)
+                # particle.attr += value * jitter
+                pvalue = getattr(particle, attr)
+                setattr(particle, attr, pvalue + value * jitter)
 
 
 class PhysicsKick(object):
@@ -417,19 +470,6 @@ class PhysicsKick(object):
         self.dy = dy
         self.life = life
 
-    @classmethod
-    def radial(cls, r, theta):
-        """Provide a radial velocity kick.
-
-        Arguments:
-            r (float): speed in pixels per second (per second)
-            theta (float): angle in degrees (0 = +X axis, 90 = +Y axis)
-        """
-        radians = math.radians(theta)
-        dx = r * math.cos(radians)
-        dy = r * math.sin(radians)
-        return cls(dx=dx, dy=dy)
-
     def __call__(self, dt, particle):
         """Perform kick for `dt` seconds on given particle.
 
@@ -445,7 +485,11 @@ class PhysicsKick(object):
 
 
 class PhysicsAcceleration(object):
-    """Constant acceleration field."""
+    """Constant acceleration field.
+
+    This is kind of a special case of Kick, for only dx & dy, but
+    we keep it separate for clarity.
+    """
     def __init__(self, ax, ay):
         """Set up acceleration field.
 
@@ -572,3 +616,9 @@ class ArtistFadeOverlay(object):
         else:
             tint = self.tints[floor]
         return tint
+
+
+def _indicates_dead_emitter(desired_particle_count):
+    return desired_particle_count is None or \
+        desired_particle_count == OUT_OF_PARTICLES or \
+        desired_particle_count < 0
