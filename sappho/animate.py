@@ -266,7 +266,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         return AnimatedSprite(frames)
 
-    def update_state(self, timedelta):
+    def update(self, timedelta):
         """Manipulate the state of this AnimatedSprite, namely
         the on-screen/viewport position (not absolute) and
         using the timedelta to do animation manipulations.

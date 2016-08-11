@@ -43,7 +43,7 @@ class TestAnimatedSprite(object):
         assert(compare_surfaces(outputsurface, frameone))
 
         timedelta = clock.get_time()
-        animsprite.update_state(timedelta)
+        animsprite.update(timedelta)
 
         # Blit again, which should give us our second frame
         outputsurface = pygame.surface.Surface((10, 10))
@@ -78,7 +78,7 @@ class TestAnimatedSprite(object):
         assert(compare_surfaces(outputsurface, frameone_surface))
 
         # Update the AnimatedSprite
-        animsprite.update_state(clock.get_time())
+        animsprite.update(clock.get_time())
 
         # Blit again, which should give us our second frame
         outputsurface = pygame.surface.Surface((10, 10))

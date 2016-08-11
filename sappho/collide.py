@@ -52,7 +52,9 @@ class CollisionSprite(pygame.sprite.Sprite):
 
         self.sprite = sprite
         self.rect = self.sprite.rect
-        self.mask = self.sprite.mask
+
+        if hasattr(sprite, 'mask'):
+            self.mask = self.sprite.mask
 
     def update_state(self, timedelta):
         """Set the rect and mask attributes after updating
@@ -66,7 +68,9 @@ class CollisionSprite(pygame.sprite.Sprite):
 
         self.sprite.update_state(timedelta)
         self.rect.size = self.sprite.size
-        self.mask = self.sprite.mask
+
+        if hasattr(self, 'mask'):
+            self.mask = self.sprite.mask
 
     def collides_with_any_in_group(self, pygame_sprite_group):
         """Return True if this CollisionSprite collides with
@@ -101,12 +105,20 @@ class CollisionSprite(pygame.sprite.Sprite):
         # collide with this CollisionSprite based on mask
         for tile_whose_rect_collides in tiles_colliding_by_rect:
 
-            if collide_mask(tile_whose_rect_collides, self) is not None:
-                return True
+            if (hasattr(self, 'mask')
+                    and hasattr(tile_whose_rect_collides, 'mask')
+                    and (collide_mask(tile_whose_rect_collides, self))):
 
-        return False
+                print("mask collision")
+                return tile_whose_rect_collides
 
-    def try_to_move(self, x_speed, y_speed, sprite_group):
+            elif (not hasattr(self, 'mask')) and (not hasattr(self, 'mask')):
+                print("rect collision")
+                return tile_whose_rect_collides
+
+        return None
+
+    def try_to_move(self, new_coord, sprite_group):
         """Try to move to a position and either succeed
         or raise a Collision exception.
 
@@ -125,10 +137,11 @@ class CollisionSprite(pygame.sprite.Sprite):
         """
 
         old_topleft = self.rect.topleft
-        potential_x_coord = old_topleft[0] + x_speed
-        potential_y_coord = old_topleft[1] + y_speed
-        self.rect.topleft = (potential_x_coord, potential_y_coord)
+        self.rect.topleft = new_coord
 
         if self.collides_with_any_in_group(sprite_group):
             self.rect.topleft = old_topleft
             raise Collision("some side...")
+
+    def try_to_movable_coordinate_preceeding(self):
+        pass

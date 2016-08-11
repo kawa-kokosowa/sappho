@@ -1,9 +1,14 @@
 # Constants/game config
 
+MAX_SPEED = 3
+
 RESOLUTION = [700, 500]
 """tuple(int, int): This demo will be ran in a window of the
 dimensions (x, y) pixels (width, height).
 """
+
+VIEWPORT = (80, 80)
+"""tuple(int, int): ..."""
 
 WINDOW_TITLE = "Sappho Engine Test"
 """str: The title of the window running the demo.
