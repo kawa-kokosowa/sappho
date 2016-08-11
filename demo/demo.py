@@ -159,8 +159,14 @@ player_bullet_list = pygame.sprite.Group()
 
 # Asteroids
 asteroid_list = pygame.sprite.Group()
-an_asteroid = Asteroid((60, 60), 10, 1, 1)
-asteroid_list.add(an_asteroid)
+asteroid_a = Asteroid((60, 60), 10, 1, 1)
+asteroid_b = Asteroid((80, 80), 10, -1, -1)
+asteroid_c = Asteroid((40, 40), 10, 1, 0)
+asteroid_d = Asteroid((60, 60), 10, 0, 1)
+asteroid_list.add(asteroid_a)
+asteroid_list.add(asteroid_b)
+asteroid_list.add(asteroid_c)
+asteroid_list.add(asteroid_d)
 
 # Main program loop ###########################################################
 while not done:
