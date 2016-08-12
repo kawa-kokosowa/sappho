@@ -73,7 +73,6 @@ class Asteroid(CollisionSprite):
                 new_asteroid = self.new_smaller_asteroid()
                 asteroid_list.add(new_asteroid)
 
-        SMALL_EXPLODE_SOUND.play()
         asteroid_list.remove(self)
 
     def update(self, wall_list, layer_size, asteroid_list, player_bullet_list, timedelta):
@@ -85,6 +84,7 @@ class Asteroid(CollisionSprite):
         collision_bullet = self.collides_with_any_in_group(player_bullet_list)
 
         if collision_bullet:
+            SMALL_EXPLODE_SOUND.play()
 
             if self.rect.width >= 4:
                 self.explode(asteroid_list)
@@ -322,9 +322,9 @@ while not done:
     # we should make these chase the player, actually...
     if len(asteroid_list) < 3:
         plus_or_minus_x = random.choice([1, -1])
-        new_asteroid_x = (player_collider.rect.top - (20 * plus_or_minus_x) * plus_or_minus_x)
+        new_asteroid_x = (player_collider.rect.top - (20 * plus_or_minus_x)) * plus_or_minus_x
         plus_or_minus_y = random.choice([1, -1])
-        new_asteroid_y = (player_collider.rect.left - (20 * plus_or_minus_y) * plus_or_minus_y)
+        new_asteroid_y = (player_collider.rect.left - (20 * plus_or_minus_y)) * plus_or_minus_y
         another_asteroid = Asteroid((new_asteroid_x, new_asteroid_y), 10, 0, 1)
         asteroid_list.add(another_asteroid)
 
