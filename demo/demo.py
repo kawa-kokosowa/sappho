@@ -81,15 +81,6 @@ class Asteroid(CollisionSprite):
 
         new_rect = wrap_logic(self.rect, layer_size)
         self.rect = new_rect
-        collision_bullet = self.collides_with_any_in_group(player_bullet_list)
-
-        if collision_bullet:
-            SMALL_EXPLODE_SOUND.play()
-
-            if self.rect.width >= 4:
-                self.explode(asteroid_list)
-
-            player_bullet_list.remove(collision_bullet)
              
         # colliding with wall?
         collision_wall = self.collides_with_any_in_group(wall_list)
@@ -111,21 +102,32 @@ class Bullet(CollisionSprite):
         self.total_duration = duration
         super(Bullet, self).__init__(self)
 
-    def update(self, player_bullet_list, wall_list, timedelta):
+    def update(self, wall_list, asteroid_list, player_bullet_list, timedelta):
         self.current_duration += timedelta
 
         if self.current_duration >= self.total_duration:
             player_bullet_list.remove(self)
 
-        self.rect.topleft = (self.x_speed + self.rect.left,
-                             self.y_speed + self.rect.top)
+        new_coord = (self.rect.left + self.x_speed,
+                     self.rect.top + self.y_speed)
+        collision_asteroids = self.sprites_in_path(new_coord, asteroid_list)
 
-        # now we must see if we collide
-        collision_wall = self.collides_with_any_in_group(wall_list)
+        if collision_asteroids:
+            SMALL_EXPLODE_SOUND.play()
+
+            for asteroid in collision_asteroids:
+                asteroid.explode(asteroid_list)
+
+            player_bullet_list.remove(self)
+             
+        # colliding with wall?
+        collision_wall = self.sprites_in_path(new_coord, wall_list)
 
         if collision_wall:
             player_bullet_list.remove(self)
             THIP_SOUND.play()
+        else:
+            self.rect.topleft = new_coord
 
 
 def wrap_logic(rect, layer_size):
@@ -354,7 +356,7 @@ while not done:
     camera.update_state("hahahahahah lies lies lies")
     player_sprite.update(timedelta)
     animated_bg.update(timedelta)
-    player_bullet_list.update(player_bullet_list, collision_group_on_player_index, timedelta)
+    player_bullet_list.update(collision_group_on_player_index, asteroid_list, player_bullet_list, timedelta)
     asteroid_list.update(collision_group_on_player_index, layers[0].get_size(), asteroid_list, player_bullet_list, timedelta)
  
     # Go ahead and update the screen with what we've drawn.
