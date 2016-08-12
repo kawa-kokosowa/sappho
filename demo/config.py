@@ -1,6 +1,6 @@
 # Constants/game config
 
-MAX_SPEED = 3
+MAX_SPEED = 2
 
 RESOLUTION = [700, 500]
 """tuple(int, int): This demo will be ran in a window of the

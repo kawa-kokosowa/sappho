@@ -118,6 +118,7 @@ class CollisionSprite(pygame.sprite.Sprite):
 
         return None
 
+    # TODO: test all proceeding coordinates, returning first obstruction?
     def try_to_move(self, new_coord, sprite_group):
         """Try to move to a position and either succeed
         or raise a Collision exception.
@@ -142,6 +143,24 @@ class CollisionSprite(pygame.sprite.Sprite):
         if self.collides_with_any_in_group(sprite_group):
             self.rect.topleft = old_topleft
             raise Collision("some side...")
+
+    # TODO: what if I want diagonal!?
+    def sprites_in_path(self, new_coord, sprite_group):
+        """Test every position up to new_coord.
+
+        Warning: this only works for orthoganal shooting, i.e.,
+        up, down, left, right.
+
+        """
+
+        current_rect = self.rect
+        future_rect = self.rect.copy()
+        future_rect.topleft = new_coord
+        collision_rect = future_rect.union(current_rect)
+        self.rect = collision_rect
+        colliding_with = self.collides_with_any_in_group(sprite_group)
+        self.rect = current_rect
+        return colliding_with
 
     def try_to_movable_coordinate_preceeding(self):
         pass
