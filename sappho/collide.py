@@ -1,6 +1,6 @@
 """Handle generic pygame collision.
 
-The CollisionSprite lets you have a positional
+The ColliderSprite lets you have a positional
 sprite, with a mask and rect, which can be
 efficiently and easily tested against sprite
 groups with similar data.
@@ -16,12 +16,15 @@ class Collision(Exception):
         self.collision_details = collision_details
 
 
-class CollisionSprite(pygame.sprite.Sprite):
+class ColliderSprite(pygame.sprite.Sprite):
     """A sprite with a position and collision data.
 
     Especially useful for sprites whose state changes
     a lot, notably through its update_state() method,
     affecting its mask, rect.
+
+    The update() method will update the sprite as well, there's
+    no reason for you to access said sprite anymore.
 
     Attributes:
         sprite (pygame.Sprite): The sprite which represents
@@ -38,7 +41,7 @@ class CollisionSprite(pygame.sprite.Sprite):
     """
 
     def __init__(self, sprite):
-        """Create a CollisionSprite, using data from the
+        """Create a ColliderSprite, using data from the
         supplied sprite.
 
         Arguments:
@@ -48,7 +51,7 @@ class CollisionSprite(pygame.sprite.Sprite):
 
         """
 
-        super(CollisionSprite, self).__init__()
+        super(ColliderSprite, self).__init__()
 
         self.sprite = sprite
         self.rect = self.sprite.rect
@@ -72,51 +75,28 @@ class CollisionSprite(pygame.sprite.Sprite):
         if hasattr(self, 'mask'):
             self.mask = self.sprite.mask
 
-    def collides_with_any_in_group(self, pygame_sprite_group):
-        """Return True if this CollisionSprite collides with
-        any of the sprites in the provided sprite group.
+    def collides_rect(self, sprite_group):
+        return pygame.sprite.spritecollide(self, sprite_group, False,
+                                           collided=pygame.sprite.collide_rect)
 
-        Collisions are checked by first getting all the sprites
-        from the pygame_sprite_group which collide with this
-        CollisionSprite based on rectangles. Using those sprites
-        gotten, see if any collide based on mask.
+    def collides_rect_mask(self, sprite_group):
 
-        Arguments:
-            pygame_sprite_group (pygame.sprite.Group): ...
-
-        Returns:
-            bool: True if colliding based on mask.
-
-        """
-
-        # shorthand
-        spritecollide = pygame.sprite.spritecollide
-        collide_mask = pygame.sprite.collide_mask
-
-        # get the tiles (sprites) colliding with this
-        # collision sprite based on rect property.
-        tiles_colliding_by_rect = (spritecollide(self,
-                                                 pygame_sprite_group,
-                                                 False,
-                                                 collided=(pygame.sprite
-                                                           .collide_rect)))
-
-        # of the tiles which intersected based on rect, see if any tiles
-        # collide with this CollisionSprite based on mask
-        for tile_whose_rect_collides in tiles_colliding_by_rect:
+        for sprite_whose_rect_collides in self.collides_rect(sprite_group):
 
             if (hasattr(self, 'mask')
-                    and hasattr(tile_whose_rect_collides, 'mask')
-                    and (collide_mask(tile_whose_rect_collides, self))):
+                    and hasattr(sprite_whose_rect_collides, 'mask')
+                    and (pygame.sprite
+                         .collide_mask(sprite_whose_rect_collides, self))):
 
                 print("mask collision")
-                return tile_whose_rect_collides
+                return sprite_whose_rect_collides
 
             elif (not hasattr(self, 'mask')) and (not hasattr(self, 'mask')):
                 print("rect collision")
-                return tile_whose_rect_collides
+                return sprite_whose_rect_collides
 
-        return None
+        else:
+            return None
 
     # TODO: test all proceeding coordinates, returning first obstruction?
     def try_to_move(self, new_coord, sprite_group):
@@ -140,16 +120,18 @@ class CollisionSprite(pygame.sprite.Sprite):
         old_topleft = self.rect.topleft
         self.rect.topleft = new_coord
 
-        if self.collides_with_any_in_group(sprite_group):
+        if self.collides_rect_mask(sprite_group):
             self.rect.topleft = old_topleft
             raise Collision("some side...")
 
     # TODO: what if I want diagonal!?
     def sprites_in_path(self, new_coord, sprite_group):
-        """Test every position up to new_coord.
+        """Return the sprites this ColliderSprite would "run through"
+        and thus collide with if it moved to new_coord.
 
-        Warning: this only works for orthoganal shooting, i.e.,
-        up, down, left, right.
+        Warning:
+            This does not work diagonally! This is shamefully bad, but
+            works perfectly for orthogonal movement.
 
         """
 
@@ -158,9 +140,6 @@ class CollisionSprite(pygame.sprite.Sprite):
         future_rect.topleft = new_coord
         collision_rect = future_rect.union(current_rect)
         self.rect = collision_rect
-        colliding_with = self.collides_with_any_in_group(sprite_group)
+        colliding_with = self.collides_rect(sprite_group)
         self.rect = current_rect
         return colliding_with
-
-    def try_to_movable_coordinate_preceeding(self):
-        pass

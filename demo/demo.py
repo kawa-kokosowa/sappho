@@ -14,7 +14,7 @@ import random
 
 import pygame
 
-from sappho.collide import CollisionSprite, Collision
+from sappho.collide import ColliderSprite, Collision
 from sappho.animate import AnimatedSprite
 from sappho.tiles import TileMap, Tilesheet, tmx_file_to_tilemaps
 from sappho.layers import SurfaceLayers
@@ -39,7 +39,7 @@ class Player(object):
 
     def __init__(self, topleft):
         self.sprite = AnimatedSprite.from_gif(config.ANIMATED_SPRITE_PATH, mask_threshold=127)
-        self.collider = CollisionSprite(self.sprite)
+        self.collider = ColliderSprite(self.sprite)
         self.bullet_duration = 150
         self.bullet_size = (2, 2)
         self.bullet_color = BLUE
@@ -121,7 +121,7 @@ class Player(object):
                 camera.scroll_to(self.collider.rect)
      
 
-class Asteroid(CollisionSprite):
+class Asteroid(ColliderSprite):
     COLOR = GREEN
 
     def __init__(self, center, size, x_speed, y_speed):
@@ -170,13 +170,13 @@ class Asteroid(CollisionSprite):
         self.rect = new_rect
              
         # colliding with wall?
-        collision_wall = self.collides_with_any_in_group(wall_list)
+        collision_wall = self.collides_rect_mask(wall_list)
 
         if collision_wall:
             self.explode(asteroid_list)
 
 
-class Bullet(CollisionSprite):
+class Bullet(ColliderSprite):
 
     def __init__(self, duration, color, center, x_speed, y_speed, size):
         self.image = pygame.Surface(size)
