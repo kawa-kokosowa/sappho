@@ -9,13 +9,23 @@ This could also serve as a template in the future.
 Needs to use sprite groups.
 
 """
+from __future__ import absolute_import
  
+import os.path
+import sys
 import pygame
+
+DEMO_PATH = os.path.dirname(os.path.abspath(__file__))
+
+# If being run from sappho project, make sure we use live code version of sappho
+if os.path.exists(os.path.join(os.path.dirname(DEMO_PATH), "sappho")):
+    sys.path.insert(0, os.path.dirname(DEMO_PATH))
 
 from sappho.animatedsprite import AnimatedSprite
 from sappho.tilemap import TileMap, Tilesheet, tmx_file_to_tilemaps
 from sappho.layers import SurfaceLayers
 from sappho.camera import Camera, CameraCenterBehavior
+import pkg_resources
 
 # Constants/game config
 
@@ -26,13 +36,13 @@ RESOLUTION = [700, 500]
 WINDOW_TITLE = "Sappho Engine Test"
 
 # The path to the file that's being used to represent the player
-ANIMATED_SPRITE_PATH = "test.gif"
+ANIMATED_SPRITE_PATH = pkg_resources.resource_filename("test_scene", "test.gif")
 
 # The path to the file being used as the tilesheet
-TILESHEET_PATH = "test_scene/tilesheet.png"
+TILESHEET_PATH = pkg_resources.resource_filename("test_scene", "tilesheet.png")
 
 # The Tiled Map Editor file which the player explores
-TMX_PATH = "test_scene/test.tmx"
+TMX_PATH = pkg_resources.resource_filename("test_scene", "test.tmx")
 
 # The layer that the player's sprite will be rendered on 
 ANIMATED_SPRITE_Z_INDEX = 0
