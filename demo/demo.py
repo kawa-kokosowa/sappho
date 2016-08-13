@@ -152,7 +152,7 @@ class Asteroid(ColliderSprite):
 
         """
 
-        if self.rect.width > 3:
+        if self.rect.width > 5:
 
             for i in range(self.rect.width / 2):
                 new_asteroid = self.new_smaller_asteroid()
@@ -323,7 +323,7 @@ while not done:
  
     # create some asteroids, hurdled t the player
     # we should make these chase the player, actually...
-    Asteroid.add_if_below_threshold(player, asteroid_list, 20)
+    Asteroid.add_if_below_threshold(player, asteroid_list, 10)
 
     # DRAWING/RENDER CODE
 
