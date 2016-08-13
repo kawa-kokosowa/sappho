@@ -1,9 +1,11 @@
+from __future__ import absolute_import
+
 import os
 import textwrap
 
 import pygame
 
-from .. import sappho
+import sappho.tilemap
 from .common import compare_surfaces
 
 

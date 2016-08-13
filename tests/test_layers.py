@@ -1,6 +1,8 @@
+from __future__ import absolute_import
+
 import pygame
 
-from .. import sappho
+import sappho.layers
 from .common import compare_surfaces
 
 
