@@ -300,12 +300,24 @@ while not done:
  
     # create some asteroids, hurdled t the player
     # we should make these chase the player, actually...
-    if len(asteroid_list) < 10:
+    if len(asteroid_list) < 20:
         plus_or_minus_x = random.choice([1, -1])
         new_asteroid_x = player.collider.rect.top - (10 * plus_or_minus_x)
+
+        if new_asteroid_x > player.collider.rect.left:
+            x_speed = -1
+        else:
+            x_speed = 1
+
         plus_or_minus_y = random.choice([1, -1])
         new_asteroid_y = player.collider.rect.left - (10 * plus_or_minus_y)
-        another_asteroid = Asteroid((new_asteroid_x, new_asteroid_y), 10, 0, 1)
+
+        if new_asteroid_y > player.collider.rect.top:
+            y_speed = -1
+        else:
+            y_speed = 1
+
+        another_asteroid = Asteroid((new_asteroid_x, new_asteroid_y), 10, x_speed, y_speed)
         asteroid_list.add(another_asteroid)
 
     # DRAWING/RENDER CODE
