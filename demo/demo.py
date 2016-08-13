@@ -109,6 +109,29 @@ class Asteroid(ColliderSprite):
         self.y_speed = y_speed
         super(Asteroid, self).__init__(self)
 
+    @classmethod
+    def add_if_below_threshold(cls, player, asteroid_list, at_least_x_existing):
+
+        if len(asteroid_list) < at_least_x_existing:
+            plus_or_minus_x = random.choice([1, -1])
+            new_asteroid_x = player.collider.rect.top - (10 * plus_or_minus_x)
+
+            if new_asteroid_x > player.collider.rect.left:
+                x_speed = -1
+            else:
+                x_speed = 1
+
+            plus_or_minus_y = random.choice([1, -1])
+            new_asteroid_y = player.collider.rect.left - (10 * plus_or_minus_y)
+
+            if new_asteroid_y > player.collider.rect.top:
+                y_speed = -1
+            else:
+                y_speed = 1
+
+            another_asteroid = Asteroid((new_asteroid_x, new_asteroid_y), 10, x_speed, y_speed)
+            asteroid_list.add(another_asteroid)
+
     def new_smaller_asteroid(self):
         """New x and y speed based on player coords
 
@@ -300,25 +323,7 @@ while not done:
  
     # create some asteroids, hurdled t the player
     # we should make these chase the player, actually...
-    if len(asteroid_list) < 20:
-        plus_or_minus_x = random.choice([1, -1])
-        new_asteroid_x = player.collider.rect.top - (10 * plus_or_minus_x)
-
-        if new_asteroid_x > player.collider.rect.left:
-            x_speed = -1
-        else:
-            x_speed = 1
-
-        plus_or_minus_y = random.choice([1, -1])
-        new_asteroid_y = player.collider.rect.left - (10 * plus_or_minus_y)
-
-        if new_asteroid_y > player.collider.rect.top:
-            y_speed = -1
-        else:
-            y_speed = 1
-
-        another_asteroid = Asteroid((new_asteroid_x, new_asteroid_y), 10, x_speed, y_speed)
-        asteroid_list.add(another_asteroid)
+    Asteroid.add_if_below_threshold(player, asteroid_list, 20)
 
     # DRAWING/RENDER CODE
 
