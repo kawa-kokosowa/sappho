@@ -38,8 +38,8 @@ LASER_SOUND = pygame.mixer.Sound("laser.wav")
 class Player(object):
 
     def __init__(self, topleft):
-        self.sprite = AnimatedSprite.from_gif(config.ANIMATED_SPRITE_PATH, mask_threshold=127)
-        self.collider = ColliderSprite(self.sprite)
+        sprite = AnimatedSprite.from_gif(config.ANIMATED_SPRITE_PATH, mask_threshold=127)
+        self.collider = ColliderSprite(sprite)
         self.bullet_duration = 150
         self.bullet_size = (2, 2)
         self.bullet_color = BLUE
@@ -54,72 +54,47 @@ class Player(object):
         self.bullet_list.add(bullet)
 
     def update(self, camera, wall_collision_group, layer_size, timedelta):
-        self.sprite.update(timedelta)
+        self.collider.update(timedelta)
 
-        if self.x_speed != 0 or self.y_speed != 0:
-            layer_size = layers[0].get_size()
+        if self.x_speed == 0 and self.y_speed == 0:
+            return None
 
-            new_coord = [self.x_speed + self.collider.rect.topleft[0],
-                         self.y_speed + self.collider.rect.topleft[1]]
-            dummy_rect = self.collider.rect.copy()
-            dummy_rect.topleft = new_coord
-            new_coord = wrap_logic(dummy_rect, layer_size).topleft
+        # move
+        new_coord = [self.x_speed + self.collider.rect.topleft[0],
+                     self.y_speed + self.collider.rect.topleft[1]]
 
-            # try range preceeding
-            # could be a "Find nearest to obstruction"
-            try:
-                self.collider.try_to_move(new_coord, wall_collision_group)
-                self.bullet_duration = 150
-                self.bullet_size = (2, 2)
-                self.shoot_sound = LASER_SOUND
-                self.bullet_color = BLUE
-            except Collision:
-                THIP_SOUND.play()
-                self.bullet_duration = 500
-                self.bullet_color = RED
-                self.bullet_size = (4, 4)
-                self.shoot_sound = BIG_LASER_SOUND
-                collided_at_this_y_speed = self.y_speed
-                collided_at_this_x_speed = self.x_speed
-                self.x_speed = 0
-                self.y_speed = 0       
+        dummy_future_rect = self.collider.rect.copy()
+        dummy_future_rect.topleft = new_coord
+        wrapped_coord = wrap_logic(dummy_future_rect, layer_size).topleft
 
-                if collided_at_this_y_speed > 0:
-                    y_modifier = -1
-                elif collided_at_this_y_speed < 0:
-                    y_modifier = 1
-                elif collided_at_this_y_speed == 0:
-                    y_modifer = 0
+        if wrapped_coord != new_coord:
+            # we wrapped around the screen pacman style
+            oldie = self.collider.rect.topleft
+            self.collider.rect.topleft = wrapped_coord
+            collided_with = self.collider.collides_rect_mask(wall_collision_group)
+            if collided_with:   
+                self.collider.rect.topleft = oldie
+        else:
+            # we did NOT wrap around the screen
+            # NOTE: oh no the way collider.move_As_close_as_possible works won't work with wrapping
+            collided_with = self.collider.move_as_close_as_possible(new_coord, wall_collision_group)
 
-                if collided_at_this_x_speed > 0:
-                    x_modifier = -1
-                elif collided_at_this_x_speed < 0:
-                    x_modifier = 1
-                elif collided_at_this_x_speed == 0:
-                    x_modifer = 0
+        camera.scroll_to(self.collider.rect)
 
-                while not (collided_at_this_x_speed == 0 and collided_at_this_y_speed == 0):
+        if collided_with:
+            THIP_SOUND.play()
+            self.bullet_duration = 500
+            self.bullet_color = RED
+            self.bullet_size = (4, 4)
+            self.shoot_sound = BIG_LASER_SOUND
+            self.x_speed = 0
+            self.y_speed = 0 
+        else:
+            self.bullet_duration = 150
+            self.bullet_size = (2, 2)
+            self.shoot_sound = LASER_SOUND
+            self.bullet_color = BLUE
 
-                    if collided_at_this_x_speed != 0:
-                        collided_at_this_x_speed += x_modifier
-
-                    if collided_at_this_y_speed != 0:
-                        collided_at_this_y_speed += y_modifier
-
-                    new_coord = [collided_at_this_x_speed + self.collider.rect.topleft[0],
-                                 collided_at_this_y_speed + self.collider.rect.topleft[1]]
-
-                    try:
-                        self.collider.try_to_move(new_coord, wall_collision_group)
-                    except Collision:
-                        pass
-                    else:
-                        camera.scroll_to(self.collider.rect)
-                        break
-
-            else:
-                camera.scroll_to(self.collider.rect)
-     
 
 class Asteroid(ColliderSprite):
     COLOR = GREEN
@@ -343,7 +318,7 @@ while not done:
 
     # Finally let's render the animated sprite on some
     # arbitrary layer. In the future the TMX will set this.
-    layers[config.ANIMATED_SPRITE_Z_INDEX].blit(player.sprite.image,
+    layers[config.ANIMATED_SPRITE_Z_INDEX].blit(player.collider.sprite.image,
                                                 player.collider.rect.topleft)
 
     # draw asteroids
