@@ -98,6 +98,7 @@ class Player(object):
 
 class Asteroid(ColliderSprite):
     COLOR = GREEN
+    SPAWN_DISTANCE_FROM_PLAYER = 35
 
     def __init__(self, center, size, x_speed, y_speed):
         image = pygame.Surface([size, size])
@@ -114,7 +115,7 @@ class Asteroid(ColliderSprite):
 
         if len(asteroid_list) < at_least_x_existing:
             plus_or_minus_x = random.choice([1, -1])
-            new_asteroid_x = player.collider.rect.top - (10 * plus_or_minus_x)
+            new_asteroid_x = player.collider.rect.top - (cls.SPAWN_DISTANCE_FROM_PLAYER * plus_or_minus_x)
 
             if new_asteroid_x > player.collider.rect.left:
                 x_speed = -1
@@ -122,7 +123,7 @@ class Asteroid(ColliderSprite):
                 x_speed = 1
 
             plus_or_minus_y = random.choice([1, -1])
-            new_asteroid_y = player.collider.rect.left - (10 * plus_or_minus_y)
+            new_asteroid_y = player.collider.rect.left - (cls.SPAWN_DISTANCE_FROM_PLAYER * plus_or_minus_y)
 
             if new_asteroid_y > player.collider.rect.top:
                 y_speed = -1
@@ -152,7 +153,7 @@ class Asteroid(ColliderSprite):
 
         """
 
-        if self.rect.width > 3:
+        if self.rect.width > 5:
 
             for i in range(self.rect.width / 2):
                 new_asteroid = self.new_smaller_asteroid()
@@ -323,7 +324,7 @@ while not done:
  
     # create some asteroids, hurdled t the player
     # we should make these chase the player, actually...
-    Asteroid.add_if_below_threshold(player, asteroid_list, 20)
+    Asteroid.add_if_below_threshold(player, asteroid_list, 10)
 
     # DRAWING/RENDER CODE
 
