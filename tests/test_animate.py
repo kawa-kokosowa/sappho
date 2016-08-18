@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 import os
 
 import pygame
 
-from ..sappho import animate
+from sappho import animate
 # this isn't very law of demeter...
 from .common import compare_surfaces
 

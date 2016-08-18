@@ -2,7 +2,7 @@ import os
 
 import pygame
 
-from ..sappho import collide, animate
+from sappho import collide, animate
 
 
 class TestColliderSprites(object):

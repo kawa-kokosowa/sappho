@@ -341,7 +341,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         Example:
             >>> from PIL import Image
-            >>> gif = Image.open('demo/test.gif')
+            >>> gif = Image.open('demo/test_scene/test.gif')
             >>> AnimatedSprite.pil_image_to_pygame_surface(gif)
             <Surface(10x10x32 SW)>
 

@@ -9,16 +9,24 @@ This could also serve as a template in the future.
 Needs to use sprite groups.
 
 """
+from __future__ import absolute_import
  
 import random
-
+import os.path
+import sys
 import pygame
 
+DEMO_PATH = os.path.dirname(os.path.abspath(__file__))
+
+# If being run from sappho project, make sure we use live code version of sappho
+if os.path.exists(os.path.join(os.path.dirname(DEMO_PATH), "sappho")):
+    sys.path.insert(0, os.path.dirname(DEMO_PATH))
+
+from sappho.layers import SurfaceLayers
+from sappho.camera import Camera, CameraCenterBehavior
 from sappho.collide import ColliderSprite, Collision
 from sappho.animate import AnimatedSprite
 from sappho.tiles import TileMap, Tilesheet, tmx_file_to_tilemaps
-from sappho.layers import SurfaceLayers
-from sappho.camera import Camera, CameraCenterBehavior
 
 import config
 
