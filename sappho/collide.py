@@ -102,11 +102,9 @@ class ColliderSprite(pygame.sprite.Sprite):
                     and (pygame.sprite
                          .collide_mask(sprite_whose_rect_collides, self))):
 
-                print("mask collision")
                 return sprite_whose_rect_collides
 
             elif (not hasattr(self, 'mask')) and (not hasattr(self, 'mask')):
-                print("rect collision")
                 return sprite_whose_rect_collides
 
         else:
@@ -146,60 +144,48 @@ class ColliderSprite(pygame.sprite.Sprite):
 
         """
 
-        position_difference_x = self.rect.topleft[0] - destination[0]
-        position_difference_y = self.rect.topleft[1] - destination[1]
+        # first figure out the x and y increments
+        goal_x, goal_y = destination
+        current_x, current_y = self.rect.topleft
 
-        if position_difference_y > 0:
-            y_modifier = -1
-        elif position_difference_y < 0:
-            y_modifier = 1
-        elif position_difference_y == 0:
-            y_modifer = 0
+        if goal_x > self.rect.left:
+            x_increment = 1
+        elif goal_x < self.rect.left:
+            x_increment = -1
+        else:
+            x_increment = 0
 
-        if position_difference_x > 0:
-            x_modifier = -1
-        elif position_difference_x < 0:
-            x_modifier = 1
-        elif position_difference_x == 0:
-            x_modifer = 0
+        if goal_y > self.rect.top:
+            y_increment = 1
+        elif goal_y < self.rect.top:
+            y_increment = -1
+        else:
+            y_increment = 0
 
-        # will not check the last position
-        while not (position_difference_x == 0 and position_difference_y == 0):
+        # ...
+        colliding_with = None
+        distance_to_goal_x = goal_x - current_x
+        distance_to_goal_y = goal_y - current_y
 
-            if position_difference_x != 0:
-                position_difference_x += x_modifier
+        while True:
+            last_safe_topleft = self.rect.topleft
 
-            if position_difference_y != 0:
-                position_difference_y += y_modifier
+            if not self.rect.top == goal_y:
+                self.rect.top += y_increment
 
-            old_coord = self.rect.topleft
-            new_coord = [position_difference_x + self.rect.topleft[0],
-                         position_difference_y + self.rect.topleft[1]]
-            self.rect.topleft = new_coord
+            if not self.rect.left == goal_x:
+                self.rect.left += x_increment
+
             colliding_with = self.collides_rect_mask(sprite_group)
 
             if colliding_with:
-                self.rect.topleft = old_coord
+                print("is colliding somehow")
+                self.rect.topleft = last_safe_topleft
                 return colliding_with
+            elif self.rect.topleft == (goal_x, goal_y):
+                break
 
-        # one last check for the last point
-        if position_difference_x != 0:
-            position_difference_x += x_modifier
-
-        if position_difference_y != 0:
-            position_difference_y += y_modifier
-
-        old_topleft = self.rect.topleft
-        new_coord = [position_difference_x + self.rect.topleft[0],
-                     position_difference_y + self.rect.topleft[1]]
-        self.rect.topleft = new_coord
-        colliding_with = self.collides_rect_mask(sprite_group)
-
-        if colliding_with:
-            self.rect.topleft = old_coord
-            return colliding_with
-        else:
-            return None
+        return None
 
     # TODO: what if I want diagonal!?
     def sprites_in_path(self, new_coord, sprite_group):

@@ -68,8 +68,8 @@ class Player(object):
             return None
 
         # move
-        new_coord = [self.x_speed + self.collider.rect.topleft[0],
-                     self.y_speed + self.collider.rect.topleft[1]]
+        new_coord = (self.x_speed + self.collider.rect.topleft[0],
+                     self.y_speed + self.collider.rect.topleft[1])
 
         dummy_future_rect = self.collider.rect.copy()
         dummy_future_rect.topleft = new_coord
@@ -77,6 +77,7 @@ class Player(object):
 
         if wrapped_coord != new_coord:
             # we wrapped around the screen pacman style
+            print([wrapped_coord, new_coord])
             oldie = self.collider.rect.topleft
             self.collider.rect.topleft = wrapped_coord
             collided_with = self.collider.collides_rect_mask(wall_collision_group)
