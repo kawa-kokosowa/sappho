@@ -144,10 +144,14 @@ class ColliderSprite(pygame.sprite.Sprite):
 
         """
 
-        # first figure out the x and y increments
         goal_x, goal_y = destination
         current_x, current_y = self.rect.topleft
 
+        # FIRST: figure out the x and y increments
+        #
+        # For both the x and y axis, get the "step"
+        # (increment or decrement) which will
+        # eventually bring us to the goal.
         if goal_x > self.rect.left:
             x_increment = 1
         elif goal_x < self.rect.left:
@@ -162,30 +166,30 @@ class ColliderSprite(pygame.sprite.Sprite):
         else:
             y_increment = 0
 
-        # ...
-        colliding_with = None
-        distance_to_goal_x = goal_x - current_x
-        distance_to_goal_y = goal_y - current_y
-
+        # Ye dangerous infinite loop: exits when either a collision
+        # is detected, or we have arrived at the goal/destination.
         while True:
+            # last_safe_topleft allows us to reset to the last known
+            # good/noncolliding coordinate in the event of a collision
             last_safe_topleft = self.rect.topleft
 
+            # If y is already at its goal, there's no need to increment
             if not self.rect.top == goal_y:
                 self.rect.top += y_increment
 
+            # ... same thing for x and its goal.
             if not self.rect.left == goal_x:
                 self.rect.left += x_increment
 
             colliding_with = self.collides_rect_mask(sprite_group)
 
             if colliding_with:
-                print("is colliding somehow")
                 self.rect.topleft = last_safe_topleft
                 return colliding_with
             elif self.rect.topleft == (goal_x, goal_y):
-                break
-
-        return None
+                # we're at our goal, we've not encountered
+                # a collision.
+                return None
 
     # TODO: what if I want diagonal!?
     def sprites_in_path(self, new_coord, sprite_group):
