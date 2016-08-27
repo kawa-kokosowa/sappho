@@ -1,400 +1,11 @@
 """AnimatedSprite is a pygame sprite, which is
-animated! The image is changed by sending update()
-the game clock.
-
-AnimatedSprites also allow for "anchoring," meaning
-you can pin one AnimatedSprite to another! A file
-gives you frame-by-frame control of the anchor point
-of each AnimatedSprite. An AnimatedSprite is anchored
-to another by lining up said anchor points on either
-AnimatedSprite.
-
-Warning: this module is pretty technical, the only
-thing you should really be concerned about is
-AnimatedSprite.
+animated! The image is changed by sending
+update_state() a timedelta.
 
 """
 
 import pygame
 from PIL import Image
-
-
-class Anchor(object):
-    """A coordinate on a surface which is used for pinning to another
-    surface Anchor. Used when attempting to afix one surface to
-    another, lining up their corresponding anchors.
-
-    Attributes:
-        x (int): x-axis coordinate on a surface to place anchor at
-        y (int): y-axis coordinate on a surface to place anchor at
-
-    Example:
-        >>> anchor = Anchor(5, 3)
-        >>> anchor.x
-        5
-        >>> anchor.y
-        3
-        >>> coordinate_tuple = (1, 2)
-        >>> anchor = Anchor(*coordinate_tuple)
-        >>> anchor.x
-        1
-        >>> anchor.y
-        2
-
-    """
-
-    def __init__(self, x, y):
-        """Create an Anchor using two integers to
-        represent this Anchor's coordinate.
-
-        Args:
-            x (int): X-axis position of the supplied
-                coordinate in pixels.
-            y (int): Y-axis position of the supplied
-                coordinate in pixels.
-
-        """
-
-        self.x = x
-        self.y = y
-
-    @staticmethod
-    def _coords_are_ints(coordinates):
-        """Check if a two-element tuple representing 2D
-        coordinates consists of two integers.
-
-        This presumes that coordinates is indeed a
-        two-element tuple.
-
-        Arguments:
-            coordinates (tuple):
-
-        Returns:
-            bool: True if the coordinates are integers, False
-                otherwise.
-
-        """
-
-        return type(coordinates[0]) == int and type(coordinates[1]) == int
-
-    def __repr__(self):
-        """Represent the class/anchor with its coordinates.
-
-        Example:
-            >>> anchor = Anchor(1, 2)
-            >>> print(anchor)
-            <Anchor at (1, 2)>
-
-        """
-
-        return "<Anchor at (%d, %d)>" % (self.x, self.y)
-
-    def __add__(self, coordinates):
-        """Adds X-Y coordinates to the coordinates of an Anchor.
-
-        Args:
-            coordinates (Union[Anchor|Tuple[int, int]]):
-                The X-Y coordinates to add to the coordinates
-                of the current Anchor.  The argument may be
-                another Anchor object or tuple of two integers.
-
-        Returns:
-            Anchor: A new Anchor with the coordinates of
-                the first and second added together.
-
-        Raises:
-            NotImplemented: If `coordinates` is not an `Anchor`
-                or a 2-tuple of integers.
-
-        Example:
-            >>> anchor_a = Anchor(4, 1)
-            >>> anchor_b = Anchor(2, 0)
-            >>> anchor_a + anchor_b
-            <Anchor at (6, 1)>
-            >>> coordinate_tuple = (10, 20)
-            >>> anchor_a + coordinate_tuple
-            <Anchor at (14, 21)>
-            >>> coordinate_tuple + anchor_a
-            <Anchor at (14, 21)>
-            >>> anchor_a + 1.5 # doctest: +SKIP
-            Traceback (most recent call last):
-            TypeError: 'float' object is not subscriptable
-
-        """
-
-        if isinstance(coordinates, Anchor):
-
-            return Anchor(self.x + coordinates.x,
-                          self.y + coordinates.y)
-
-        elif self._coords_are_ints(coordinates):
-
-            return Anchor(self.x + coordinates[0],
-                          self.y + coordinates[1])
-
-        else:
-
-            raise NotImplementedError(coordinates)
-
-    def __radd__(self, coordinates):
-        """Implements addition when the Anchor is the right-hand operand.
-
-        See Also: `Anchor.__add__()`
-
-        Example:
-            >>> coordinates = (1, 2)
-            >>> anchor = Anchor(100, 200)
-            >>> coordinates + anchor
-            <Anchor at (101, 202)>
-
-        """
-
-        return self + coordinates
-
-    def __sub__(self, coordinates):
-        """Subtracts the given X-Y coordinates from the Anchor.
-
-        Args:
-            coordinates (Union[Anchor|Tuple[int, int]]):
-                The X-Y coordinates to subtract from the coordinates
-                of the current Anchor.  The argument may be another
-                Anchor object or tuple of two integers.
-
-        Returns:
-            Anchor: A new Anchor with the coordinates of
-                the second subtracted from the first.
-
-        Raises:
-            NotImplemented: If `coordinates` is not an `Anchor`
-                or a 2-tuple of integers.
-
-        Example:
-            >>> anchor_a = Anchor(4, 1)
-            >>> anchor_b = Anchor(2, 0)
-            >>> anchor_a - anchor_b
-            <Anchor at (2, 1)>
-            >>> coordinate_tuple = (3, 0)
-            >>> anchor_a - coordinate_tuple
-            <Anchor at (1, 1)>
-            >>> coordinate_tuple - anchor_b
-            <Anchor at (1, 0)>
-            >>> anchor_a - 3.2 # doctest: +SKIP
-            Traceback (most recent call last):
-            TypeError: 'float' object is not subscriptable
-
-        """
-
-        if isinstance(coordinates, Anchor):
-
-            return Anchor(self.x - coordinates.x,
-                          self.y - coordinates.y)
-
-        elif self._coords_are_ints(coordinates):
-
-            return Anchor(self.x - coordinates[0],
-                          self.y - coordinates[1])
-
-        else:
-
-            raise NotImplemented
-
-    def __rsub__(self, coordinates):
-        """Implements subtraction when the Anchor is the right-hand operand.
-
-        Example:
-            >>> coordinates = (100, 200)
-            >>> anchor = Anchor(1, 1)
-            >>> coordinates - anchor
-            <Anchor at (99, 199)>
-
-        See Also: `Anchor.__sub__()`
-
-        """
-        # The naive implementation would be...
-        #
-        #     return self - coordinates
-        #
-        # ...but that produces the wrong result because subtraction is
-        # not commutative.  We also cannot write...
-        #
-        #     return coordinates - self
-        #
-        # ...because then we're invoking this method again, i.e. we
-        # create a never-ending loop.
-        #
-        # To deal with this problem we take advantage of the fact that
-        # the following mathematical expressions are equivalent for
-        # natural numbers:
-        #
-        #     x - y
-        #     (-x) + y
-        #
-        # Therefore we create a new `Anchor` which is the inverse of
-        # the `self`, i.e. the `x` in the example above, and then we
-        # *add* the coordinates (`y`) to that, which gives us the
-        # correct result.
-
-        return (self * -1) + coordinates
-
-    def __mul__(self, multiplier):
-        """Multiplies the X-Y coordinates of an Anchor by an integer.
-
-        Args:
-            multiplier (int): The number to multiply to each coordinate.
-
-        Returns:
-            Anchor: A new Anchor object with X-Y coordinates multiplied
-                by the `multiplier` argument.
-
-        Raises:
-            NotImplemented: If `multiplier` is not an integer.
-
-        Example:
-            >>> anchor = Anchor(3, 5)
-            >>> anchor * -1
-            <Anchor at (-3, -5)>
-            >>> anchor * 0
-            <Anchor at (0, 0)>
-            >>> 2 * anchor
-            <Anchor at (6, 10)>
-            >>> anchor * 1.5 # doctest: +SKIP
-            Traceback (most recent call last):
-            TypeError: exceptions must derive from BaseException
-
-        """
-
-        if type(multiplier) == int:
-
-            return Anchor(self.x * multiplier, self.y * multiplier)
-
-        else:
-
-            raise NotImplemented
-
-    def __rmul__(self, multiplier):
-        """Allows the Anchor to be on the right-hand of multiplication.
-
-        See Also: `Anchor.__mul__()`
-
-        Example:
-            >>> 10 * Anchor(1, 2)
-            <Anchor at (10, 20)>
-            >>> 2.5 * Anchor(0, 0) # doctest: +SKIP
-            Traceback (most recent call last):
-            TypeError: exceptions must derive from BaseException
-
-        """
-
-        return self * multiplier
-
-    def as_tuple(self):
-        """Represent this anchors's (x, y)
-        coordinates as a Python tuple.
-
-        Returns:
-            tuple(int, int): (x, y) coordinate tuple
-                of this Anchor.
-
-        """
-
-        return (self.x, self.y)
-
-
-class FrameAnchors(object):
-    """Labeled anchors for a frame. Each anchor point has
-    an associated and unique label, e.g. "head." This is
-    the anchors attribute on any given Frame instance.
-
-    Not much distinguishes this from a regular dictionary,
-    besides the method to create a FrameAnchors using
-    a configparser object. This object exists in case
-    more advance operations with frame anchors are
-    performed, or perhaps new/more static methods for
-    creating FrameAnchors.
-
-    See Also:
-        * Frame
-        * Frame.anchors
-        * AnimatedSprite
-
-    Note:
-        May add "belongs_to_frame_index" attribute in
-        the future since I'm just discarding that info
-        in from_config().
-
-    """
-
-    def __init__(self, labeled_anchors):
-        """Set the _labeled_anchors private attribute.
-
-        Args:
-            labeled_anchors (dict): A dictionary whose keys
-                are "labels" for an anchor (the value). For
-                example:
-
-                >>> an_anchor = Anchor(5, 88)
-                >>> labeled_anchors = {'head': an_anchor}
-
-        See Also:
-            * FrameAnchors.from_config()
-
-        """
-
-        self._labeled_anchors = labeled_anchors
-
-    def __getitem__(self, label):
-        """Return the anchor corresponding to label.
-
-        Arg:
-            label (str): The label associated with
-                the anchor you want.
-
-        Raises:
-            KeyError: label does not correspond to anything.
-
-        Returns:
-            Anchor: The anchor associated with
-                the provided label.
-
-        """
-
-        return self._labeled_anchors[label]
-
-    @staticmethod
-    def from_config(anchors_config, frame_index):
-        """Load the anchors from a GIF's anchor config file.
-
-        Look for this frame's anchors in an configparser
-        object, where the sections are anchor labels, and
-        the key/value pairs are "frame index=(x, y)".
-
-        Args:
-            anchors_config (ConfigParser): This configparser
-                is used for finding this frame's anchors. This
-                is the INI which is associated with a Walkabout
-                animation or sprite, e.g., walk_down.ini.
-            frame_index (int): Which animation frame do the
-                anchors belong to?
-
-        Raises:
-            KeyError: INI has no anchor entry for frame_index.
-            ValueError: INI's corresponding anchor entry is
-                malformed.
-
-        Returns:
-            FrameAnchors: Instance created from supplied
-                anchors_config dictionary and the frame index.
-
-        """
-
-        labeled_anchors = {}
-
-        for section in anchors_config.sections():
-            anchor_for_frame = anchors_config.get(section, str(frame_index))
-            x, y = anchor_for_frame.split(',')
-            labeled_anchors[section] = Anchor(int(x), int(y))
-
-        return FrameAnchors(labeled_anchors)
 
 
 class Frame(object):
@@ -403,12 +14,13 @@ class Frame(object):
     Attributes:
         surface (pygame.Surface): The pygame image which is used
             for a frame of an animation.
+        mask (pygame.Mask): Mask automatically generated from the
+            supplied surface (see above). Only exists if mask_threshold
+            was >0 on init.
         duration (integer): Milliseconds this frame lasts. How
             long this frame is displayed in corresponding animation.
         start_time (integer): The animation position in milleseconds,
             when this frame will start being displayed.
-        anchors (LabeledSurfaceAnchors): Optional positional anchors
-            used when afixing other surfaces upon another.
 
     See Also:
         * AnimatedSprite.frames_from_gif()
@@ -418,9 +30,9 @@ class Frame(object):
 
     """
 
-    def __init__(self, surface, start_time, duration, anchors=None):
+    def __init__(self, surface, start_time, duration, mask_threshold=0):
         """Create a frame using a pygame surface, the start time,
-        duration time, and, optionally,  FrameAnchors.
+        and the duration time.
 
         Args:
             surface (pygame.Surface): The surface/image for this
@@ -432,10 +44,10 @@ class Frame(object):
                 while duration signifies when it ends.
             duration (integer): Milleseconds this frame lasts. See:
                 start_time argument description.
-            anchors (FrameAnchors): This frame's anchor points.
-
-        See Also:
-            * FrameAnchors
+            mask_threshold (int): Valid values 0-254. Alpha values
+                ABOVE this provided number are marked as "solid"/
+                collidable/set. If this is not greater than zero,
+                the mask is not generated.
 
         """
 
@@ -443,7 +55,9 @@ class Frame(object):
         self.duration = duration
         self.start_time = start_time
         self.end_time = start_time + duration
-        self.anchors = anchors or None
+
+        if mask_threshold > 0:
+            self.mask = pygame.mask.from_surface(surface, mask_threshold)
 
     def __repr__(self):
         s = "<Frame duration(%s) start_time(%s) end_time(%s)>"
@@ -461,21 +75,25 @@ class AnimatedSprite(pygame.sprite.Sprite):
             animation in milliseconds.
         image (pygame.Surface): Current surface belonging to
             the active frame. Set once per tick through
-            the AnimatedSprite.update() method.
+            the AnimatedSprite.update_state() method.
         rect (pygame.Rect): Does not reflect position, only
             area. Updated once per tick, to reflect current
-            frame's rect, in AnimatedSprite.update().
+            frame's rect, in AnimatedSprite.update_state().
+        mask (pygame.Mask): If the first frame had a mask
+            attribute, then we assume all do, and this
+            (optional) attribute points to the active
+            frame's mask attribute.
         active_frame_index (int): Frame # which is being
             rendered/to be rendered. Also updated once per
-            tick, see the AnimatedSprite.update() method.
+            tick, see the AnimatedSprite.update_state() method.
         active_frame: The current surface representing this
             animation at its current animation position. Set
-            once per tick through the update() method.
+            once per tick through the update_state() method.
         animation_position (int): Animation position in
             milliseconds; milleseconds elapsed in this
             animation. This is used for determining
             which frame to select. Set once per tick through
-            the AnimatedSprite.update() method.
+            the AnimatedSprite.update_state() method.
 
     See Also:
         * :class:`pygame.sprite.Sprite`
@@ -522,6 +140,11 @@ class AnimatedSprite(pygame.sprite.Sprite):
         # on screen.
         self.rect = self.image.get_rect()
 
+        # making the bold assumption that if the
+        # first frame has a mask, as do the rest.
+        if hasattr(self.frames[0], 'mask'):
+            self.mask = self.frames[0].mask
+
     def __getitem__(self, frame_index):
         """Return the frame corresponding to
         the supplied frame_index.
@@ -564,66 +187,62 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         return largest_frame_size
 
-    @staticmethod
-    def from_surface_duration_list(surface_duration_list):
-        """Support PygAnimation-style frames.
-
-        A list like [(surface, int duration in ms)]
-
-        Args:
-            surface_duration_list (list[tuple]): A list
-                of tuples, first element is a surface,
-                second element being how long said surface
-                is displayed for. For example:
-
-                >>> a_surface = pygame.Surface((10, 10))
-                >>> duration = 100  # 100 MS
-                >>> surface_duration_list = [(a_surface, duration)]
-
-        Returns:
-            AnimatedSprite: The animated sprite constructed
-                from the provided surface_duration_list.
-
-        """
-
-        running_time = 0
-        frames = []
-
-        for surface, duration in surface_duration_list:
-            frame = Frame(surface, running_time, duration)
-            frames.append(frame)
-            running_time += duration
-
-        return AnimatedSprite(frames)
-
     @classmethod
-    def from_file(cls, path_or_readable, anchors_config=None):
+    def from_gif(cls, path_or_readable, mask_threshold=0):
         """The default is to create from gif bytes, but this can
         also be done from other methods...
+
+        Create a list of surfaces (frames) and a list of their
+        respective frame durations from an animated GIF.
 
         Args:
             path_or_readable (str|file-like-object): Either a string
                 or an object with a read() method. So, either a path
                 to an animated GIF, or a file-like-object/buffer of
                 an animated GIF.
-            anchors_config (configparser): INI/config file associated
-                with providing anchors for this animation.
+            mask_threshold (int): An optional keyword argument which
+                must be >0 to generate masks automatically per frame.
+                This value is used to note which parts are opaque and
+                thus collidable, and which values are not. Think of
+                RGBA, valid values are 0-254. See also: Frame().
 
         Returns:
             AnimatedSprite: --
 
         """
 
-        frames = cls.frames_from_gif(path_or_readable, anchors_config)
+        pil_gif = Image.open(path_or_readable)
+
+        frame_index = 0
+        frames = []
+        time_position = 0
+
+        try:
+
+            while True:
+                duration = pil_gif.info['duration']
+                frame_sprite = cls.pil_image_to_pygame_surface(pil_gif)
+                frame = Frame(surface=frame_sprite,
+                              start_time=time_position,
+                              duration=duration,
+                              mask_threshold=mask_threshold)
+                frames.append(frame)
+                frame_index += 1
+                time_position += duration
+                pil_gif.seek(pil_gif.tell() + 1)
+
+        except EOFError:
+
+            pass  # end of sequence
 
         return AnimatedSprite(frames)
 
-    def update(self, clock):
+    def update_state(self, timedelta):
         """Manipulate the state of this AnimatedSprite, namely
         the on-screen/viewport position (not absolute) and
-        using the clock to do animation manipulations.
+        using the timedelta to do animation manipulations.
 
-        Using the game's clock we decipher the animation position,
+        Using the game's timedelta we decipher the animation position,
         which in turn allows us to locate the correct frame.
 
         Sets the image attribute to the current frame's image. Updates
@@ -635,12 +254,13 @@ class AnimatedSprite(pygame.sprite.Sprite):
             remedying this in the future.
 
         Args:
-            clock (pygame.time.Clock): THE game clock, typically
-                found as the attribute Game.screen.clock.
+            timedelta (int|float): Typically from the game
+                clock (pygame.time.Clock) via clock.get_time().
+                Used to update the animation position.
 
         """
 
-        self.animation_position += clock.get_time()
+        self.animation_position += timedelta
 
         if self.animation_position >= self.total_duration:
             self.animation_position = (self.animation_position %
@@ -656,11 +276,14 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.image = self.frames[self.active_frame_index - 1].surface
 
         image_size = self.image.get_size()
-
-        # we're only using self.rect for size for now...
         self.rect = pygame.rect.Rect((0, 0), image_size)
-
         self.active_frame = self.frames[self.active_frame_index]
+
+        # if we have a mask, let's update our pointer!
+        # again, we make the bold assumption that if
+        # our first frame had a mask, then the rest do.
+        if hasattr(self, 'mask'):
+            self.mask = self.active_frame.mask
 
     @staticmethod
     def get_total_duration(frames):
@@ -676,56 +299,6 @@ class AnimatedSprite(pygame.sprite.Sprite):
         """
 
         return sum([frame.duration for frame in frames])
-
-    @classmethod
-    def frames_from_gif(cls, path_or_readable, anchors_config=None):
-        """Create a list of surfaces (frames) and a list of their
-        respective frame durations from an animated GIF.
-
-        Args:
-            path_or_readable (str|file-like-object): Path to
-                an animated-or-not GIF.
-            anchors_config (configparser): The anchors ini file
-                associated with this GIF.
-
-        Returns
-            (List[pygame.Surface], List[int]): --
-
-        """
-
-        pil_gif = Image.open(path_or_readable)
-
-        frame_index = 0
-        frames = []
-        time_position = 0
-
-        try:
-
-            while True:
-                duration = pil_gif.info['duration']
-                frame_sprite = cls.pil_image_to_pygame_surface(pil_gif)
-
-                if anchors_config:
-                    frame_anchors = FrameAnchors.from_config(anchors_config,
-                                                             frame_index)
-
-                else:
-                    frame_anchors = None
-
-                frame = Frame(surface=frame_sprite,
-                              start_time=time_position,
-                              duration=duration,
-                              anchors=frame_anchors)
-                frames.append(frame)
-                frame_index += 1
-                time_position += duration
-                pil_gif.seek(pil_gif.tell() + 1)
-
-        except EOFError:
-
-            pass  # end of sequence
-
-        return frames
 
     @staticmethod
     def pil_image_to_pygame_surface(pil_image):

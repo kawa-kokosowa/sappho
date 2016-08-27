@@ -1,0 +1,15 @@
+#!/bin/sh
+# This was very helpful
+# http://codeinthehole.com/writing/tips-for-using-a-git-pre-commit-hook/
+
+echo "running pre-commit hook..."
+
+py.test tests --doctest-modules --pep8 sappho -v --cov-report term-missing --cov=sappho
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+    echo "$TEST"
+    exit 1
+fi
+
+exit 0

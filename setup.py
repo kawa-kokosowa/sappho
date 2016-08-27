@@ -11,16 +11,6 @@ Distributing:
   You'll need the wheel, twine package for bdist_wheel. Don't forget
   to clear your dist when finished.
 
-Installing:
-  `pip install .` in the project root. This script detects the
-  python version and builds the install_requires accordingly.
-
-  Does not install pygame. See `README.md`.
-
-Notes:
-    Pygame is a hassle to install, use the boostrap (whenever
-    it's ported from Hypatia Engine).
-
 """
 
 import sys

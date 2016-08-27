@@ -3,6 +3,22 @@
 We want to leave your workflow up to you, and not
 overload you with constraints.
 
+## Code Philosophy
+
+  * You are not allowed to import other modules from the Sappho package.
+  * Your code should be very transparent to the fact that we're using pygame,
+    that means inherit native pygame objects where possible (like surfaces
+    and sprites) and return pygame or builtin Python objects. This is "loose
+    coupling." Don't interfere with the way people build their pygame games.
+  * Other developers should not have to read about your module, as possible. To
+    be truly transparent, using Sappho should be completely intuitive to a
+    pygame developer.
+  * Simplicity and readability first
+  * Consistency
+  * Fully documented (docstrings at least)
+  * Create code that is easy to test. 100% test coverage.
+  * Don't automate "game logic"
+
 ## Quality Checklist
 
 Before making a pull request you should go through
@@ -23,4 +39,7 @@ this checklist:
 
   * When you make a new branch, branch from master, e.g.,
     `checkout -b some-new-branch-name master`
-  * Make a pull request comparing against `master`
+  * Make a pull request comparing against `master` (if
+    approved it'll be merged to `nextrelease`
+  * The only time you branch from `nextrelease` is when
+    you're working on docs or tests.

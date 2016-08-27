@@ -25,7 +25,7 @@ class TestAnimatedSprite(object):
         clock = MockClock()
 
         # Create the AnimatedSprite object from the test GIF file
-        animsprite = animatedsprite.AnimatedSprite.from_file(path)
+        animsprite = animatedsprite.AnimatedSprite.from_gif(path)
 
         # Test getting the dimensions of the largest frame
         assert animsprite.largest_frame_size() == (10, 10)
@@ -42,8 +42,8 @@ class TestAnimatedSprite(object):
 
         assert(compare_surfaces(outputsurface, frameone))
 
-        # Update the AnimatedSprite
-        animsprite.update(clock)
+        timedelta = clock.get_time()
+        animsprite.update_state(timedelta)
 
         # Blit again, which should give us our second frame
         outputsurface = pygame.surface.Surface((10, 10))
@@ -78,7 +78,7 @@ class TestAnimatedSprite(object):
         assert(compare_surfaces(outputsurface, frameone_surface))
 
         # Update the AnimatedSprite
-        animsprite.update(clock)
+        animsprite.update_state(clock.get_time())
 
         # Blit again, which should give us our second frame
         outputsurface = pygame.surface.Surface((10, 10))

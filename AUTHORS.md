@@ -1,17 +1,16 @@
 # Authors and Rights
 
-## Lillian Gardenia Seabreeze
+## Lily Seabreeze
 
-  * lillian.gardenia.seabreeze@hypatiasoftware.org
-  * http://about.lillian.link/
+http://lily.seabreeze.pro/
 
-Lillian owns and reserves all rights to this project,
-as the Sappho project mom.
+Project Mom (Project Lead)
+
+Lily coordinates developer efforts, release strategies, architecture
+implementation, ensures code quality and develops the standards thereof,
+the primary contributor, and general mom/author/benevolent dictator of
+Sappho game engine.
 
 ## Alice Jenkinson
 
-alice.jenkinson@hypatiasoftware.org
-
-Alice is one of the primary developers of Sappho
-and is a heavy contributor to Hypatia Software
-Organization, both in and outside of code.
+Testing Automation Lead
