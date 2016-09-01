@@ -17,6 +17,7 @@ import sys
 import pygame
 
 DEMO_PATH = os.path.dirname(os.path.abspath(__file__))
+os.chdir(DEMO_PATH)
 
 # If being run from sappho project, make sure we use live code version of sappho
 if os.path.exists(os.path.join(os.path.dirname(DEMO_PATH), "sappho")):
