@@ -336,8 +336,8 @@ class TestArtistSimple(unittest.TestCase):
 
         desired_world = pygame.surface.Surface((4, 4))
         desired_world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
-        for x in (1,2):
-            for y in (1,2):
+        for x in (1, 2):
+            for y in (1, 2):
                 desired_world.set_at((x, y), (255, 0, 0))
 
         ps.update_state(1)
@@ -366,7 +366,6 @@ class TestArtistSimple(unittest.TestCase):
         ps.update_state(1)
         ps.draw_on(world)
         assert(compare_surfaces(desired_world, world))
-
 
 
 if __name__ == '__main__':

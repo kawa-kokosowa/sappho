@@ -39,9 +39,9 @@ import math
 import random
 
 
-try: # pragma: no cover
+try:  # pragma: no cover
     import pygame
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     # This allows our particle tests to run even if pygame won't :D
     class pygame:
         BLEND_RGBA_MULT = 8
@@ -51,6 +51,10 @@ except ImportError: # pragma: no cover
 INFINITY = float('inf')
 
 OUT_OF_PARTICLES = -1
+
+
+# Indicate to center artist's image
+CENTER = object()
 
 
 class Particle(object):
@@ -543,7 +547,6 @@ class PhysicsAcceleration(object):
 
 
 class ArtistSimple(object):
-    CENTER = object()
     """Artist that simply draws an image at each particle position."""
     def __init__(self, image, origin=CENTER, special_flags=0):
         """Initialize the artist.
@@ -554,7 +557,7 @@ class ArtistSimple(object):
                 additive, subtractive, etc)
         """
         self.image = image
-        if origin is self.CENTER:
+        if origin is CENTER:
             self.origin = tuple(x // 2 for x in self.image.get_size())
         else:
             self.origin = origin
@@ -575,7 +578,7 @@ class ArtistSimple(object):
 class ArtistFadeOverlay(object):
     """Artist that draws an image, fading between different tints based on
     the particle's lifetime."""
-    def __init__(self, image, tints,
+    def __init__(self, image, origin, tints,
                  blit_flags=0, tint_flags=pygame.BLEND_RGBA_MULT):
         """Initialize the artist.
 
@@ -600,6 +603,10 @@ class ArtistFadeOverlay(object):
                 the image. By default this is multiplicative.
         """
         self.image = image.convert_alpha()
+        if origin is CENTER:
+            self.origin = tuple(x // 2 for x in self.image.get_size())
+        else:
+            self.origin = origin
         self.tints = tints
         self.blit_flags = blit_flags
         self.tint_flags = tint_flags
@@ -615,8 +622,8 @@ class ArtistFadeOverlay(object):
         tint = self._calculate_tint(particle)
 
         overlay.fill(tint, special_flags=self.tint_flags)
-        x = int(particle.x - 0.5 * self.image.get_size()[0])
-        y = int(particle.y - 0.5 * self.image.get_size()[1])
+        x = int(particle.x - self.origin[0])
+        y = int(particle.y - self.origin[1])
         surface.blit(overlay, (x, y), special_flags=self.blit_flags)
 
     def _calculate_tint(self, particle):
