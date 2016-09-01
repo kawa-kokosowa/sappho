@@ -1,3 +1,4 @@
+# TODO: module level docstring
 import sys
 import pygame
 
@@ -87,6 +88,11 @@ class SurfaceLayers(object):
 
     def render(self):
         """Draw each layer onto the target surface in the correct order.
+
+        We're wiping surface layers because there may be a layer higher up
+        which has a lot of transparent air but parts of pillars or whatever;
+        if we didn't wipe you'd see that column drag across the screen as the
+        camera moved.
 
         """
 

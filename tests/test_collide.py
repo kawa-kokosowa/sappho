@@ -2,10 +2,10 @@ import os
 
 import pygame
 
-from ..sappho import collisionsprite, animatedsprite
+from sappho import collide, animate
 
 
-class TestCollisionSprites(object):
+class TestColliderSprites(object):
 
     # NOTE, TODO: this is a pretty bad test. Ideally, it
     # would do something more specific in addition to retesting
@@ -17,9 +17,9 @@ class TestCollisionSprites(object):
                                             "..",
                                             "resources",
                                             "animatedsprite.gif"))
-        animsprite = animatedsprite.AnimatedSprite.from_gif(path,
-                                                            mask_threshold=254)
-        collision_sprite = collisionsprite.CollisionSprite(animsprite)
+        animsprite = animate.AnimatedSprite.from_gif(path,
+                                                     mask_threshold=254)
+        collision_sprite = collide.ColliderSprite(animsprite)
 
         assert collision_sprite.rect.size == (10, 10)
         assert hasattr(collision_sprite, 'mask')

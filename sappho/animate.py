@@ -1,6 +1,36 @@
-"""AnimatedSprite is a pygame sprite, which is
-animated! The image is changed by sending
-update_state() a timedelta.
+"""Painless animated sprites which are pygame.sprite.Sprite objects.
+
+Animated sprites from GIF, and all YOU have to know is to `update_state`!
+You just have to call `update_state` once per loop with the timedelta:
+
+  >>> AnimatedSprite.from_gif('example.gif')  # doctest: +SKIP
+  >>> timedelta = clock.get_time()  # doctest: +SKIP
+  >>> animated_sprite.update_state(timedelta)  # doctest: +SKIP
+
+Treat it like a normal pygame sprite, because it is! It's that easy!
+
+A word on `rect` and `mask`:
+    In pygame, `Sprite` has the `rect` attribute and optionally the
+    `mask` attribute. Both `rect` and `mask` sprite attributes are the
+    primary data used in collision detection.
+
+    In this implementation, `Frame` and `AnimatedSprite` both have the
+    `mask` and `rect` attributes. Don't use `rect for positional stuff,
+    e.g., don't do something like `animatedsprite.rect.topleft = (11, 22)`.
+    The `mask` and `rect` of an `AnimatedSprite` are merely a reference to
+    the current `Frame`'s `rect` and `mask`! When you load an animated
+    sprite, you can specify a threshold:
+
+      >>> AnimatedSprite.from_gif('example.gif',
+      ...                         mask_threshold=254)  # doctest: +SKIP
+
+    Whereas, the threshold denotes the alpha transparency value for a
+    pixel, which is opaque enough to be "set".
+
+What's supported:
+    Right now there's only support for GIFs, but I'd like to expand that
+    (especially since GIFs can't really take advantage of alpha
+    transparency).
 
 """
 
@@ -8,6 +38,7 @@ import pygame
 from PIL import Image
 
 
+# NOTE: could be a sprite...
 class Frame(object):
     """A frame of an AnimatedSprite animation.
 
@@ -25,8 +56,6 @@ class Frame(object):
     See Also:
         * AnimatedSprite.frames_from_gif()
         * AnimatedSprite.animation_position
-        * FrameAnchors
-        * Anchor
 
     """
 
@@ -237,7 +266,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         return AnimatedSprite(frames)
 
-    def update_state(self, timedelta):
+    def update(self, timedelta):
         """Manipulate the state of this AnimatedSprite, namely
         the on-screen/viewport position (not absolute) and
         using the timedelta to do animation manipulations.
@@ -312,7 +341,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         Example:
             >>> from PIL import Image
-            >>> gif = Image.open('demo/test.gif')
+            >>> gif = Image.open('demo/test_scene/test.gif')
             >>> AnimatedSprite.pil_image_to_pygame_surface(gif)
             <Surface(10x10x32 SW)>
 

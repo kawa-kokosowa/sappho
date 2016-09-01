@@ -1,10 +1,12 @@
+from __future__ import absolute_import
+
 import pygame
 import pytest
 
-from ..sappho.camera import (Camera,
-                             CameraBehavior,
-                             CameraCenterBehavior,
-                             CameraOutOfBounds)
+from sappho.camera import (Camera,
+                           CameraBehavior,
+                           CameraCenterBehavior,
+                           CameraOutOfBounds)
 
 from .common import compare_surfaces
 

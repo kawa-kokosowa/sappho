@@ -1,29 +1,31 @@
+"""Configuration constants for Sappho demo."""
+import pkg_resources
+
 # Constants/game config
+
+# The path to the file that's being used to represent the player
+ANIMATED_SPRITE_PATH = pkg_resources.resource_filename("test_scene", "test.gif")
+
+# The path to the file being used as the tilesheet
+TILESHEET_PATH = pkg_resources.resource_filename("test_scene", "tilesheet.png")
+
+# The Tiled Map Editor file which the player explores
+TMX_PATH = pkg_resources.resource_filename("test_scene", "test.tmx")
+
+MAX_SPEED = 2
 
 RESOLUTION = [700, 500]
 """tuple(int, int): This demo will be ran in a window of the
 dimensions (x, y) pixels (width, height).
 """
 
+VIEWPORT = (80, 80)
+"""tuple(int, int): ..."""
+
 WINDOW_TITLE = "Sappho Engine Test"
 """str: The title of the window running the demo.
 
 The text which appears in the titlebar of the window.
-"""
-
-ANIMATED_SPRITE_PATH = "test.gif"
-"""str: path to animated GIF to use as player's sprite."""
-
-TILESHEET_PATH = "test_scene/tilesheet.png"
-"""str: path to file to be used as the tilesheet for
-drawing the map.
-
-I've only tested PNGs.
-"""
-
-TMX_PATH = "test_scene/test.tmx"
-"""str: path to Tiled Map Editor file, this will be used
-to draw our level, which the player will explore.
 """
 
 ANIMATED_SPRITE_Z_INDEX = 0
