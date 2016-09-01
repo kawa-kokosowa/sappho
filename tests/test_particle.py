@@ -352,7 +352,8 @@ class TestArtistSimple(unittest.TestCase):
             particle.Particle(0, 1, 1, 0, 3, 'pixel'),
             particle.EmitterBurst.single(1),
             artist=particle.ArtistSimple(
-                block, particle.ArtistSimple.CENTER),
+                block, particle.CENTER
+            ),
         )
         world = pygame.surface.Surface((4, 4))
         world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
@@ -365,6 +366,64 @@ class TestArtistSimple(unittest.TestCase):
 
         ps.update_state(1)
         ps.draw_on(world)
+        assert(compare_surfaces(desired_world, world))
+
+
+class TestArtistFadeOverlay(unittest.TestCase):
+    def test_artist_draw_origin(self):
+        block = pygame.surface.Surface((2, 2))
+        block.fill((255, 0, 0), pygame.Rect(0, 0, 2, 2))
+
+        ps = particle.ParticleSystem(
+            particle.Particle(0, 1, 1, 0, 3, 'pixel'),
+            particle.EmitterBurst.single(1),
+            artist=particle.ArtistFadeOverlay(
+                block, (0, 0),
+                [(255, 255, 255, 255), (255, 255, 255, 255)]
+            ),
+        )
+        world = pygame.surface.Surface((4, 4))
+        world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
+
+        desired_world = pygame.surface.Surface((4, 4))
+        desired_world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
+        for x in (1, 2):
+            for y in (1, 2):
+                # Ugh this is only 254 for some reason
+                # get it together pygame
+                desired_world.set_at((x, y), (254, 0, 0))
+
+        ps.update_state(1)
+        ps.draw_on(world)
+        assert(compare_surfaces(desired_world, world))
+
+    def test_artist_draw_center(self):
+        block = pygame.surface.Surface((2, 2))
+        block.fill((255, 0, 0), pygame.Rect(0, 0, 2, 2))
+
+        ps = particle.ParticleSystem(
+            particle.Particle(0, 1, 1, 0, 3, 'pixel'),
+            particle.EmitterBurst.single(1),
+            artist=particle.ArtistFadeOverlay(
+                block, particle.CENTER,
+                [(255, 255, 255, 255), (255, 255, 255, 255)]
+            ),
+        )
+        world = pygame.surface.Surface((4, 4))
+        world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
+
+        desired_world = pygame.surface.Surface((4, 4))
+        desired_world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
+        for x in (0, 1):
+            for y in (0, 1):
+                # Ugh this is only 254 for some reason
+                # get it together pygame
+                desired_world.set_at((x, y), (254, 0, 0))
+
+        ps.update_state(1)
+        ps.draw_on(world)
+
+        print(world.get_at((1, 1)))
         assert(compare_surfaces(desired_world, world))
 
 

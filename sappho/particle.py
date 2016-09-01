@@ -54,7 +54,8 @@ OUT_OF_PARTICLES = -1
 
 
 # Indicate to center artist's image
-CENTER = object()
+def CENTER(image):
+    return tuple(x // 2 for x in image.get_size())
 
 
 class Particle(object):
@@ -557,8 +558,8 @@ class ArtistSimple(object):
                 additive, subtractive, etc)
         """
         self.image = image
-        if origin is CENTER:
-            self.origin = tuple(x // 2 for x in self.image.get_size())
+        if callable(origin):
+            self.origin = origin(self.image)
         else:
             self.origin = origin
         self.special_flags = special_flags
@@ -602,9 +603,14 @@ class ArtistFadeOverlay(object):
                 additive, subtractive, etc) the tint will be applied to
                 the image. By default this is multiplicative.
         """
-        self.image = image.convert_alpha()
-        if origin is CENTER:
-            self.origin = tuple(x // 2 for x in self.image.get_size())
+        self.image = image
+        try:
+            self.image = self.image.convert_alpha()
+        except:  # pragma: no cover
+            pass
+
+        if callable(origin):
+            self.origin = origin(self.image)
         else:
             self.origin = origin
         self.tints = tints
