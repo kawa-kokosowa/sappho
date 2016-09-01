@@ -430,7 +430,7 @@ class TestArtistFadeOverlay(unittest.TestCase):
         block = pygame.surface.Surface((2, 2))
         block.fill((255, 0, 0), pygame.Rect(0, 0, 2, 2))
 
-        artist=particle.ArtistFadeOverlay(
+        artist = particle.ArtistFadeOverlay(
             block, particle.CENTER,
             [(10, 10, 10, 255), (20, 20, 20, 255), (40, 40, 40, 255)]
         )
