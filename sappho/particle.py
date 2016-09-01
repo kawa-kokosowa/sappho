@@ -625,16 +625,16 @@ class ArtistFadeOverlay(object):
             particle (Particle): Particle to draw
         """
         overlay = self.image.copy()
-        tint = self._calculate_tint(particle)
+        tint = self.calculate_tint(particle.life, particle.initial_life)
 
         overlay.fill(tint, special_flags=self.tint_flags)
         x = int(particle.x - self.origin[0])
         y = int(particle.y - self.origin[1])
         surface.blit(overlay, (x, y), special_flags=self.blit_flags)
 
-    def _calculate_tint(self, particle):
+    def calculate_tint(self, life, initial_life):
         """Calculate tint to apply to particle."""
-        life_fraction = 1 - particle.life * 1.0 / particle.initial_life
+        life_fraction = (initial_life - life) * 1.0 / initial_life
         if life_fraction > 1:
             life_fraction = 1
         elif life_fraction < 0:

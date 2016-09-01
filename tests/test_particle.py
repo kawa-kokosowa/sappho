@@ -426,6 +426,19 @@ class TestArtistFadeOverlay(unittest.TestCase):
         print(world.get_at((1, 1)))
         assert(compare_surfaces(desired_world, world))
 
+    def test_calculate_tint(self):
+        block = pygame.surface.Surface((2, 2))
+        block.fill((255, 0, 0), pygame.Rect(0, 0, 2, 2))
+
+        artist=particle.ArtistFadeOverlay(
+            block, particle.CENTER,
+            [(10, 10, 10, 255), (20, 20, 20, 255), (40, 40, 40, 255)]
+        )
+        low_life_tint = artist.calculate_tint(-0.5, 10)
+        self.assertEquals(low_life_tint, (40, 40, 40, 255))
+        high_life_tint = artist.calculate_tint(10.5, 10)
+        self.assertEquals(high_life_tint, (10, 10, 10, 255))
+
 
 if __name__ == '__main__':
     unittest.main()
