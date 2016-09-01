@@ -13,6 +13,13 @@ class TestParticle(unittest.TestCase):
         self.assertEquals(p.life, +5)
         self.assertEquals(p.species, 'spark')
 
+    def test_particle_repr(self):
+        p = particle.Particle(-1, +1, +2, -2, +5, 'spark')
+        r = repr(p)
+        self.assertEquals(
+            r, 'Particle(-1, 1, dx=2, dy=-2, life=5, species=\'spark\')'
+        )
+
 
 class TestParticleSystem(unittest.TestCase):
     def test_one_particle(self):
@@ -60,6 +67,26 @@ class TestParticleSystem(unittest.TestCase):
         self.assertEquals(p.dy, 0)
         self.assertEquals(p.life, 0)  # Lost all life
         self.assertEquals(p.species, 'giblet')
+
+    def test_particle_death(self):
+        # start it
+        # Particles alive for 3 seconds, one generated every two seconds
+        ps = particle.ParticleSystem(
+            particle.Particle(0, -1, 1, 0, 3, 'giblet'),
+            particle.EmitterBurst.repeat(1, 2)
+        )
+        ps.update_state(1)
+        self.assertEquals(len(ps.particles), 1)
+        print(ps.particles)
+        ps.update_state(1)
+        self.assertEquals(len(ps.particles), 2)
+        print(ps.particles)
+        p1, p2 = ps.particles
+        ps.update_state(1)
+        self.assertEquals(len(ps.particles), 1)
+        print(ps.particles)
+        self.assertIs(p2, ps.particles[0])
+
 
 
 class TestEmitterConstantRate(unittest.TestCase):

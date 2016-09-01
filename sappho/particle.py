@@ -39,9 +39,9 @@ import math
 import random
 
 
-try:
+try: # pragma: no cover
     import pygame
-except ImportError:
+except ImportError: # pragma: no cover
     # This allows our particle tests to run even if pygame won't :D
     class pygame:
         BLEND_RGBA_MULT = 8
@@ -86,6 +86,19 @@ class Particle(object):
         self.life = life
         self.species = species
         self.initial_life = life
+
+    def __repr__(self):
+        parts = list()
+        parts.append(
+            'Particle({!r}, {!r}'.format(self.x, self.y)
+        )
+        if self.dx or self.dy:
+            parts.append(', dx={!r}, dy={!r}'.format(self.dx, self.dy))
+        parts.append(', life={!r}'.format(self.life))
+        if self.species is not None:
+            parts.append(', species={!r}'.format(self.species))
+        parts.append(')')
+        return ''.join(parts)
 
 
 class ParticleSystem(object):
@@ -193,9 +206,9 @@ class ParticleSystem(object):
         write_index = 0
         for read_index, particle in enumerate(self.particles):
             if particle.life > 0:
-                write_index += 1
                 if read_index > write_index:
                     self.particles[write_index] = particle
+                write_index += 1
         del self.particles[write_index:]
 
 
