@@ -39,9 +39,12 @@ import math
 import random
 
 
-#import pygame
-class pygame:
-    BLEND_RGBA_MULT = 8
+try:
+    import pygame
+except ImportError:
+    # This allows our particle tests to run even if pygame won't :D
+    class pygame:
+        BLEND_RGBA_MULT = 8
 
 
 # The biggest number less than infinity-plus-one
@@ -611,7 +614,7 @@ class ArtistFadeOverlay(object):
         if remainder > 0:
             tint = tuple([
                 int(a * (1 - remainder) + b * remainder)
-                for a, b in zip(self.tints[floor], self.tints[floor+1])
+                for a, b in zip(self.tints[floor], self.tints[floor + 1])
             ])
         else:
             tint = self.tints[floor]

@@ -188,7 +188,9 @@ class TestPhysicsJitter(unittest.TestCase):
     def test_jitter(self):
         # Jitter cycles between +1 & -1 times time delta
         jitter_iter = itertools.cycle((1, -1))
-        jitter = lambda dt: dt * next(jitter_iter)
+
+        def jitter(dt):
+            return dt * next(jitter_iter)
 
         physics = particle.PhysicsJitter(y=2, jitter=jitter)
         p = particle.Particle(0, 0)
