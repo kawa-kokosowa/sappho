@@ -644,11 +644,12 @@ class ArtistFadeOverlay(object):
         remainder = index - floor
         if remainder > 0:
             tint = tuple([
-                int(a * (1 - remainder) + b * remainder)
+                int(round(a + (b - a) * remainder))
                 for a, b in zip(self.tints[floor], self.tints[floor + 1])
             ])
         else:
             tint = self.tints[floor]
+        print(tint)
         return tint
 
 
