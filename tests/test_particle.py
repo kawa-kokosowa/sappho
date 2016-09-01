@@ -1,6 +1,18 @@
 import itertools
 import unittest
 from sappho import particle
+import pygame
+from .common import compare_surfaces
+
+
+class ArtistNull(object):
+    def __init__(self):
+        self.count = 0
+        self.last_particle = None
+
+    def __call__(self, surface, particle):
+        self.count += 1
+        self.last_particle = particle
 
 
 class TestParticle(unittest.TestCase):
@@ -87,6 +99,20 @@ class TestParticleSystem(unittest.TestCase):
         print(ps.particles)
         self.assertIs(p2, ps.particles[0])
 
+    def test_draw_three_particles(self):
+        # start it
+        artist = ArtistNull()
+        ps = particle.ParticleSystem(
+            particle.Particle(0, -1, 1, 0, 3, 'giblet'),
+            particle.EmitterBurst.single(3),
+            artist=artist,
+        )
+        # advance 1 second
+        ps.update_state(1)
+        ps.draw_on(None)
+
+        self.assertEquals(artist.count, 3)
+        self.assertEquals(artist.last_particle, ps.particles[-1])
 
 
 class TestEmitterConstantRate(unittest.TestCase):
@@ -115,6 +141,7 @@ class TestEmitterComposite(unittest.TestCase):
         self.assertEquals(emitter(5), 100)
         self.assertEquals(emitter(15), 200)
         self.assertLess(emitter(1), 0)
+        self.assertLess(emitter(1), 0)
 
     def test_two_bursts_alt_construction(self):
         emitter = particle.EmitterComposite().add(
@@ -125,6 +152,7 @@ class TestEmitterComposite(unittest.TestCase):
         self.assertEquals(emitter(5), 100)
         self.assertEquals(emitter(15), 200)
         self.assertLess(emitter(1), 0)
+        self.assertLess(emitter(1), 0)
 
 
 class TestEmitterBurst(unittest.TestCase):
@@ -133,6 +161,7 @@ class TestEmitterBurst(unittest.TestCase):
         emitter = particle.EmitterBurst.single(100, 10)
         self.assertEquals(emitter(5.2), 0)
         self.assertEquals(emitter(4.9), 100)
+        self.assertLess(emitter(0.1), 0)
         self.assertLess(emitter(0.1), 0)
 
     def test_repeated_bursts(self):
@@ -290,6 +319,54 @@ class TestPhysicsAcceleration(unittest.TestCase):
         physics(3, p)
         self.assertEquals(p.dx, 100)
         self.assertEquals(p.dy, 108)
+
+
+class TestArtistSimple(unittest.TestCase):
+    def test_artist_draw_origin(self):
+        block = pygame.surface.Surface((2, 2))
+        block.fill((255, 0, 0), pygame.Rect(0, 0, 2, 2))
+
+        ps = particle.ParticleSystem(
+            particle.Particle(0, 1, 1, 0, 3, 'pixel'),
+            particle.EmitterBurst.single(1),
+            artist=particle.ArtistSimple(block, (0, 0)),
+        )
+        world = pygame.surface.Surface((4, 4))
+        world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
+
+        desired_world = pygame.surface.Surface((4, 4))
+        desired_world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
+        for x in (1,2):
+            for y in (1,2):
+                desired_world.set_at((x, y), (255, 0, 0))
+
+        ps.update_state(1)
+        ps.draw_on(world)
+        assert(compare_surfaces(desired_world, world))
+
+    def test_artist_draw_center(self):
+        block = pygame.surface.Surface((2, 2))
+        block.fill((255, 0, 0), pygame.Rect(0, 0, 2, 2))
+
+        ps = particle.ParticleSystem(
+            particle.Particle(0, 1, 1, 0, 3, 'pixel'),
+            particle.EmitterBurst.single(1),
+            artist=particle.ArtistSimple(
+                block, particle.ArtistSimple.CENTER),
+        )
+        world = pygame.surface.Surface((4, 4))
+        world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
+
+        desired_world = pygame.surface.Surface((4, 4))
+        desired_world.fill((0, 255, 0), pygame.Rect(0, 0, 4, 4))
+        for x in (0, 1):
+            for y in (0, 1):
+                desired_world.set_at((x, y), (255, 0, 0))
+
+        ps.update_state(1)
+        ps.draw_on(world)
+        assert(compare_surfaces(desired_world, world))
+
 
 
 if __name__ == '__main__':

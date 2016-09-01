@@ -543,8 +543,9 @@ class PhysicsAcceleration(object):
 
 
 class ArtistSimple(object):
+    CENTER = object()
     """Artist that simply draws an image at each particle position."""
-    def __init__(self, image, special_flags=0):
+    def __init__(self, image, origin=CENTER, special_flags=0):
         """Initialize the artist.
 
         Arguments:
@@ -553,6 +554,10 @@ class ArtistSimple(object):
                 additive, subtractive, etc)
         """
         self.image = image
+        if origin is self.CENTER:
+            self.origin = tuple(x // 2 for x in self.image.get_size())
+        else:
+            self.origin = origin
         self.special_flags = special_flags
 
     def __call__(self, surface, particle):
@@ -562,8 +567,8 @@ class ArtistSimple(object):
             surface (pygame.Surface): Surface to draw on
             particle (Particle): Particle to draw
         """
-        x = int(particle.x - 0.5 * self.image.get_size()[0])
-        y = int(particle.y - 0.5 * self.image.get_size()[1])
+        x = int(particle.x - self.origin[0])
+        y = int(particle.y - self.origin[1])
         surface.blit(self.image, (x, y), special_flags=self.special_flags)
 
 
