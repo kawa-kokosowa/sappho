@@ -139,6 +139,7 @@ class ColliderSprite(pygame.sprite.Sprite):
             raise Collision("some side...")
 
     # TODO, FIXME
+    # lacks any heuristics
     def move_as_close_as_possible(self, destination, sprite_group):
         """Move as close as possible to `destination` without collision.
 
@@ -191,8 +192,29 @@ class ColliderSprite(pygame.sprite.Sprite):
                 # a collision.
                 return None
 
+        # one last check for the last point
+
+        # mathematically, if we 
+        if position_difference_x != 0:
+            position_difference_x += x_modifier
+
+        if position_difference_y != 0:
+            position_difference_y += y_modifier
+
+        old_topleft = self.rect.topleft
+        new_coord = [position_difference_x + self.rect.topleft[0],
+                     position_difference_y + self.rect.topleft[1]]
+        self.rect.topleft = new_coord
+        colliding_with = self.collides_rect_mask(sprite_group)
+
+        if colliding_with:
+            self.rect.topleft = old_coord
+            return colliding_with
+        else:
+            return None
+
     # TODO: what if I want diagonal!?
-    def sprites_in_path(self, new_coord, sprite_group):
+    def sprites_in_orthogonal_path(self, new_coord, sprite_group):
         """Return the sprites this ColliderSprite would "run through"
         and thus collide with if it moved to new_coord.
 

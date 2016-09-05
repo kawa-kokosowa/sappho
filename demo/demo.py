@@ -77,7 +77,6 @@ class Player(object):
 
         if wrapped_coord != new_coord:
             # we wrapped around the screen pacman style
-            print([wrapped_coord, new_coord])
             oldie = self.collider.rect.topleft
             self.collider.rect.topleft = wrapped_coord
             collided_with = self.collider.collides_rect_mask(wall_collision_group)
@@ -205,7 +204,8 @@ class Bullet(ColliderSprite):
 
         new_coord = (self.rect.left + self.x_speed,
                      self.rect.top + self.y_speed)
-        collision_asteroids = self.sprites_in_path(new_coord, asteroid_list)
+        collision_asteroids = self.sprites_in_orthogonal_path(new_coord,
+                                                              asteroid_list)
 
         if collision_asteroids:
             SMALL_EXPLODE_SOUND.play()
@@ -216,7 +216,7 @@ class Bullet(ColliderSprite):
             player_bullet_list.remove(self)
              
         # colliding with wall?
-        collision_wall = self.sprites_in_path(new_coord, wall_list)
+        collision_wall = self.sprites_in_orthogonal_path(new_coord, wall_list)
 
         if collision_wall:
             player_bullet_list.remove(self)
