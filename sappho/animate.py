@@ -304,8 +304,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         # NOTE: the fact that I'm using -1 here seems sloppy/hacky
         self.image = self.frames[self.active_frame_index - 1].surface
 
-        image_size = self.image.get_size()
-        self.rect = pygame.rect.Rect((0, 0), image_size)
+        self.rect.size = self.image.get_size()
         self.active_frame = self.frames[self.active_frame_index]
 
         # if we have a mask, let's update our pointer!

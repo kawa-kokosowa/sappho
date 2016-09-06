@@ -9,6 +9,7 @@ This could also serve as a template in the future.
 Needs to use sprite groups.
 
 """
+
 from __future__ import absolute_import
  
 import random
@@ -23,9 +24,9 @@ os.chdir(DEMO_PATH)
 if os.path.exists(os.path.join(os.path.dirname(DEMO_PATH), "sappho")):
     sys.path.insert(0, os.path.dirname(DEMO_PATH))
 
+from sappho import collide
 from sappho.layers import SurfaceLayers
 from sappho.camera import Camera, CameraCenterBehavior
-from sappho.collide import ColliderSprite, Collision
 from sappho.animate import AnimatedSprite
 from sappho.tiles import TileMap, Tilesheet, tmx_file_to_tilemaps
 
@@ -47,8 +48,7 @@ LASER_SOUND = pygame.mixer.Sound("laser.wav")
 class Player(object):
 
     def __init__(self, topleft):
-        sprite = AnimatedSprite.from_gif(config.ANIMATED_SPRITE_PATH, mask_threshold=127)
-        self.collider = ColliderSprite(sprite)
+        self.sprite = AnimatedSprite.from_gif(config.ANIMATED_SPRITE_PATH, mask_threshold=127)
         self.bullet_duration = 150
         self.bullet_size = (2, 2)
         self.bullet_color = BLUE
@@ -59,36 +59,35 @@ class Player(object):
 
     def shoot(self, x_speed, y_speed):
         self.shoot_sound.play()
-        bullet = Bullet(self.bullet_duration, self.bullet_color, self.collider.rect.center, x_speed, y_speed, self.bullet_size)
+        bullet = Bullet(self.bullet_duration, self.bullet_color, self.sprite.rect.center, x_speed, y_speed, self.bullet_size)
         self.bullet_list.add(bullet)
 
     def update(self, camera, wall_collision_group, layer_size, timedelta):
-        self.collider.update(timedelta)
+        self.sprite.update(timedelta)
 
         if self.x_speed == 0 and self.y_speed == 0:
             return None
 
         # move
-        new_coord = (self.x_speed + self.collider.rect.topleft[0],
-                     self.y_speed + self.collider.rect.topleft[1])
+        new_coord = (self.x_speed + self.sprite.rect.topleft[0],
+                     self.y_speed + self.sprite.rect.topleft[1])
 
-        dummy_future_rect = self.collider.rect.copy()
+        dummy_future_rect = self.sprite.rect.copy()
         dummy_future_rect.topleft = new_coord
         wrapped_coord = wrap_logic(dummy_future_rect, layer_size).topleft
 
         if wrapped_coord != new_coord:
             # we wrapped around the screen pacman style
-            oldie = self.collider.rect.topleft
-            self.collider.rect.topleft = wrapped_coord
-            collided_with = self.collider.collides_rect_mask(wall_collision_group)
+            oldie = self.sprite.rect.topleft
+            self.sprite.rect.topleft = wrapped_coord
+            collided_with = collide.collides_rect_mask(self.sprite, wall_collision_group)
             if collided_with:   
-                self.collider.rect.topleft = oldie
+                self.sprite.rect.topleft = oldie
         else:
             # we did NOT wrap around the screen
-            # NOTE: oh no the way collider.move_As_close_as_possible works won't work with wrapping
-            collided_with = self.collider.move_as_close_as_possible(new_coord, wall_collision_group)
+            collided_with = collide.move_as_close_as_possible(self.sprite, new_coord, wall_collision_group)
 
-        camera.scroll_to(self.collider.rect)
+        camera.scroll_to(self.sprite.rect)
 
         if collided_with:
             THIP_SOUND.play()
@@ -105,7 +104,7 @@ class Player(object):
             self.bullet_color = BLUE
 
 
-class Asteroid(ColliderSprite):
+class Asteroid(pygame.sprite.Sprite):
     COLOR = GREEN
     SPAWN_DISTANCE_FROM_PLAYER = 35
 
@@ -117,24 +116,24 @@ class Asteroid(ColliderSprite):
         self.image.fill(self.COLOR)
         self.x_speed = x_speed
         self.y_speed = y_speed
-        super(Asteroid, self).__init__(self)
+        super(Asteroid, self).__init__()
 
     @classmethod
     def add_if_below_threshold(cls, player, asteroid_list, at_least_x_existing):
 
         if len(asteroid_list) < at_least_x_existing:
             plus_or_minus_x = random.choice([1, -1])
-            new_asteroid_x = player.collider.rect.top - (cls.SPAWN_DISTANCE_FROM_PLAYER * plus_or_minus_x)
+            new_asteroid_x = player.sprite.rect.top - (cls.SPAWN_DISTANCE_FROM_PLAYER * plus_or_minus_x)
 
-            if new_asteroid_x > player.collider.rect.left:
+            if new_asteroid_x > player.sprite.rect.left:
                 x_speed = -1
             else:
                 x_speed = 1
 
             plus_or_minus_y = random.choice([1, -1])
-            new_asteroid_y = player.collider.rect.left - (cls.SPAWN_DISTANCE_FROM_PLAYER * plus_or_minus_y)
+            new_asteroid_y = player.sprite.rect.left - (cls.SPAWN_DISTANCE_FROM_PLAYER * plus_or_minus_y)
 
-            if new_asteroid_y > player.collider.rect.top:
+            if new_asteroid_y > player.sprite.rect.top:
                 y_speed = -1
             else:
                 y_speed = 1
@@ -178,13 +177,13 @@ class Asteroid(ColliderSprite):
         self.rect = new_rect
              
         # colliding with wall?
-        collision_wall = self.collides_rect_mask(wall_list)
+        collision_wall = collide.collides_rect_mask(self, wall_list)
 
         if collision_wall:
             self.explode(asteroid_list)
 
 
-class Bullet(ColliderSprite):
+class Bullet(pygame.sprite.Sprite):
 
     def __init__(self, duration, color, center, x_speed, y_speed, size):
         self.image = pygame.Surface(size)
@@ -195,7 +194,7 @@ class Bullet(ColliderSprite):
         self.y_speed = y_speed
         self.current_duration = 0
         self.total_duration = duration
-        super(Bullet, self).__init__(self)
+        super(Bullet, self).__init__()
 
     def update(self, wall_list, asteroid_list, player_bullet_list, timedelta):
         self.current_duration += timedelta
@@ -205,8 +204,9 @@ class Bullet(ColliderSprite):
 
         new_coord = (self.rect.left + self.x_speed,
                      self.rect.top + self.y_speed)
-        collision_asteroids = self.sprites_in_orthogonal_path(new_coord,
-                                                              asteroid_list)
+        collision_asteroids = collide.sprites_in_orthogonal_path(self,
+                                                                 new_coord,
+                                                                 asteroid_list)
 
         if collision_asteroids:
             SMALL_EXPLODE_SOUND.play()
@@ -217,7 +217,7 @@ class Bullet(ColliderSprite):
             player_bullet_list.remove(self)
              
         # colliding with wall?
-        collision_wall = self.sprites_in_orthogonal_path(new_coord, wall_list)
+        collision_wall = collide.sprites_in_orthogonal_path(self, new_coord, wall_list)
 
         if collision_wall:
             player_bullet_list.remove(self)
@@ -325,7 +325,7 @@ while not done:
 
     # Move the object according to the speed vector.
     #
-    # We will be resetting player_collider.rect.topleft
+    # We will be resetting player.sprite.rect.topleft
     # to old_topleft if there is a collision.
     tilemap_on_players_index = tilemaps_by_layer[config.ANIMATED_SPRITE_Z_INDEX]
     collision_group_on_player_index = tilemap_on_players_index.collision_group
@@ -346,8 +346,8 @@ while not done:
 
     # Finally let's render the animated sprite on some
     # arbitrary layer. In the future the TMX will set this.
-    layers[config.ANIMATED_SPRITE_Z_INDEX].blit(player.collider.sprite.image,
-                                                player.collider.rect.topleft)
+    layers[config.ANIMATED_SPRITE_Z_INDEX].blit(player.sprite.image,
+                                                player.sprite.rect.topleft)
 
     # draw asteroids
     asteroid_list.draw(layers[config.ANIMATED_SPRITE_Z_INDEX])

@@ -10,247 +10,161 @@ groups with similar data.
 import pygame
 
 
-class Collision(Exception):
+# TODO: this is pretty unnecessary now...
+def collides_rect(sprite, sprite_group):
+    """
 
-    def __init__(self, collision_details):
-        self.collision_details = collision_details
-
-
-class ColliderSprite(pygame.sprite.Sprite):
-    """A sprite with a position and collision data.
-
-    Especially useful for sprites whose state changes
-    a lot, notably through its update() method,
-    affecting its mask, rect.
-
-    The update() method will update the sprite as well, there's
-    no reason for you to access said sprite anymore.
-
-    Attributes:
-        sprite (pygame.Sprite): The sprite which represents
-            this actor, and from which the actor's mask and
-            rect are derived every call to update().
-        rect (pygame.Rect): Rectangle whose dimensions
-            are updated (update) to reflect that
-            of the sprite's rect dimensions. Absolute position
-            of the Actor is set by setting this rect's:
-            topleft, center, etc.
-        mask (pygame.Mask): Reference to sprite's mask,
-            which is updated every update().
+    Boilerplate for checking rectangular collision of provided
+    sprite against sprites in the provided sprite_group.
 
     """
 
-    def __init__(self, sprite):
-        """Create a ColliderSprite, using data from the
-        supplied sprite.
+    return pygame.sprite.spritecollide(sprite, sprite_group, False)
 
-        Arguments:
-            sprite (pygame.Sprite): A Pygame sprite with the
-                special attribute of mask and special method
-                of update(). QUACK!
 
-        """
+def collides_rect_mask(sprite, sprite_group):
+    """See if provided sprite collides with any in the sprite_group
+    by rect first, then check by mask if exists.
 
-        super(ColliderSprite, self).__init__()
+    Arguments:
+        sprite (pygame.Sprite): ...
+        sprite_group (pygame.sprite.Group): See if this ColliderSprite
+            collides with any sprites in `sprite_group`.
 
-        self.sprite = sprite
-        self.rect = self.sprite.rect
+    Returns:
+        None: If there are no collisions.
+        pygame.sprite.Sprite: the first sprite to collide with
+            this ColliderSprite based on rect and possibly also
+            mask (if exists on both this ColliderSprite and the
+            other sprite being checked!).
 
-        if hasattr(sprite, 'mask'):
-            self.mask = self.sprite.mask
+    """
 
-    def update(self, timedelta):
-        """Set the rect and mask attributes after updating
-        the sprite's state.
+    for sprite_whose_rect_collides in collides_rect(sprite, sprite_group):
 
-        Arguments:
-            timedelta (int): Typically the clock timedelta
-                resulting from the game's clock.get_time().
+        if (hasattr(sprite, 'mask')
+                and hasattr(sprite_whose_rect_collides, 'mask')
+                and (pygame.sprite
+                     .collide_mask(sprite_whose_rect_collides, sprite))):
 
-        """
+            return sprite_whose_rect_collides
 
-        self.sprite.update(timedelta)
-        self.rect.size = self.sprite.rect.size
+        elif (not hasattr(sprite, 'mask')) and (not hasattr(sprite, 'mask')):
+            return sprite_whose_rect_collides
 
-        if hasattr(self, 'mask'):
-            self.mask = self.sprite.mask
+    return None
 
-    # TODO: is not used. how does spritecollide work?
-    def collides_rect(self, sprite_group):
-        """
 
-        Boilerplate for checking rectangular collision of this
-        ColliderSprite against sprites in the provided sprite_group.
+def move_as_close_as_possible(sprite, destination, sprite_group):
+    """Move along a line to destination coordinate, stopping before
+    potential collision.
 
-        """
+    Move as close as possible to `destination` without collision.
 
-        return pygame.sprite.spritecollide(self, sprite_group, False)
+    Warning:
+        This isn't fast! It lacks any decent heuristics, such as
+        line-based collisions. I'll be benchmarking this method
+        against line-based collision heuristics in the future.
 
-    def collides_rect_mask(self, sprite_group):
-        """See if collides by rect first, then check by mask if exists.
+    Arguments:
+        sprite (pygame.Sprite): the sprite to move as close...
+        destination (tuple[x, y]): The goal coordinate to move to, or
+            at least as close to as possible before colliding.
+        sprite_group (pygame.sprite.Group): Pygame sprite group, whose
+            sprites are check each time we move one pixel
+            toward the destination.
 
-        Arguments:
-            sprite_group (pygame.sprite.Group): See if this ColliderSprite
-                collides with any sprites in `sprite_group`.
+    Returns:
+        pygame.Sprite: The first sprite detected which prevented
+            moving further in the path.
+        None: Moved to destination without collision.
 
-        Returns:
-            None: If there are no collisions.
-            pygame.sprite.Sprite: the first sprite to collide with
-                this ColliderSprite based on rect and possibly also
-                mask (if exists on both this ColliderSprite and the
-                other sprite being checked!).
+    """
 
-        """
+    # Figure out the x and y increments!
+    #
+    # I use "increment" herein to mean "step which approaches,
+    # by one, the destination.
+    #
+    # For both the x and y axis, get the "step"
+    # (increment or decrement) which will
+    # eventually bring us to the goal.
+    goal_x, goal_y = destination
 
-        for sprite_whose_rect_collides in self.collides_rect(sprite_group):
+    if goal_x > sprite.rect.left:
+        x_increment = 1
+    elif goal_x < sprite.rect.left:
+        x_increment = -1
+    else:
+        x_increment = 0
 
-            if (hasattr(self, 'mask')
-                    and hasattr(sprite_whose_rect_collides, 'mask')
-                    and (pygame.sprite
-                         .collide_mask(sprite_whose_rect_collides, self))):
+    if goal_y > sprite.rect.top:
+        y_increment = 1
+    elif goal_y < sprite.rect.top:
+        y_increment = -1
+    else:
+        y_increment = 0
 
-                return sprite_whose_rect_collides
+    # This loop will return the first sprite it finds to collide,
+    # or we'll return None (later) if it can't find anything!
+    while sprite.rect.topleft != (goal_x, goal_y):
+        # last_safe_topleft allows us to reset to the last known
+        # good/noncolliding coordinate in the event of a collision
+        last_safe_topleft = sprite.rect.topleft
 
-            elif (not hasattr(self, 'mask')) and (not hasattr(self, 'mask')):
-                return sprite_whose_rect_collides
+        # If y is already at its goal, there's no need to increment
+        if sprite.rect.top != goal_y:
+            sprite.rect.top += y_increment
 
-        return None
+        # ... same thing for x and its goal.
+        if sprite.rect.left != goal_x:
+            sprite.rect.left += x_increment
 
-    # TODO:
-    # could be called something like rect_mask_path and iterate
-    # through up to the collision point returning that value.
-    def try_to_move(self, new_coord, sprite_group):
-        """Try to move to a position and either succeed
-        or raise a Collision exception.
+        colliding_with = collides_rect_mask(sprite, sprite_group)
 
-        Will not change position if Collision raised.
+        if colliding_with:
+            sprite.rect.topleft = last_safe_topleft
+            return colliding_with
 
-        Arguments:
-            x_speed (int): this number will be added to the
-                rectangle's topleft x!
-            y_speed (int): this number will be added to the
-                rectangle's topleft y!
-            sprite_group (pygame.sprite.Group): ...
+    return None
 
-        Raises:
-            Collision: ...
 
-        """
+def sprites_in_orthogonal_path(sprite, new_coord, sprite_group):
+    """Return the sprites this ColliderSprite would "run through"
+    and thus collide with if it moved to new_coord.
 
-        old_topleft = self.rect.topleft
-        self.rect.topleft = new_coord
+    Warning:
+        This does not work diagonally! This is shamefully bad, but
+        works perfectly for orthogonal movement.
 
-        if self.collides_rect_mask(sprite_group):
-            self.rect.topleft = old_topleft
-            raise Collision("some side...")
+    Arguments:
+        new_coord (tuple[int, int]): topleft coordinate value this
+            ColliderSprite would hypotherically have at the end of
+            this path.
+        sprite_group (pygame.sprite.Group): ...
 
-    def move_as_close_as_possible(self, destination, sprite_group):
-        """Move along a line to destination coordinate, stopping before
-        potential collision.
+    """
 
-        Move as close as possible to `destination` without collision.
+    current_rect = sprite.rect
+    future_rect = sprite.rect.copy()
+    future_rect.topleft = new_coord
+    collision_rect = future_rect.union(current_rect)
+    sprite.rect = collision_rect
+    colliding_with = collides_rect(sprite, sprite_group)
+    sprite.rect = current_rect
+    return colliding_with
 
-        Warning:
-            This isn't fast! It lacks any decent heuristics, such as
-            line-based collisions. I'll be benchmarking this method
-            against line-based collision heuristics in the future.
 
-        Arguments:
-            destination (tuple[x, y]): The goal coordinate to move to, or
-                at least as close to as possible before colliding.
-            sprite_group (pygame.sprite.Group): Pygame sprite group, whose
-                sprites are check each time we move one pixel
-                toward the destination.
+def collides_line(sprite, line_point_a, line_point_b, sprite_group):
+    """Efficiently check if any sprites along a line collide,
+    return True on first result, False if no collision.
 
-        Returns:
-            pygame.Sprite: The first sprite detected which prevented
-                moving further in the path.
-            None: Moved to destination without collision.
+    Arguments:
+        line_point_a (tuple[int, int]): --
 
-        """
+    """
 
-        # Figure out the x and y increments!
-        #
-        # I use "increment" herein to mean "step which approaches,
-        # by one, the destination.
-        #
-        # For both the x and y axis, get the "step"
-        # (increment or decrement) which will
-        # eventually bring us to the goal.
-        goal_x, goal_y = destination
-
-        if goal_x > self.rect.left:
-            x_increment = 1
-        elif goal_x < self.rect.left:
-            x_increment = -1
-        else:
-            x_increment = 0
-
-        if goal_y > self.rect.top:
-            y_increment = 1
-        elif goal_y < self.rect.top:
-            y_increment = -1
-        else:
-            y_increment = 0
-
-        # This loop will return the first sprite it finds to collide,
-        # or we'll return None (later) if it can't find anything!
-        while self.rect.topleft != (goal_x, goal_y):
-            # last_safe_topleft allows us to reset to the last known
-            # good/noncolliding coordinate in the event of a collision
-            last_safe_topleft = self.rect.topleft
-
-            # If y is already at its goal, there's no need to increment
-            if self.rect.top != goal_y:
-                self.rect.top += y_increment
-
-            # ... same thing for x and its goal.
-            if self.rect.left != goal_x:
-                self.rect.left += x_increment
-
-            colliding_with = self.collides_rect_mask(sprite_group)
-
-            if colliding_with:
-                self.rect.topleft = last_safe_topleft
-                return colliding_with
-
-        return None
-
-    def sprites_in_orthogonal_path(self, new_coord, sprite_group):
-        """Return the sprites this ColliderSprite would "run through"
-        and thus collide with if it moved to new_coord.
-
-        Warning:
-            This does not work diagonally! This is shamefully bad, but
-            works perfectly for orthogonal movement.
-
-        Arguments:
-            new_coord (tuple[int, int]): topleft coordinate value this
-                ColliderSprite would hypotherically have at the end of
-                this path.
-            sprite_group (pygame.sprite.Group): ...
-
-        """
-
-        current_rect = self.rect
-        future_rect = self.rect.copy()
-        future_rect.topleft = new_coord
-        collision_rect = future_rect.union(current_rect)
-        self.rect = collision_rect
-        colliding_with = self.collides_rect(sprite_group)
-        self.rect = current_rect
-        return colliding_with
-
-    def collides_line(self, line_point_a, line_point_b, sprite_group):
-        """Efficiently check if any sprites along a line collide,
-        return True on first result, False if no collision.
-
-        Arguments:
-            line_point_a (tuple[int, int]): --
-
-        """
-
-        pass
+    pass
 
 
 def lines_intersection(line_a, line_b):
