@@ -75,9 +75,16 @@ class ColliderSprite(pygame.sprite.Sprite):
         if hasattr(self, 'mask'):
             self.mask = self.sprite.mask
 
+    # TODO: is not used. how does spritecollide work?
     def collides_rect(self, sprite_group):
-        return pygame.sprite.spritecollide(self, sprite_group, False,
-                                           collided=pygame.sprite.collide_rect)
+        """
+
+        Boilerplate for checking rectangular collision of this
+        ColliderSprite against sprites in the provided sprite_group.
+
+        """
+
+        return pygame.sprite.spritecollide(self, sprite_group, False)
 
     def collides_rect_mask(self, sprite_group):
         """See if collides by rect first, then check by mask if exists.
@@ -107,8 +114,7 @@ class ColliderSprite(pygame.sprite.Sprite):
             elif (not hasattr(self, 'mask')) and (not hasattr(self, 'mask')):
                 return sprite_whose_rect_collides
 
-        else:
-            return None
+        return None
 
     # TODO:
     # could be called something like rect_mask_path and iterate
@@ -138,21 +144,41 @@ class ColliderSprite(pygame.sprite.Sprite):
             self.rect.topleft = old_topleft
             raise Collision("some side...")
 
-    # TODO, FIXME
-    # lacks any heuristics
     def move_as_close_as_possible(self, destination, sprite_group):
-        """Move as close as possible to `destination` without collision.
+        """Move along a line to destination coordinate, stopping before
+        potential collision.
+
+        Move as close as possible to `destination` without collision.
+
+        Warning:
+            This isn't fast! It lacks any decent heuristics, such as
+            line-based collisions. I'll be benchmarking this method
+            against line-based collision heuristics in the future.
+
+        Arguments:
+            destination (tuple[x, y]): The goal coordinate to move to, or
+                at least as close to as possible before colliding.
+            sprite_group (pygame.sprite.Group): Pygame sprite group, whose
+                sprites are check each time we move one pixel
+                toward the destination.
+
+        Returns:
+            pygame.Sprite: The first sprite detected which prevented
+                moving further in the path.
+            None: Moved to destination without collision.
 
         """
 
-        goal_x, goal_y = destination
-        current_x, current_y = self.rect.topleft
-
-        # FIRST: figure out the x and y increments
+        # Figure out the x and y increments!
+        #
+        # I use "increment" herein to mean "step which approaches,
+        # by one, the destination.
         #
         # For both the x and y axis, get the "step"
         # (increment or decrement) which will
         # eventually bring us to the goal.
+        goal_x, goal_y = destination
+
         if goal_x > self.rect.left:
             x_increment = 1
         elif goal_x < self.rect.left:
@@ -167,19 +193,19 @@ class ColliderSprite(pygame.sprite.Sprite):
         else:
             y_increment = 0
 
-        # Ye dangerous infinite loop: exits when either a collision
-        # is detected, or we have arrived at the goal/destination.
-        while True:
+        # This loop will return the first sprite it finds to collide,
+        # or we'll return None (later) if it can't find anything!
+        while self.rect.topleft != (goal_x, goal_y):
             # last_safe_topleft allows us to reset to the last known
             # good/noncolliding coordinate in the event of a collision
             last_safe_topleft = self.rect.topleft
 
             # If y is already at its goal, there's no need to increment
-            if not self.rect.top == goal_y:
+            if self.rect.top != goal_y:
                 self.rect.top += y_increment
 
             # ... same thing for x and its goal.
-            if not self.rect.left == goal_x:
+            if self.rect.left != goal_x:
                 self.rect.left += x_increment
 
             colliding_with = self.collides_rect_mask(sprite_group)
@@ -187,33 +213,9 @@ class ColliderSprite(pygame.sprite.Sprite):
             if colliding_with:
                 self.rect.topleft = last_safe_topleft
                 return colliding_with
-            elif self.rect.topleft == (goal_x, goal_y):
-                # we're at our goal, we've not encountered
-                # a collision.
-                return None
 
-        # one last check for the last point
+        return None
 
-        # mathematically, if we 
-        if position_difference_x != 0:
-            position_difference_x += x_modifier
-
-        if position_difference_y != 0:
-            position_difference_y += y_modifier
-
-        old_topleft = self.rect.topleft
-        new_coord = [position_difference_x + self.rect.topleft[0],
-                     position_difference_y + self.rect.topleft[1]]
-        self.rect.topleft = new_coord
-        colliding_with = self.collides_rect_mask(sprite_group)
-
-        if colliding_with:
-            self.rect.topleft = old_coord
-            return colliding_with
-        else:
-            return None
-
-    # TODO: what if I want diagonal!?
     def sprites_in_orthogonal_path(self, new_coord, sprite_group):
         """Return the sprites this ColliderSprite would "run through"
         and thus collide with if it moved to new_coord.
@@ -238,3 +240,28 @@ class ColliderSprite(pygame.sprite.Sprite):
         colliding_with = self.collides_rect(sprite_group)
         self.rect = current_rect
         return colliding_with
+
+    def collides_line(self, line_point_a, line_point_b, sprite_group):
+        """Efficiently check if any sprites along a line collide,
+        return True on first result, False if no collision.
+
+        Arguments:
+            line_point_a (tuple[int, int]): --
+
+        """
+
+        pass
+
+
+def lines_intersection(line_a, line_b):
+    """Return the point in which lines intersect, else
+    return None.
+
+    Arguments:
+        line_a (tuple[int, int]): --
+
+    http://webcache.googleusercontent.com/search?q=cache:Ur-EPX41x00J:devmag.org.za/2009/04/17/basic-collision-detection-in-2d-part-2/+&cd=1&hl=en&ct=clnk&gl=us&client=ubuntu
+
+    """
+
+    pass
