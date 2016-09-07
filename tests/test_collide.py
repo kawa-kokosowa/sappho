@@ -17,17 +17,22 @@ animsprite_mask_20_20 = animate.AnimatedSprite.from_gif(
     path,
     mask_threshold=254
 )
-
 animsprite_mask_20_20.rect.topleft = (20, 20)
 
 animsprite_mask_40_40 = animate.AnimatedSprite.from_gif(
     path,
     mask_threshold=254
 )
-
 animsprite_mask_40_40.rect.topleft = (40, 40)
 
-animsprite_group_sans_one = pygame.sprite.Group(animsprite_mask_40_40)
+animsprite_20_43 = animate.AnimatedSprite.from_gif(
+    path,
+    mask_threshold=254
+)
+animsprite_20_43.rect.topleft = (20, 43)
+
+animsprite_group_sans_one = pygame.sprite.Group(animsprite_mask_40_40,
+                                                animsprite_20_43)
 
 
 def test_move_close_as_possible():
@@ -53,3 +58,20 @@ def test_move_close_as_possible():
     )
     assert closest_to_goal == (10, 10)
     assert collided_with is None
+
+    closest_to_goal, collided_with = collide.move_as_close_as_possible(
+        animsprite_mask_20_20,
+        (20, 60),
+        animsprite_group_sans_one
+    )
+    assert closest_to_goal == (20, 33)
+    assert collided_with is animsprite_20_43
+
+
+def test_sprites_in_orthogonal_path():
+    collided_with = collide.sprites_in_orthogonal_path(
+        animsprite_mask_20_20,
+        (20, 60),
+        animsprite_group_sans_one
+    )
+    assert collided_with[0] is animsprite_20_43
