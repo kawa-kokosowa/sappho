@@ -20,6 +20,17 @@ def collides_rect(sprite, sprite_group):
     return pygame.sprite.spritecollide(sprite, sprite_group, False)
 
 
+def add_rect_mask_if_missing_mask(sprite):
+    """So you can do rect/mask collisions.
+
+    """
+
+    if not hasattr(sprite, 'mask'):
+        new_mask = pygame.mask.Mask(sprite.rect.size)
+        new_mask.fill()
+        sprite.mask = new_mask
+
+
 def collides_rect_mask(sprite, sprite_group):
     """See if provided sprite collides with any in the sprite_group
     by rect first, then check by mask if exists.
@@ -38,16 +49,12 @@ def collides_rect_mask(sprite, sprite_group):
 
     """
 
+    add_rect_mask_if_missing_mask(sprite)
+
     for sprite_whose_rect_collides in collides_rect(sprite, sprite_group):
+        add_rect_mask_if_missing_mask(sprite_whose_rect_collides)
 
-        if (hasattr(sprite, 'mask')
-                and hasattr(sprite_whose_rect_collides, 'mask')
-                and (pygame.sprite
-                     .collide_mask(sprite_whose_rect_collides, sprite))):
-
-            return sprite_whose_rect_collides
-
-        elif (not hasattr(sprite, 'mask')) and (not hasattr(sprite, 'mask')):
+        if pygame.sprite.collide_mask(sprite_whose_rect_collides, sprite):
             return sprite_whose_rect_collides
 
     return None

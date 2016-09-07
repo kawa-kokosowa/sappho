@@ -25,10 +25,7 @@ animsprite_mask_40_40 = animate.AnimatedSprite.from_gif(
 )
 animsprite_mask_40_40.rect.topleft = (40, 40)
 
-animsprite_20_43 = animate.AnimatedSprite.from_gif(
-    path,
-    mask_threshold=254
-)
+animsprite_20_43 = animate.AnimatedSprite.from_gif(path)
 animsprite_20_43.rect.topleft = (20, 43)
 
 animsprite_group_sans_one = pygame.sprite.Group(animsprite_mask_40_40,
