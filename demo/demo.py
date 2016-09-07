@@ -85,7 +85,8 @@ class Player(object):
                 self.sprite.rect.topleft = oldie
         else:
             # we did NOT wrap around the screen
-            collided_with = collide.move_as_close_as_possible(self.sprite, new_coord, wall_collision_group)
+            closest_position, collided_with = collide.move_as_close_as_possible(self.sprite, new_coord, wall_collision_group)
+            self.sprite.rect.topleft = closest_position
 
         camera.scroll_to(self.sprite.rect)
 

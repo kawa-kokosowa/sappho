@@ -1,9 +1,7 @@
 """Handle generic pygame collision.
 
-The ColliderSprite lets you have a positional
-sprite, with a mask and rect, which can be
-efficiently and easily tested against sprite
-groups with similar data.
+Maybe this shouldn't ever move a sprite, but always return
+a coordinate and any sprites it collides with.
 
 """
 
@@ -56,10 +54,30 @@ def collides_rect_mask(sprite, sprite_group):
 
 
 def move_as_close_as_possible(sprite, destination, sprite_group):
-    """Move along a line to destination coordinate, stopping before
-    potential collision.
+    """Return how close sprite can go to destination without collision,
+    along with the first sprite blocking its progress (if any).
 
-    Move as close as possible to `destination` without collision.
+    "Position" herein will always refer to a position
+    for sprite.rect.topleft.
+
+    Say you have a SPACESHIP (S), "blank space" (-), the
+    destination (D), and a collidable BLOCK (B). If the
+    SPACESHIP moves at a velocity of x+5 y+5, this function
+    would would take (6, 6) as the `destination`, and it would
+    return ((3, 3), <sprite of the BLOCK>). This directly
+    mitigates "bad" collision where you could simply jump from
+    1,1 to 6,6 despite there being a collision in the path (BLOCK).
+
+        123456
+      1 S-----
+      2 ------
+      3 ------
+      4 ---B--
+      5 ------
+      6 -----D
+
+    In the example above, if there were no BLOCK (B) the return value
+    would be ((6,6), None).
 
     Warning:
         This isn't fast! It lacks any decent heuristics, such as
@@ -67,7 +85,11 @@ def move_as_close_as_possible(sprite, destination, sprite_group):
         against line-based collision heuristics in the future.
 
     Arguments:
-        sprite (pygame.Sprite): the sprite to move as close...
+        sprite (pygame.Sprite): This sprite is used to incrementally
+            move toward the destination, continuously checking
+            if colliding with any in sprite_group. The sprite's position
+            will not be affected (you will have to update the
+            sprite.rect.topleft respectively, yourself).
         destination (tuple[x, y]): The goal coordinate to move to, or
             at least as close to as possible before colliding.
         sprite_group (pygame.sprite.Group): Pygame sprite group, whose
@@ -75,11 +97,25 @@ def move_as_close_as_possible(sprite, destination, sprite_group):
             toward the destination.
 
     Returns:
-        pygame.Sprite: The first sprite detected which prevented
-            moving further in the path.
-        None: Moved to destination without collision.
+        tuple: The first element is the "topleft" coordinate
+            representing the closest sprite may move toward the
+            destination before a collision occurs. The first element
+            coordinate will be one of the following:
+              * At the original "topleft" position of sprite, i.e.,
+                sprite.rect.topleft
+              * The destination provided: if there were no collisions
+                moving between original position and destination.
+              * In between original and destination positions: when
+                there was a collision, this will be the last value
+                that didn't collide along that path toward destination.
+            The second element is the first sprite which
+            prevents progressing further toward destination. The second
+            element could be None if sprite can move to destination
+            without any collisions from sprite_group.
 
     """
+
+    original_position = sprite.rect.topleft
 
     # Figure out the x and y increments!
     #
@@ -123,10 +159,10 @@ def move_as_close_as_possible(sprite, destination, sprite_group):
         colliding_with = collides_rect_mask(sprite, sprite_group)
 
         if colliding_with:
-            sprite.rect.topleft = last_safe_topleft
-            return colliding_with
+            sprite.rect.topleft = original_position
+            return (last_safe_topleft, colliding_with)
 
-    return None
+    return (destination, None)
 
 
 def sprites_in_orthogonal_path(sprite, new_coord, sprite_group):
@@ -134,8 +170,8 @@ def sprites_in_orthogonal_path(sprite, new_coord, sprite_group):
     and thus collide with if it moved to new_coord.
 
     Warning:
-        This does not work diagonally! This is shamefully bad, but
-        works perfectly for orthogonal movement.
+        This does not work diagonally! This is only good for
+        quickly checking collisions along an orthogonal path.
 
     Arguments:
         new_coord (tuple[int, int]): topleft coordinate value this
