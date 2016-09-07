@@ -2,28 +2,54 @@ import os
 
 import pygame
 
+from sappho import animate
 from sappho import collide
 
+
+# this sprite is 10x10
 testpath = os.path.realpath(__file__)
 path = os.path.abspath(os.path.join(testpath,
                                     "..",
                                     "resources",
                                     "animatedsprite.gif"))
-animsprite = animate.AnimatedSprite.from_gif(path,
-                                             mask_threshold=254)
-collision_sprite = collide.ColliderSprite(animsprite)
 
-assert collision_sprite.rect.size == (10, 10)
-assert hasattr(collision_sprite, 'mask')
-# TODO: should test after updating sprite
+animsprite_mask_20_20 = animate.AnimatedSprite.from_gif(
+    path,
+    mask_threshold=254
+)
 
-# The below pattern can be used for collides_rect, collides_Rect_mask,
-# try_to_move
+animsprite_mask_20_20.rect.topleft = (20, 20)
 
-# Create a group of sprites with various unique positions
+animsprite_mask_40_40 = animate.AnimatedSprite.from_gif(
+    path,
+    mask_threshold=254
+)
 
-# Create a sprite which will be checked for collisions
-# against the group of sprites created in the last step.
-# We intentionally place this collidersprite somewhere that'll
-# collide with at least one colliddersprite from the group of
-# the last step
+animsprite_mask_40_40.rect.topleft = (40, 40)
+
+animsprite_group_sans_one = pygame.sprite.Group(animsprite_mask_40_40)
+
+
+def test_move_close_as_possible():
+    """
+
+    Move `animsprite_mask_20_20` to (60, 60), which should collide
+    with both `animsprite_mask_40_40` and `animsprite_35_40`.
+
+    """
+
+    closest_to_goal, collided_with = collide.move_as_close_as_possible(
+        animsprite_mask_20_20,
+        (60, 60),
+        animsprite_group_sans_one
+    )
+    assert closest_to_goal == (30, 30)
+    assert collided_with is animsprite_mask_40_40
+
+    closest_to_goal, collided_with = collide.move_as_close_as_possible(
+        animsprite_mask_20_20,
+        (10, 10),
+        animsprite_group_sans_one
+    )
+    assert closest_to_goal == (10, 10)
+    assert collided_with is None
