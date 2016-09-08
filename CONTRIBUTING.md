@@ -26,6 +26,7 @@ you intend to make, consider:
   * `feature/collide-line-heuristics`
   * `fix/32-animate-bug`
   * `clean/refactor-and-add-comments`
+  * `test/tiles-raise-some-exception`
 
 Use `git checkout -b docs/sphinx-and-docstrings master`.
 
