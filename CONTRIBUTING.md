@@ -1,9 +1,6 @@
 # Rules for Contributing
 
-We want to leave your workflow up to you, and not
-overload you with constraints.
-
-## Code Philosophy
+## Before you start (code philosophy)
 
   * You are not allowed to import other modules from the Sappho package.
   * Your code should be very transparent to the fact that we're using pygame,
@@ -19,11 +16,23 @@ overload you with constraints.
   * Create code that is easy to test. 100% test coverage.
   * Don't automate "game logic"
   * Avoid modifying foreign objects inside of a different object
+  * Use `etc/pre-commit` git hook
 
-## Quality Checklist
+## Acceptance criteria for pull requests
 
-Before making a pull request you should go through
-this checklist:
+First you'll want to make a branch that identifies the set of changes
+you intend to make, consider:
+
+  * `feature/collide-line-heuristics`
+  * `fix/32-animate-bug`
+  * `clean/refactor-and-add-comments`
+
+Use `git checkout -b docs/sphinx-and-docstrings master`.
+
+After your branch is created, make sure each commit has a descriptive
+`git commit` message. You're invited to make a pull request for your
+branch whenever you please, but keep in mind the acceptance criteria
+for pull requests:
 
   * Changes 100% tested with unit tests
   * Changes reflected in the docs
@@ -32,15 +41,9 @@ this checklist:
   * Follows other conventions in code
   * Adheres to philosophies listed in `README.md`
   * Tests are passing, i.e., `py.test tests`
-  * Run `py.test tests --doctest-modules --pep8 sappho -v --cov-report term-missing --cov=sappho`
+  * Tests passing in Travis CI (tip: use `etc/pre-commit`)
 
-## Git
-
-### Branches
-
-  * When you make a new branch, branch from master, e.g.,
-    `checkout -b some-new-branch-name master`
-  * Make a pull request comparing against `master` (if
-    approved it'll be merged to `nextrelease`
-  * The only time you branch from `nextrelease` is when
-    you're working on docs or tests.
+Once your pull request has been reviewed by one other developer
+(signified by their approval, e.g., :+1:) it may be merged to master,
+but that's ultimately up to Lily Seabreeze, the project's mom who
+manages the project and its releases.
