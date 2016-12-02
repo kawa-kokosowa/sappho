@@ -1,11 +1,217 @@
-"""Handle generic pygame collision.
-
-Maybe this shouldn't ever move a sprite, but always return
-a coordinate and any sprites it collides with.
+"""Various functions for detecting pygame sprite collisions!
 
 """
 
+import doctest
+
 import pygame
+
+
+class SpatialPartition(object):
+    """A pygame.sprite.Group combined with a rectangle, which
+    represents its area on the SpatialPartitionGrid to which it
+    belongs. This is effectively a cell of the SpatialPartitionGrid.
+
+    Attributes:
+        rect: pygame.Rect() object, representing the dimensions and
+            location on the SpatialPartitionGrid.
+
+    """
+
+    def __init__(self, x, y, width, height):
+        """
+
+        Arguments:
+            x (int): x-coordinate of topleft.
+            y (int): y-coordinate of topleft of this partition.
+            width (int): ...
+            height (int): ...
+
+        """
+
+        self.rect = pygame.rect.Rect(x, y, width, height)
+        self.sprite_group = pygame.sprite.Group()
+
+
+class SpatialPartitionGrid(object):
+    """A plane/rectangle divided up into equally-sized,
+    non-overlapping "spatial partitions," effectively cells
+    of the SpatialPartitionGrid. SpatialPartitionGrids are
+    useful for performing actions based on locality, e.g.,
+    collisions, updating sprites.
+
+    """
+
+    def __init__(self, width=None, height=None):
+        """
+
+        """
+
+        self.partitions = self.create_spatial_partitions(
+            pixels_wide,
+            pixels_tall,
+            partitions_wide,
+            partitions_tall,
+        )
+
+    @staticmethod
+    def create_spatial_partitions(self, pixels_wide, pixels_tall,
+                                  partitions_wide, partitions_tall):
+
+        """
+
+        Arguments:
+            pixels_wide (int):
+            pixels_tall (int):
+            partitions_wide (int):
+            partitions_tall (int):
+
+        Returns:
+            lol
+
+        """
+
+        partition_width = pixels_wide // partitions_wide
+        partition_height = pixels_tall // partitions_tall
+
+        # ... We need to add "extra" pixels, in terms of size, to
+        # the last partition of every row and to every partition of
+        # the last row. This is in case the SpartialPartitionGrid
+        # cannot be divided evenly, and we add the remainder pixels
+        # to the last partition of every row, and the bottom of every
+        # partition of the last row.
+        last_partition_extra_width = (pixels_wide - (partitions_wide
+                                                     * partition_width))
+        last_partition_extra_height = (pixels_tall - (partitions_tall
+                                                      * partition_height))
+
+        # We build partitions by iterating numbers 1 through z, where
+        # z is the number of partitions that will fit in the
+        # SpatialPartitionGrid (its area in partitions).
+        #
+        # For example, if you have a SpatialPartitionGrid with the
+        # properties:
+        #
+        #  * partitions wide: 3
+        #  * partitions tall: 4
+        #  * Total partitions: 12
+        #  * partition width (pixels): 10
+        #  * partition height (pixels): 10
+        #  * Grid width: 31px
+        #  * Grid height: 31px
+        #
+        # ... and thus it looks like this:
+        #  
+        #  + - + - + - +
+        #  | 0 | 1 | 2 |
+        #  + - + - + - +
+        #  | 3 | 4 | 5 |
+        #  + - + - + - +
+        #  | 6 | 7 | 8 |
+        #  + - + - + - +
+        #  | 9 | 10| 11|
+        #  + - + - + - +
+        #
+        # ... then partition 0's topleft coordinate would be 0,0
+        # and its dimensions are 10x10 pixels. In fact, all of
+        # the partitions would be 10x10 pixels, with these exceptions,
+        # which utilize last_partition_extra_width or
+        # last_partition_extra_height:
+        #
+        #  * Partition 2: top left coord is 20,0. Dimensions are
+        #    11x10 pixels. This is because every last partition
+        #    from each row gets last_partition_extra_width (1px) added
+        #    to its width, to compensate for the total
+        #    SpatialPartitionGrid width (31px) having a remainder when
+        #    divided by the number of partitions per row (3), i.e.,
+        #    `partitions_wide`, that is, to bring the total width of
+        #    the row of partitions to 31px.
+        #  * Partition 5: top left coord is 20,10; dimensions: 11x10px.
+        #  * Partition 8: top left coord is 20,20; dimensions: 11x10px.
+        #  * Partition 9: top left coord is 0,30; dimensions: 10x11px.
+        #  * Partition 10: top left coord is 10,30; dimensions: 10x11px.
+        #  * Partition 11: top left coord is 20,30; dimensions: 11x11px.
+        return_these_partitions = []
+        for partition_index in xrange(pixels_wide * pixels_tall):
+            # if we continue the example above, if `partition_index` is
+            # 8, its top left coord is 20,20; this calculation will correctly
+            # deduce 20 (pixels) for the partition's top left X coordinate.
+            #                 2
+            # ... as 20 == (8 % 3) * 10
+            partition_x = (partition_index % partitions_wide) * partition_width
+
+
+            # ... again, if `partition_index` is 8 the topleft coord is 20,20,
+            # this calculation will correctly deduce 20 (pixels) for this
+            # partition's top left Y coordinate.
+            #                 2
+            # ... as 20 == (8 // 3) * 10
+            partition_y = (partition_index // partitions_wide) * partition_height
+
+            # The rest of this iteration is devoted to determining the
+            # partition's width and height in pixels. By default, the
+            # width and height of any partition is 10x10 pixels, but
+            # as noted earlier, we need to compensate if there's a
+            # remainder when dividing the total grid height/width in
+            # pixels by the number of partitions (wide/tall), which the
+            # grid consists of.
+            #
+            # So we start at the standard 10x10 pixel dimensions for the
+            # partition, and we later add the compensating pixels if
+            # on an appropriate partition to do so.
+            this_partitions_width = partition_width
+            this_partitions_height = partition_height
+
+            # ... if this is partition index 8: (8 + 1) % 3 == 0
+            # tells us that this partition is flush with the right
+            # side and thus needs to compensate to stretch to the
+            # total SpatialPartitionGrid width in pixels...
+            if (partition_index + 1) % partitions_wide == 0:
+                # ... if index 8, this will correctly give us
+                # the width of 11.
+                this_partitions_width += last_partition_extra_width
+
+            # The calculation below tells us if we're on the last
+            # row or not, in order to compensate/stretch.
+            #                   12
+            #    True == 9 >= (3 * 4) - 3
+            if partition_index >= (partitions_wide * partitions_tall) - (partitions_wide):
+                this_partitions_height += last_partition_extra_height
+
+            spatial_partition = SpatialPartition(
+                x=partition_x,
+                y=partition_y,
+                width=this_partitions_width,
+                height=this_partitions_height,
+            )
+            return_these_partitions.append(spatial_partition)
+
+        return return_these_partitions
+
+    def get_partition_by_coordinate(self, coordinate_x, coordinate_y):
+        """Return the correct/corresponding pygame.SpriteGroup from the
+        spatial_partitions, which corresponds to the supplied pixel
+        x/y coordinate.
+
+        Arguments:
+            coordinate_x (int):
+            coordinate_y (int):
+
+        """
+
+        partition_index = lol
+        return self.spatial_partitions[partition_index]
+
+    def partition_update(self):
+        pass
+
+    def move_sprite(self):
+        """Set the topleft of this specific sprite, and move
+        it from one partition to another.
+
+        """
+
+        pass
 
 
 # TODO: this is pretty unnecessary now...
@@ -20,6 +226,8 @@ def collides_rect(sprite, sprite_group):
     return pygame.sprite.spritecollide(sprite, sprite_group, False)
 
 
+# TODO: rename; this adds a mask if missing, so
+# add_mask_if_missing()
 def add_rect_mask_if_missing_mask(sprite):
     """So you can do rect/mask collisions.
 
@@ -198,27 +406,5 @@ def sprites_in_orthogonal_path(sprite, new_coord, sprite_group):
     return colliding_with
 
 
-def collides_line(sprite, line_point_a, line_point_b, sprite_group):
-    """Efficiently check if any sprites along a line collide,
-    return True on first result, False if no collision.
-
-    Arguments:
-        line_point_a (tuple[int, int]): --
-
-    """
-
-    pass
-
-
-def lines_intersection(line_a, line_b):
-    """Return the point in which lines intersect, else
-    return None.
-
-    Arguments:
-        line_a (tuple[int, int]): --
-
-    http://webcache.googleusercontent.com/search?q=cache:Ur-EPX41x00J:devmag.org.za/2009/04/17/basic-collision-detection-in-2d-part-2/+&cd=1&hl=en&ct=clnk&gl=us&client=ubuntu
-
-    """
-
-    pass
+if __name__ == '__main__':
+    doctest.testmod()
