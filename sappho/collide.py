@@ -55,7 +55,7 @@ class SpatialPartitionGrid(object):
         )
 
     @staticmethod
-    def create_spatial_partitions(self, pixels_wide, pixels_tall,
+    def create_spatial_partitions(pixels_wide, pixels_tall,
                                   partitions_wide, partitions_tall):
 
         """
@@ -68,6 +68,16 @@ class SpatialPartitionGrid(object):
 
         Returns:
             lol
+
+        Examples:
+            >>> lol = SpatialPartitionGrid.create_spatial_partitions(
+            ...     pixels_wide=31,
+            ...     pixels_tall=31,
+            ...     partitions_wide=3,
+            ...     partitions_tall=4,
+            ... )
+            >>> len(lol)
+            12
 
         """
 
@@ -132,7 +142,7 @@ class SpatialPartitionGrid(object):
         #  * Partition 10: top left coord is 10,30; dimensions: 10x11px.
         #  * Partition 11: top left coord is 20,30; dimensions: 11x11px.
         return_these_partitions = []
-        for partition_index in xrange(pixels_wide * pixels_tall):
+        for partition_index in xrange(partitions_wide * partitions_tall):
             # if we continue the example above, if `partition_index` is
             # 8, its top left coord is 20,20; this calculation will correctly
             # deduce 20 (pixels) for the partition's top left X coordinate.
