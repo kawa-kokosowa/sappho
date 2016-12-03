@@ -45,6 +45,6 @@ for pull requests:
   * Tests passing in Travis CI (tip: use `etc/pre-commit`)
 
 Once your pull request has been reviewed by one other developer
-(signified by their approval, e.g., :+1:) it may be merged to master,
+(signified by their approval, e.g., :+1:) it may be merged to `nextrelease`,
 but that's ultimately up to Lily Seabreeze, the project's mom who
 manages the project and its releases.
