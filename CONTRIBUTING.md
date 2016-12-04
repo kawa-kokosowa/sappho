@@ -48,3 +48,9 @@ Once your pull request has been reviewed by one other developer
 (signified by their approval, e.g., :+1:) it may be merged to master,
 but that's ultimately up to Lily Seabreeze, the project's mom who
 manages the project and its releases.
+
+## Running tests
+
+`pip install -r requirements/develop.txt`
+
+`py.test tests --doctest-modules --pep8 sappho -v --cov-report term-missing --cov=sappho`

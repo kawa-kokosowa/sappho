@@ -74,7 +74,7 @@ class SpatialPartitionGrid(object):
           * partition height (pixels): 10
           * Grid width: 31px
           * Grid height: 41px
-       
+
         ... and thus it looks like this:
 
           +---+---+----+
@@ -177,7 +177,8 @@ class SpatialPartitionGrid(object):
             # partition's top left Y coordinate.
             #                 2
             # ... as 20 == (8 // 3) * 10
-            partition_y = (partition_index // partitions_wide) * partition_height
+            partition_y = ((partition_index // partitions_wide)
+                           * partition_height)
 
             # The rest of this iteration is devoted to determining the
             # partition's width and height in pixels. By default, the
@@ -206,7 +207,9 @@ class SpatialPartitionGrid(object):
             # row or not, in order to compensate/stretch.
             #                   12
             #    True == 9 >= (3 * 4) - 3
-            if partition_index >= (partitions_wide * partitions_tall) - (partitions_wide):
+            if (partition_index >= (partitions_wide * partitions_tall)
+               - (partitions_wide)):
+
                 this_partitions_height += last_partition_extra_height
 
             # Finally, we've gotten all the info required to accurately
