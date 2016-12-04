@@ -2,3 +2,4 @@
 #numpy>=1.0
 Pillow>=2, <4
 wheel  # added cuz weird issues
+six

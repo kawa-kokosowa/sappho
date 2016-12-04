@@ -5,6 +5,7 @@
 import doctest
 
 import pygame
+import six
 
 
 class SpatialPartition(object):
@@ -62,6 +63,9 @@ class SpatialPartitionGrid(object):
                                   partitions_wide, partitions_tall):
 
         """Generate a list of SpatialPartition objects.
+
+        Create a 2d space, consisting of non-overlapping "spacial
+        "partitions" (SpatialPartition).
 
         For example, if you `create_spatial_partitions(10, 10, 3, 4)`,
         the SpatialPartitionGrid that will be created will have these
@@ -160,11 +164,14 @@ class SpatialPartitionGrid(object):
         last_partition_extra_height = (pixels_tall - (partitions_tall
                                                       * partition_height))
 
-        # We build partitions by iterating numbers 1 through z, where
-        # z is the number of partitions that will fit in the
-        # SpatialPartitionGrid (its area in partitions).
+        # We build the partitions, we know how many partitions we need
+        # to generate: the grid's area in partitions. So, we iterate
+        # through the indexes 0-n for each of those partitions. None
+        # of the partitions overlap. Please reference this method's
+        # docstring.
+        area_in_partitions = partitions_wide * partitions_tall
         list_of_spatial_partitions = []
-        for partition_index in xrange(partitions_wide * partitions_tall):
+        for partition_index in six.moves.range(area_in_partitions):
             # if we continue the docstring example, if `partition_index` is
             # 8, its top left coord is 20,20; this calculation will correctly
             # deduce 20 (pixels) for the partition's top left X coordinate.
@@ -205,11 +212,7 @@ class SpatialPartitionGrid(object):
 
             # The calculation below tells us if we're on the last
             # row or not, in order to compensate/stretch.
-            #                   12
-            #    True == 9 >= (3 * 4) - 3
-            if (partition_index >= (partitions_wide * partitions_tall)
-               - (partitions_wide)):
-
+            if partition_index >= area_in_partitions - partitions_wide:
                 this_partitions_height += last_partition_extra_height
 
             # Finally, we've gotten all the info required to accurately
