@@ -32,6 +32,11 @@ class SpatialPartition(object):
         self.rect = pygame.rect.Rect(x, y, width, height)
         self.sprite_group = pygame.sprite.Group()
 
+    def update(self, *args, **kwargs):
+
+        for sprite in sprite_group:
+            sprite.update(*args, **kwargs)
+
 
 class SpatialPartitionGrid(object):
     """A plane/rectangle divided up into equally-sized,
@@ -42,23 +47,68 @@ class SpatialPartitionGrid(object):
 
     """
 
-    def __init__(self, width=None, height=None):
+    def __init__(self, list_of_spatial_partitions):
         """
 
+        Arguments:
+            list_of_spatial_partitions (list[SpatialPartition]): ...
+
         """
 
-        self.partitions = self.create_spatial_partitions(
-            pixels_wide,
-            pixels_tall,
-            partitions_wide,
-            partitions_tall,
-        )
+        self._partitions = list_of_spatial_partitions
 
-    @staticmethod
-    def create_spatial_partitions(pixels_wide, pixels_tall,
+    @classmethod
+    def create_spatial_partitions(cls, pixels_wide, pixels_tall,
                                   partitions_wide, partitions_tall):
 
-        """
+        """Generate a list of SpatialPartition objects.
+
+        For example, if you `create_spatial_partitions(10, 10, 3, 4)`,
+        the SpatialPartitionGrid that will be created will have these
+        measurements:
+
+          * partitions wide: 3
+          * partitions tall: 4
+          * Total partitions: 12
+          * partition width (pixels): 10
+          * partition height (pixels): 10
+          * Grid width: 31px
+          * Grid height: 41px
+       
+        ... and thus it looks like this:
+
+          +---+---+----+
+          | 0 | 1 | 2  |
+          +---+---+----+
+          | 3 | 4 | 5  |
+          +---+---+----+
+          | 6 | 7 | 8  |
+          +---+---+----+
+          | 9 | 10| 11 |
+          |___|___|____|
+
+        ... then partition 0's topleft coordinate would be 0,0
+        and its dimensions are 10x10 pixels. In fact, all of
+        the partitions would be 10x10 pixels, with these exceptions,
+        which utilize last_partition_extra_width or
+        last_partition_extra_height:
+
+          * Partition 2: top left coord is 20,0. Dimensions are
+            11x10 pixels. This is because every last partition
+            from each row gets last_partition_extra_width (1px) added
+            to its width, to compensate for the total
+            SpatialPartitionGrid width (31px) having a remainder when
+            divided by the number of partitions per row (3), i.e.,
+            `partitions_wide`, that is, to bring the total width of
+            the row of partitions to 31px.
+          * Partition 5: top left coord is 20,10; dimensions: 11x10px.
+          * Partition 8: top left coord is 20,20; dimensions: 11x10px.
+          * Partition 9: top left coord is 0,30; dimensions: 10x11px.
+          * Partition 10: top left coord is 10,30; dimensions: 10x11px.
+          * Partition 11: top left coord is 20,30; dimensions: 11x11px.
+
+        I use this above example extensively in the source code's
+        comments for this method.
 
         Arguments:
             pixels_wide (int):
@@ -67,17 +117,32 @@ class SpatialPartitionGrid(object):
             partitions_tall (int):
 
         Returns:
-            lol
+            SpatialPartitionGrid: created from a list of
+                SpatialPartitions.
 
         Examples:
-            >>> lol = SpatialPartitionGrid.create_spatial_partitions(
+            To continue the example...
+
+            >>> grid = SpatialPartitionGrid.create_spatial_partitions(
             ...     pixels_wide=31,
-            ...     pixels_tall=31,
+            ...     pixels_tall=41,
             ...     partitions_wide=3,
             ...     partitions_tall=4,
             ... )
-            >>> len(lol)
+            >>> len(grid._partitions)
             12
+            >>> grid._partitions[0].rect.topleft
+            (0, 0)
+            >>> grid._partitions[0].rect.size
+            (10, 10)
+            >>> grid._partitions[11].rect.topleft
+            (20, 30)
+            >>> grid._partitions[11].rect.size
+            (11, 11)
+            >>> grid._partitions[5].rect.topleft
+            (20, 10)
+            >>> grid._partitions[5].rect.size
+            (11, 10)
 
         """
 
@@ -98,58 +163,14 @@ class SpatialPartitionGrid(object):
         # We build partitions by iterating numbers 1 through z, where
         # z is the number of partitions that will fit in the
         # SpatialPartitionGrid (its area in partitions).
-        #
-        # For example, if you have a SpatialPartitionGrid with the
-        # properties:
-        #
-        #  * partitions wide: 3
-        #  * partitions tall: 4
-        #  * Total partitions: 12
-        #  * partition width (pixels): 10
-        #  * partition height (pixels): 10
-        #  * Grid width: 31px
-        #  * Grid height: 31px
-        #
-        # ... and thus it looks like this:
-        #  
-        #  + - + - + - +
-        #  | 0 | 1 | 2 |
-        #  + - + - + - +
-        #  | 3 | 4 | 5 |
-        #  + - + - + - +
-        #  | 6 | 7 | 8 |
-        #  + - + - + - +
-        #  | 9 | 10| 11|
-        #  + - + - + - +
-        #
-        # ... then partition 0's topleft coordinate would be 0,0
-        # and its dimensions are 10x10 pixels. In fact, all of
-        # the partitions would be 10x10 pixels, with these exceptions,
-        # which utilize last_partition_extra_width or
-        # last_partition_extra_height:
-        #
-        #  * Partition 2: top left coord is 20,0. Dimensions are
-        #    11x10 pixels. This is because every last partition
-        #    from each row gets last_partition_extra_width (1px) added
-        #    to its width, to compensate for the total
-        #    SpatialPartitionGrid width (31px) having a remainder when
-        #    divided by the number of partitions per row (3), i.e.,
-        #    `partitions_wide`, that is, to bring the total width of
-        #    the row of partitions to 31px.
-        #  * Partition 5: top left coord is 20,10; dimensions: 11x10px.
-        #  * Partition 8: top left coord is 20,20; dimensions: 11x10px.
-        #  * Partition 9: top left coord is 0,30; dimensions: 10x11px.
-        #  * Partition 10: top left coord is 10,30; dimensions: 10x11px.
-        #  * Partition 11: top left coord is 20,30; dimensions: 11x11px.
-        return_these_partitions = []
+        list_of_spatial_partitions = []
         for partition_index in xrange(partitions_wide * partitions_tall):
-            # if we continue the example above, if `partition_index` is
+            # if we continue the docstring example, if `partition_index` is
             # 8, its top left coord is 20,20; this calculation will correctly
             # deduce 20 (pixels) for the partition's top left X coordinate.
             #                 2
             # ... as 20 == (8 % 3) * 10
             partition_x = (partition_index % partitions_wide) * partition_width
-
 
             # ... again, if `partition_index` is 8 the topleft coord is 20,20,
             # this calculation will correctly deduce 20 (pixels) for this
@@ -188,15 +209,18 @@ class SpatialPartitionGrid(object):
             if partition_index >= (partitions_wide * partitions_tall) - (partitions_wide):
                 this_partitions_height += last_partition_extra_height
 
+            # Finally, we've gotten all the info required to accurately
+            # create this spacial partition and add it to the list of
+            # spatial partitions to return!
             spatial_partition = SpatialPartition(
                 x=partition_x,
                 y=partition_y,
                 width=this_partitions_width,
                 height=this_partitions_height,
             )
-            return_these_partitions.append(spatial_partition)
+            list_of_spatial_partitions.append(spatial_partition)
 
-        return return_these_partitions
+        return SpatialPartitionGrid(list_of_spatial_partitions)
 
     def get_partition_by_coordinate(self, coordinate_x, coordinate_y):
         """Return the correct/corresponding pygame.SpriteGroup from the
@@ -211,17 +235,6 @@ class SpatialPartitionGrid(object):
 
         partition_index = lol
         return self.spatial_partitions[partition_index]
-
-    def partition_update(self):
-        pass
-
-    def move_sprite(self):
-        """Set the topleft of this specific sprite, and move
-        it from one partition to another.
-
-        """
-
-        pass
 
 
 # TODO: this is pretty unnecessary now...
