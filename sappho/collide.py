@@ -13,6 +13,8 @@ class SpatialPartition(object):
     represents its area on the SpatialPartitionGrid to which it
     belongs. This is effectively a cell of the SpatialPartitionGrid.
 
+    You can use self.sprite_group.update and the like! Very useful!
+
     Attributes:
         rect: pygame.Rect() object, representing the dimensions and
             location on the SpatialPartitionGrid.
@@ -33,12 +35,10 @@ class SpatialPartition(object):
         self.rect = pygame.rect.Rect(x, y, width, height)
         self.sprite_group = pygame.sprite.Group()
 
-    def update(self, *args, **kwargs):
 
-        for sprite in sprite_group:
-            sprite.update(*args, **kwargs)
-
-
+# TODO/NOTES
+# How to keep track which partitions a sprite are in?
+# Can use Sprite.groups as a heuristic.
 class SpatialPartitionGrid(object):
     """A plane/rectangle divided up into equally-sized,
     non-overlapping "spatial partitions," effectively cells
@@ -46,28 +46,91 @@ class SpatialPartitionGrid(object):
     useful for performing actions based on locality, e.g.,
     collisions, updating sprites.
 
+    Specification (spec):
+        A SpatialPartitionGrid is created with a 1D list
+        of SpatialPartitions whose coordinates and size cover
+        the entirety of an implied 2D grid, without overlap.
+
+        All SpatialPartitions are the same size, or
+        the ones that differ may be either right-most
+        partitions by this much:
+
+          width in pixels - (
+            normal partition width in pixels
+            * grid width in partitions
+          )
+
+        ... or bottom-most partitions differing by this much:
+
+          height in pixels - (
+            normal partition height in pixels
+            * grid height in partitions
+          )
+
+        A bottom-most, right-most partition (the bottom-right corner
+        partition) would increase its dimensions according to both
+        of the above calculations.
+
+        There are a lot of cases where the "normal partition" would
+        be the least common pixel dimensions for a partition. As a
+        rule-of-thumb, the unadultrated dimesions, i.e., an "normal
+        partition height and width," can always be found at index 0
+        of the list.
+
+        The real logic behind this is that you determine your grid width
+        first, then you decide how many partitions wide/tall it is, and
+        if there's any remainder when you divide the height/width into
+        partitions, those remainders go into the bottom-most partitions
+        and the right-most partitions.
+
+    See also:
+        SpatialPartitionGrid.from_dimensions()
+
     """
 
     def __init__(self, list_of_spatial_partitions):
         """
 
         Arguments:
-            list_of_spatial_partitions (list[SpatialPartition]): ...
+            list_of_spatial_partitions (list[SpatialPartition]): Ordered
+                SpatialPartition list, see: `from_dimensions()`.
 
         """
 
         self._partitions = list_of_spatial_partitions
+        # we can derive all the meta about our spatial partition grid
+        # with very simple calculations.
+        self.width = list_of_spatial_partitions[-1].rect.right
+        self.height = list_of_spatial_partitions[-1].rect.bottom
+        self.normal_partition_width = list_of_spatial_partitions[0].rect.width
+        self.normal_partition_height = (list_of_spatial_partitions[0]
+                                        .rect.height)
+        self.width_in_partitions = self.width // self.normal_partition_width
+        self.height_in_partitions = self.height // self.normal_partition_height
+        self.area_in_partitions = len(self._partitions)
+        self.extra_partition_width = (
+            self.width - (
+                self.normal_partition_width
+                * self.width_in_partitions
+            )
+        )
+        self.extra_partition_height = (
+            self.height - (
+                self.normal_partition_height
+                * self.height_in_partitions
+            )
+        )
 
     @classmethod
-    def create_spatial_partitions(cls, pixels_wide, pixels_tall,
-                                  partitions_wide, partitions_tall):
+    def from_dimensions(cls, pixels_wide, pixels_tall,
+                        partitions_wide, partitions_tall):
 
         """Generate a list of SpatialPartition objects.
 
         Create a 2d space, consisting of non-overlapping "spacial
         "partitions" (SpatialPartition).
 
-        For example, if you `create_spatial_partitions(10, 10, 3, 4)`,
+        For example, if you `from_dimensions(10, 10, 3, 4)`,
         the SpatialPartitionGrid that will be created will have these
         measurements:
 
@@ -127,7 +190,7 @@ class SpatialPartitionGrid(object):
         Examples:
             To continue the example...
 
-            >>> grid = SpatialPartitionGrid.create_spatial_partitions(
+            >>> grid = SpatialPartitionGrid.from_dimensions(
             ...     pixels_wide=31,
             ...     pixels_tall=41,
             ...     partitions_wide=3,
@@ -147,6 +210,22 @@ class SpatialPartitionGrid(object):
             (20, 10)
             >>> grid._partitions[5].rect.size
             (11, 10)
+            >>> grid.width
+            31
+            >>> grid.height
+            41
+            >>> grid.width_in_partitions
+            3
+            >>> grid.height_in_partitions
+            4
+            >>> grid.normal_partition_width
+            10
+            >>> grid.normal_partition_height
+            10
+            >>> grid.extra_partition_height
+            1
+            >>> grid.extra_partition_width
+            1
 
         """
 
@@ -226,21 +305,98 @@ class SpatialPartitionGrid(object):
             )
             list_of_spatial_partitions.append(spatial_partition)
 
-        return SpatialPartitionGrid(list_of_spatial_partitions)
+        return SpatialPartitionGrid(
+            list_of_spatial_partitions,
+        )
 
-    def get_partition_by_coordinate(self, coordinate_x, coordinate_y):
-        """Return the correct/corresponding pygame.SpriteGroup from the
-        spatial_partitions, which corresponds to the supplied pixel
-        x/y coordinate.
+    def pixel_coordinates_to_partition(self, x, y):
+        """
 
-        Arguments:
-            coordinate_x (int):
-            coordinate_y (int):
+        Examples:
+            To continue the example...
+
+            >>> grid = SpatialPartitionGrid.from_dimensions(
+            ...     pixels_wide=31,
+            ...     pixels_tall=41,
+            ...     partitions_wide=3,
+            ...     partitions_tall=4,
+            ... )
+            >>> lol = grid.pixel_coordinates_to_partition(x=25, y=34)
+            >>> lol is grid._partitions[-1]
+            True
 
         """
 
-        partition_index = lol
-        return self.spatial_partitions[partition_index]
+        new_x = x // self.normal_partition_width
+        new_y = y // self.normal_partition_height
+        index = (new_x + (new_y * self.width_in_partitions))
+        return self._partitions[index]
+
+    # FIXME
+    def intersecting_partitions(self, pygame_rect):
+        """Return the partitions which a rectangle occupies.
+
+        Warning:
+            Since this just checks a rectangles's four
+            corners, it will not work properly if the
+            rectangle is greater than two partitions in size.
+
+        Arguments:
+            pygame_rect (pygame.Rect): ...
+
+        Returns:
+            set(SpatialPartition): ...
+
+        Examples:
+            >>> grid = SpatialPartitionGrid.from_dimensions(
+            ...     pixels_wide=31,
+            ...     pixels_tall=41,
+            ...     partitions_wide=3,
+            ...     partitions_tall=4,
+            ... )
+            >>> rect = pygame.Rect(15, 25, 10, 10)
+            >>> rect.topleft
+            (15, 25)
+            >>> parts = grid.intersecting_partitions(rect)
+            >>> len(parts)
+            4
+
+        """
+
+        if ((pygame_rect.width > self.normal_partition_width * 2)
+           or (pygame_rect.height > self.normal_partition_height * 2)):
+            # update this part to get the partitions in between, in the future
+            message = 'Rect must not exceed 2x height nor width. Support soon!'
+            raise NotImplementedError(message)
+        else:
+            return set([
+                self.pixel_coordinates_to_partition(*pygame_rect.topleft),
+                self.pixel_coordinates_to_partition(*pygame_rect.bottomleft),
+                self.pixel_coordinates_to_partition(*pygame_rect.topright),
+                self.pixel_coordinates_to_partition(*pygame_rect.bottomright),
+            ])
+
+    # FIXME/TODO
+    def partitions_for_sprite(self, sprite):
+
+        sprite_position
+        # get the index
+        asdf
+        pass
+
+    # FIXME/TODO
+    def move_sprite(self, some_sprite):
+        pass
+
+    # FIXME/TODO
+    def update_sprite_location(self, some_sprite):
+        some_sprite._partitions = asdf
+
+    # FIXME/TODO
+    def add_sprites(self, *args):
+
+        for sprite in args:
+            sprite._partitions = self.intersecting_partitions(sprite.rect)
 
 
 # TODO: this is pretty unnecessary now...
