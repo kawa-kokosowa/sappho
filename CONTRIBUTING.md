@@ -18,6 +18,14 @@
   * Avoid modifying foreign objects inside of a different object
   * Use `etc/pre-commit` git hook
 
+I like to think of an object as a data structure, so I make my `__init__()`
+method accept only its data structure, it itself does not construct the data/
+data structure. There are class methods for constructing said data structure/data,
+and methods for manipulating it, navigating it. Think of a tile map; it's inherently
+a 2D grid of tiles, so the data structure is a 2d list of tile objects. Your
+`__init__()` method should be exclusively assignment statements, with at most
+basic calculations being performed.
+
 ## Acceptance criteria for pull requests
 
 First you'll want to make a branch that identifies the set of changes
