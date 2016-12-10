@@ -339,7 +339,8 @@ class SpatialPartitionGrid(object):
         Warning:
             Since this just checks a rectangles's four
             corners, it will not work properly if the
-            rectangle is greater than two partitions in size.
+            rectangle is equal to or greater than
+            normal partition size + 2 pixels.
 
         Arguments:
             pygame_rect (pygame.Rect): ...
@@ -363,12 +364,15 @@ class SpatialPartitionGrid(object):
 
         """
 
-        if ((pygame_rect.width > self.normal_partition_width * 2)
-           or (pygame_rect.height > self.normal_partition_height * 2)):
+        if ((pygame_rect.width >= self.normal_partition_width + 2)
+           or (pygame_rect.height >= self.normal_partition_height + 2)):
             # update this part to get the partitions in between, in the future
             message = 'Rect must not exceed 2x height nor width. Support soon!'
             raise NotImplementedError(message)
         else:
+            # this won't work but the basic idea works, it can be broken down
+            # into a simple calc (testing if first coordinate is last of a part
+            # right?
             return set([
                 self.pixel_coordinates_to_partition(*pygame_rect.topleft),
                 self.pixel_coordinates_to_partition(*pygame_rect.bottomleft),
@@ -376,27 +380,34 @@ class SpatialPartitionGrid(object):
                 self.pixel_coordinates_to_partition(*pygame_rect.bottomright),
             ])
 
-    # FIXME/TODO
-    def partitions_for_sprite(self, sprite):
+    def move_sprite(self, some_sprite, x, y):
+        """Move some_sprite to a new coordinate on
+        the SpatialPartitionGrid.
 
-        sprite_position
-        # get the index
-        asdf
-        pass
+        Arguments:
+            some_sprite (pygame.Sprite): ...
+            x (int): ...
+            y (int): ...
 
-    # FIXME/TODO
-    def move_sprite(self, some_sprite):
-        pass
+        """
 
-    # FIXME/TODO
-    def update_sprite_location(self, some_sprite):
-        some_sprite._partitions = asdf
+        # first remove sprite from the partition(s) it's currently on
+        for partition in self.intersecting_partitions(some_sprite.rect):
+            partition.sprite_group.remove(some_sprite)
 
-    # FIXME/TODO
+        # set the new position
+        some_sprite.rect.topleft = (x, y)
+
+        # now add this sprite to the partitions based on the
+        # sprite's new position
+        for partition in self.intersecting_partitions(some_sprite.rect):
+            partition.sprite_group.add(some_sprite)
+
+    # TODO...
     def add_sprites(self, *args):
 
         for sprite in args:
-            sprite._partitions = self.intersecting_partitions(sprite.rect)
+            self.move_sprite(sprite, *sprite.rect)
 
 
 # TODO: this is pretty unnecessary now...

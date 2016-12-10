@@ -120,7 +120,7 @@ class Asteroid(pygame.sprite.Sprite):
         super(Asteroid, self).__init__()
 
     @classmethod
-    def add_if_below_threshold(cls, player, asteroid_list, at_least_x_existing):
+    def add_if_below_threshold(cls, player, spatial_partition, asteroid_list, at_least_x_existing):
 
         if len(asteroid_list) < at_least_x_existing:
             plus_or_minus_x = random.choice([1, -1])
@@ -141,6 +141,7 @@ class Asteroid(pygame.sprite.Sprite):
 
             another_asteroid = Asteroid((new_asteroid_x, new_asteroid_y), 10, x_speed, y_speed)
             asteroid_list.add(another_asteroid)
+            spatial_partition.add_sprites(another_asteroid)
 
     def new_smaller_asteroid(self):
         """New x and y speed based on player coords
@@ -290,6 +291,20 @@ layers = SurfaceLayers(camera.source_surface, len(tilemap_surfaces))
 # Asteroids
 asteroid_list = pygame.sprite.Group()
 
+# for right now we're using a fixed z position
+tilemap_on_players_index = tilemaps_by_layer[config.ANIMATED_SPRITE_Z_INDEX]
+tilemap_collision_group = tilemap_on_players_index.collision_group
+
+# The spatial partition which is used specifically (at least at the
+# moment) for asteroids and walls.
+spatial_partition = collision.SpatialPartitionGrid.from_dimensions(
+    *surface_size,
+    20,
+    20,
+)
+spatial_partition.add_sprites(sprite for sprite in tilemap_collision_group)
+
+
 # Main program loop ###########################################################
 while not done:
 
@@ -328,14 +343,19 @@ while not done:
     #
     # We will be resetting player.sprite.rect.topleft
     # to old_topleft if there is a collision.
-    tilemap_on_players_index = tilemaps_by_layer[config.ANIMATED_SPRITE_Z_INDEX]
-    collision_group_on_player_index = tilemap_on_players_index.collision_group
     timedelta = clock.get_time()
-    player.update(camera, collision_group_on_player_index, layers[0].get_size(), timedelta)
+    # TODO: why not have player accept spatial partition?
+    player.update(
+        camera,
+        tilemap_collision_group,
+        layers[0].get_size(),
+        timedelta,
+    )
  
     # create some asteroids, hurdled t the player
     # we should make these chase the player, actually...
-    Asteroid.add_if_below_threshold(player, asteroid_list, 10)
+    # TODO: accept spatial partition???
+    Asteroid.add_if_below_threshold(player, spatial_partition, asteroid_list, 10)
 
     # DRAWING/RENDER CODE
 
@@ -343,7 +363,6 @@ while not done:
     for i, tilemap_layer in enumerate(tilemap_surfaces):
         layers[i].blit(animated_bg.image, camera.view_rect.topleft)
         layers[i].blit(tilemap_layer, (0, 0))
-
 
     # Finally let's render the animated sprite on some
     # arbitrary layer. In the future the TMX will set this.
