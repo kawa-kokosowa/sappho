@@ -1,8 +1,8 @@
 # Authors and Rights
 
-## Lily Seabreeze
+## Lily Mayfield
 
-http://lily.seabreeze.pro/
+http://lilymayfield.pro/
 
 Project Mom (Project Lead)
 

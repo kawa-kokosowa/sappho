@@ -46,5 +46,5 @@ for pull requests:
 
 Once your pull request has been reviewed by one other developer
 (signified by their approval, e.g., :+1:) it may be merged to `nextrelease`,
-but that's ultimately up to Lily Seabreeze, the project's mom who
+but that's ultimately up to Lily Mayfield, the project's mom who
 manages the project and its releases.

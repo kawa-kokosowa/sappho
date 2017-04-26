@@ -1,16 +1,19 @@
 # ![Sappho Logo (A Lyre)](logo/sappho-logo.png)
 
-[![GitHub license](https://img.shields.io/github/license/lily-seabreeze/sappho.svg?style=flat-square)](https://raw.githubusercontent.com/lily-seabreeze/sappho/master/LICENSE)
+[![GitHub
+license](https://img.shields.io/github/license/lily-mayfield/sappho.svg?style=flat-square)](https://raw.githubusercontent.com/lily-mayfield/sappho/master/LICENSE)
 [![PyPI Version](https://img.shields.io/pypi/v/sappho.svg?style=flat-square)](https://pypi.python.org/pypi/sappho/)
-[![Code Climate](https://img.shields.io/codeclimate/github/lily-seabreeze/sappho.svg?style=flat-square)](https://codeclimate.com/github/lily-seabreeze/sappho)
-[![Travis](https://travis-ci.org/lily-seabreeze/sappho.svg)](https://travis-ci.org/lily-seabreeze/sappho)
-[![Coverage Status](https://img.shields.io/coveralls/lily-seabreeze/sappho.svg)](https://coveralls.io/github/lily-seabreeze/sappho)
+[![Code
+Climate](https://img.shields.io/codeclimate/github/lily-mayfield/sappho.svg?style=flat-square)](https://codeclimate.com/github/lily-mayfield/sappho)
+[![Travis](https://travis-ci.org/lily-mayfield/sappho.svg)](https://travis-ci.org/lily-mayfield/sappho)
+[![Coverage
+Status](https://img.shields.io/coveralls/lily-mayfield/sappho.svg)](https://coveralls.io/github/lily-mayfield/sappho)
 
 Sappho is a 2D game engine written with Python (2 *and* 3) and pygame.
 
-![sappho in action](https://github.com/lily-seabreeze/sappho/blob/master/game-demo.gif)
+![sappho in action](https://github.com/lily-mayfield/sappho/blob/master/game-demo.gif)
 
-[Lily Seabreeze](http://lily.seabreeze.pro/) is this project's mom and owner. Be sure to checkout the `AUTHORS.md`!
+Be sure to checkout the `AUTHORS.md`!
 
 ## Design Philosophy
 
